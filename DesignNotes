@@ -1,0 +1,45 @@
+Split the data -> so that we can work on it independently and 
+then aggregate the results that we have (sequential)
+
+Put similar things in a common bucket. (Sorted by KEYS)
+
+We need to make sure that BAD input is IGNORED (robutsness is important)
+we do not want to run for long time and fuck up for BAD. 
+Experienece with BATCH processing at SAGITEC
+
+-- Components of this system -- 
+
+Files/Data - Some input that we need to process/chew upon
+
+System Orchestrator - Accepting input/requests from USER to start some jobs/data crunching work
+
+Job Tracker - Submit the job to this guy - it divides tasks into mappers and reducers (Overall distrubuted Monitoring of the Work)
+(Distributed Co-ordinator)
+
+Task Tracker (running as daemon on each of the nodes to do some work) 
+(Local monitoring of work on each Node) (Local Co-ordinator)
+
+Worker-MapComputation (actually doing the work)
+
+Worker-ReduceComputation (actually doing the work of Reduce)
+
+
+Anatomy of a MapReduce Job Run 
+	Job Submission 
+	Job Initialization 
+	Task Assignment 
+	Task Execution 
+	Progress and Status Updates 
+	Job Completion 
+
+Failures 
+	Task Failure 
+ 	Tasktracker Failure 
+	Jobtracker Failure 
+  Job Scheduling 
+		The Fair Scheduler 
+  Shuffle and Sort 
+		The Map Side 
+		The Reduce Side
+
+ Skipping Bad Records 
