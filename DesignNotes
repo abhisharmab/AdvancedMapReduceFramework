@@ -23,6 +23,15 @@ Worker-MapComputation (actually doing the work)
 
 Worker-ReduceComputation (actually doing the work of Reduce)
 
+Polling mechanism needs for the Job's Progress Reporting 
+
+
+Tasks of the Framework: 
+- Scheduling the Tasks
+- Monitorting the Progress
+- Re-exeuting the failed tasks 
+- Handling failure of the nodes
+
 
 Anatomy of a MapReduce Job Run 
 	Job Submission 
