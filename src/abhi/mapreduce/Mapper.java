@@ -13,20 +13,21 @@ import java.io.IOException;
  * and implement the respective required methods 
  * 
  * Application Programmer will provide the precise implementations for these based on the KIND of Job
+ * @param <VIN>
+ * @param <KIN>
+ * @param <KOUT>
+ * @param <VOUT>
  */
 
-public abstract class Mapper {
+public abstract class Mapper<KIN, VIN, KOUT, VOUT> {
 
 	//Called once at the beginning to setup the Map Task or perform some pre-processing as per Application Need
 	protected void setup() throws IOException, InterruptedException {};
 	
 	//Called once at the end (Possibly for some cleanup and housekeeping work)
 	protected void cleanUp() throws IOException, InterruptedException{};
+
 	
-	
-	protected void map (String key, String value, OuputCollector outputCollector, Reporter report)
-			throws IOException, InterruptedException
-	{
-		//To be over-ridden/implemented at the 
-	}
+	public abstract void map (KIN key, VIN value, OutputCollector<KOUT, VOUT> outputCollector)
+			throws IOException, InterruptedException ;
 }
