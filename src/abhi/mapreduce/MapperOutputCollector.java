@@ -21,9 +21,14 @@ import java.util.ArrayList;
 public class MapperOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOUT> {
 
 	private Partitioner<KOUT> paritioner; 
+	
+	//Writer that will spit out the intermediate files
 	ArrayList<BufferedWriter> intermediateWriters;
+	
+	//Number of reducers chosen by the user
 	private int numReducers;
 	
+	//Constructor
 	public MapperOutputCollector(String outdirectory, Partitioner<KOUT> partitioner, int numReducers, String separator) 
 	{
 		super(outdirectory, separator);
@@ -37,7 +42,7 @@ public class MapperOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOU
 		{
 				try 
 		      	{
-		          /* build writers for different partitions */
+		           //Add writer of each of the partition.
 		           this.intermediateWriters.add(new BufferedWriter(new FileWriter(this.outputDirectory
 		                  + System.getProperty("file.separator") + "part-" + i, true)));
 		        } 
@@ -66,7 +71,8 @@ public class MapperOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOU
 		    }
 		}
 		else
-		{ //Fall back case is to write to just 1 file: At-least the job will still run even if the Applicaiton Programmer Screws Up
+		{ 
+			//Fall back case is to write to just 1 file: At-least the job will still run even if the Applicaiton Programmer Screws Up
 			System.err.println("partitioner was NULL. DEfault to single intermediate output file");
 			BufferedWriter bw = this.intermediateWriters.get(1);
 		    try 
