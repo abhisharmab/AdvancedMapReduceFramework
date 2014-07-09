@@ -17,9 +17,12 @@ public abstract class OutputCollector<KOUT, VOUT> {
 	
 	protected String outputDirectory; 
 	
-	public OutputCollector(String outdirectory)
+	protected String separator;
+	
+	public OutputCollector(String outdirectory, String separator)
 	{
 		this.outputDirectory = outdirectory;
+		this.separator = separator;
 	}
 	
 	protected abstract void collect(KOUT key, VOUT value) throws IOException;
