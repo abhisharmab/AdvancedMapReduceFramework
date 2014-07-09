@@ -19,6 +19,7 @@ public abstract class OutputCollector<KOUT, VOUT> {
 	
 	protected String separator;
 	
+	
 	public OutputCollector(String outdirectory, String separator)
 	{
 		this.outputDirectory = outdirectory;
