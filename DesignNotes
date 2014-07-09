@@ -52,3 +52,24 @@ Failures
 		The Reduce Side
 
  Skipping Bad Records 
+
+ 
+ 
+ 
+ Very Excellent Summary
+ A MapReduce job usually splits the input data-set into independent chunks which are processed by the map tasks in a completely parallel manner. 
+ The framework sorts the outputs of the maps, which are then input to the reduce tasks. Typically both the input and the output of the job are stored in a file-system. The framework takes care of scheduling tasks, monitoring them and re-executes the failed tasks.
+
+Typically the compute nodes and the storage nodes are the same, that is, the MapReduce framework and the Hadoop Distributed File System
+ (see HDFS Architecture Guide) are running on the same set of nodes. This configuration allows the framework to effectively schedule tasks on the nodes where data is already present, resulting in very high aggregate bandwidth across the cluster.
+
+The MapReduce framework consists of a single master JobTracker and one slave TaskTracker per cluster-node. 
+The master is responsible for scheduling the jobs' component tasks on the slaves, monitoring them and re-executing the failed tasks. 
+The slaves execute the tasks as directed by the master.
+
+Minimally, applications specify the input/output locations and supply map and reduce functions via implementations of appropriate 
+interfaces and/or abstract-classes. These, and other job parameters, comprise the job configuration. 
+The Hadoop job client then submits the job (jar/executable etc.) and configuration to the JobTracker which then assumes the
+ responsibility of distributing the software/configuration to the slaves, scheduling tasks and monitoring them, providing status and diagnostic information to the job-client.
+
+ 
