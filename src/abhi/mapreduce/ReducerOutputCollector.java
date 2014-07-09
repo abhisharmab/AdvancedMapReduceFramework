@@ -18,9 +18,11 @@ public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VO
 
 	private BufferedWriter bw;
 	
-	public ReducerOutputCollector(String outdirectory, String separator) {
+	private OutputFormat outFormat;
+	
+	public ReducerOutputCollector(String outdirectory, String separator, OutputFormat<KOUT, VOUT> outFormat) {
 		super(outdirectory, separator);
-		
+		this.outFormat = outFormat;
 		try 
       	{
            //Add writer of each of the partition.
@@ -33,6 +35,7 @@ public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VO
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 protected void collect(KOUT key, VOUT value) throws IOException 
 	{
@@ -40,7 +43,7 @@ protected void collect(KOUT key, VOUT value) throws IOException
 		try
 		{
 			//TODO Abhi. We need to accept formatting from the user
-			this.bw.write(key + "" + value);
+			this.bw.write(this.outFormat.format(key, value));
 		}
 		catch (IOException e)
 		{
