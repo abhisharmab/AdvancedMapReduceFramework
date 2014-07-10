@@ -21,7 +21,7 @@ public abstract class OutputFormat<KOUT, VOUT> {
 	//This is as feature of Hadoop
 	public void checkifOutputDirectoryExists()
 	{
-		
+		//Need to implement this functionality just as MapReduce
 	}
 	
 }
