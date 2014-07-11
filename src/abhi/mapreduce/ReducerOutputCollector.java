@@ -16,9 +16,11 @@ import java.io.IOException;
  */
 public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOUT> {
 
+	//Using a BufferedWriter to Amortize the cost for Disk I/O
+	//We want to fill up an buffer and then write out the data to the Disk
 	private BufferedWriter bw;
 	
-	private OutputFormat outFormat;
+	private OutputFormat<KOUT, VOUT> outFormat;
 	
 	public ReducerOutputCollector(String outdirectory, String separator, OutputFormat<KOUT, VOUT> outFormat) {
 		super(outdirectory, separator);
@@ -35,7 +37,7 @@ public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VO
 		
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 protected void collect(KOUT key, VOUT value) throws IOException 
 	{
