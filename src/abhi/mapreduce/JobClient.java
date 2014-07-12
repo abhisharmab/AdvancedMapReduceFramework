@@ -16,7 +16,7 @@ import java.rmi.*;
 
  * The job submission process involves: Main Tasks to be Done
  * Checking the input and output specifications of the job.
- * Setup the requisite accounting information for the DistributedCache of the job, if necessary.
+ * Ask the DataNodeLocal Manager to split up the file if NOT already spilt. 
  * Copying the job's jar and configuration to the map-reduce system directory on the distributed file-system.
  * Submitting the job to the JobTracker and optionally (maybe) monitoring it's status.
 
@@ -26,6 +26,7 @@ public class JobClient {
 	public static void main(String[] args)
 	{
 		//Accept the commands from the user 
+		//
 	}
 	
 }
