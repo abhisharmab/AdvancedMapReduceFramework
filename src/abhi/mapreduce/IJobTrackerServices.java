@@ -3,6 +3,10 @@
  */
 package abhi.mapreduce;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+
 /**
  * @author abhisheksharma
  *
@@ -12,6 +16,11 @@ package abhi.mapreduce;
  *JobTracker would implement these methods and provide the appropriate services to the caller.
  *
  */
-public interface IJobTrackerServices {
+public interface IJobTrackerServices extends Remote{
 
+	  public int requestJobID() throws RemoteException;
+
+	  public boolean submitJob(JobConf jconf) throws RemoteException;
+	  
+	  public void updateTaskManagerStatus(Object status) throws RemoteException;
 }
