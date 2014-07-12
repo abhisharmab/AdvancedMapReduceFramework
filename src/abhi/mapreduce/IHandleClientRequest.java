@@ -20,8 +20,8 @@ import java.io.IOException;
 public interface IHandleClientRequest {
 	
 	//Used to submit job to the JobClient which will further submit it to the Job Tracker
-	public void submitJob() throws FileNotFoundException, IOException;
+	public void submitJob(JobConf jobConf) throws FileNotFoundException, IOException;
 	
 	//Reporting status of the Job on the user's command terminal
-	public boolean monitorandPrintJobInfo() throws IOException, InterruptedException;
+	public boolean monitorandPrintJobInfo(JobConf jobConf, IRunningJobInfo job) throws IOException, InterruptedException;
 }

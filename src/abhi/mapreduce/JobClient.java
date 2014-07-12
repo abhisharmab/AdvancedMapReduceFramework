@@ -3,6 +3,8 @@
  */
 package abhi.mapreduce;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.*;
 
 /**
@@ -19,14 +21,30 @@ import java.rmi.*;
  * Ask the DataNodeLocal Manager to split up the file if NOT already spilt. 
  * Copying the job's jar and configuration to the map-reduce system directory on the distributed file-system.
  * Submitting the job to the JobTracker and optionally (maybe) monitoring it's status.
-
+ * 
+ * 
+ * This class is in charge of interact with users, like submitting jobs, kill jobs and lookup
+ * status, etc.
  */
-public class JobClient {
+public class JobClient implements IHandleClientRequest {
 
 	public static void main(String[] args)
 	{
 		//Accept the commands from the user 
 		//
+	}
+
+	@Override
+	public void submitJob(JobConf jobConf) throws FileNotFoundException, IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean monitorandPrintJobInfo(JobConf jobConf, IRunningJobInfo job) throws IOException,
+			InterruptedException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

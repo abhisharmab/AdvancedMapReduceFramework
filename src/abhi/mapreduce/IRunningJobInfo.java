@@ -18,14 +18,19 @@ import java.io.IOException;
  */
 public interface IRunningJobInfo {
 	
+	//Get the JobID
 	public String getJobID();
 	
+	//Get the JobName
 	public String getJobName();
 	
+	//Percentage Progress of the Map Tasks
 	public float getMapProgress() throws IOException;
 	
+	//Percentage Progress of the Reduce Tasks
 	public float getReduceProgress() throws IOException;
 	
+	//Is the Job Successfully Completed
 	public boolean isSuccessful();
 
 }
