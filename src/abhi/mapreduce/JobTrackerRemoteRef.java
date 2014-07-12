@@ -3,8 +3,8 @@
  */
 package abhi.mapreduce;
 
-import java.rmi.RemoteException;
 import java.rmi.*;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * @author abhisheksharma
@@ -13,7 +13,7 @@ import java.rmi.*;
  * Everyone who needs to communicate with the JobTracker will get a reference of this and talk to the JobTrackers
  * 
  * Basically this is the world-facing entity of the JobTracker and then delegates events and calls to
- * the JobTracker for the heavy-lifiting. 
+ * the JobTracker for the heavy-lifting. 
  * 
  * Primary callers of the services here are :
  * JobClient: 
@@ -26,7 +26,19 @@ import java.rmi.*;
  *  	2. Report anything special or any needed information etx.
  *
  */
-public class JobTrackerRemoteRef implements IJobTrackerServices {
+public class JobTrackerRemoteRef extends UnicastRemoteObject implements IJobTrackerServices {
+
+	private JobTracker jobTracker;
+	
+	protected JobTrackerRemoteRef() throws RemoteException {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/* (non-Javadoc)
 	 * @see abhi.mapreduce.IJobTrackerServices#requestJobID()

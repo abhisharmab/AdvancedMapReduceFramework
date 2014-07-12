@@ -6,6 +6,8 @@ package abhi.mapreduce;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /**
  * @author abhisheksharma
@@ -28,10 +30,27 @@ import java.rmi.*;
  */
 public class JobClient implements IHandleClientRequest {
 
+	//Remote Reference of the JobTracker Services to that we can Call Services upon it
+	private IJobTrackerServices trackerRemoteRef;
+	
+	public JobClient()
+	{
+		try
+		{
+			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REGISTRY_PORT));
+			Registry registry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
+			this.trackerRemoteRef = (IJobTrackerServices) registry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME));
+		}
+		catch(NumberFormatException | RemoteException | NotBoundException e)
+		{
+			System.err.println("Error occurred in communcating with JobTracker");
+			System.err.println("Ensure Jobtracker is running and check configuration");
+		}
+
+	}
+	
 	public static void main(String[] args)
 	{
-		//Accept the commands from the user 
-		//
 	}
 
 	@Override
@@ -45,6 +64,20 @@ public class JobClient implements IHandleClientRequest {
 			InterruptedException {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	/**
+	 * @return the trackerRemoteRef
+	 */
+	public IJobTrackerServices getTrackerRemoteRef() {
+		return trackerRemoteRef;
+	}
+
+	/**
+	 * @param trackerRemoteRef the trackerRemoteRef to set
+	 */
+	public void setTrackerRemoteRef(JobTrackerRemoteRef trackerRemoteRef) {
+		this.trackerRemoteRef = trackerRemoteRef;
 	}
 	
 }
