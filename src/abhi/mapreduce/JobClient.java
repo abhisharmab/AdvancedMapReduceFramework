@@ -32,6 +32,7 @@ public class JobClient implements IHandleClientRequest {
 
 	//Remote Reference of the JobTracker Services to that we can Call Services upon it
 	private IJobTrackerServices trackerRemoteRef;
+	//Actually its the same ao
 	
 	public JobClient()
 	{
