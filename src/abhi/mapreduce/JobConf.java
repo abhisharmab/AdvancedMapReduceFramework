@@ -60,6 +60,7 @@ public class JobConf implements Serializable{
 		    this.setOutputFormatClassName(null);
 		  }
 
+	
 	/**
 	 * @return the reducerNum
 	 */
