@@ -16,7 +16,7 @@ public class Test {
 		// TODO Auto-generated method stub
 		
 		int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REGISTRY_PORT));
-		int x = 0;
+        String RegistryLocation = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
 	}
 
 }
