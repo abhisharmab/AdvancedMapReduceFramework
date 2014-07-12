@@ -56,7 +56,7 @@ protected void collect(KOUT key, VOUT value) throws IOException
 	}
 	
 	
-public void close() {
+	public void close() {
 		    if (this.bw != null) {
 		      try {
 		        this.bw.flush();
