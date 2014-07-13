@@ -26,11 +26,11 @@ import java.rmi.server.UnicastRemoteObject;
  *  	2. Report anything special or any needed information etx.
  *
  */
-public class JobTrackerRemoteRef extends UnicastRemoteObject implements IJobTrackerServices {
+public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJobTrackerServices {
 
 	private JobTracker jobTracker;
 	
-	protected JobTrackerRemoteRef() throws RemoteException {
+	protected JobTrackerServiceProvider() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
 	}

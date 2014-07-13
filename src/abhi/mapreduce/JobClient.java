@@ -56,7 +56,7 @@ public class JobClient implements IHandleClientRequest {
 
 	@Override
 	public void submitJob(JobConf jobConf) throws FileNotFoundException, IOException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -77,7 +77,7 @@ public class JobClient implements IHandleClientRequest {
 	/**
 	 * @param trackerRemoteRef the trackerRemoteRef to set
 	 */
-	public void setTrackerRemoteRef(JobTrackerRemoteRef trackerRemoteRef) {
+	public void setTrackerRemoteRef(JobTrackerServiceProvider trackerRemoteRef) {
 		this.trackerRemoteRef = trackerRemoteRef;
 	}
 	
