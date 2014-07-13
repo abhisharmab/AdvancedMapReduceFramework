@@ -20,6 +20,7 @@ public class SystemConstants {
 	public static final String REGISTRY_HOST = "REGISTRY.HOST";
 	public static final String REGISTRY_PORT = "REGISTRY.PORT";
 	public static final String JOBTRACKER_SERVICE_NAME = "JOBTRACKER.SERVICE";
+	public static final String NAMENODE_SERVICE_NAME = "NAMENODE.SERVICE";
 
 	
 	public static String getConfig(String configName) 
