@@ -129,7 +129,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 			list_fileInfo.add(fileInfo);	
 		} else {
 			if(!checkFileExistance(fileInfo.getFileName())){
-				list_fileInfo.add(fileInfo);
+				list_fileInfo.add(fileInfo); 
 			}
 		}
 		

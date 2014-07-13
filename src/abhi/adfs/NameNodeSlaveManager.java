@@ -294,7 +294,7 @@ public class NameNodeSlaveManager implements Runnable {
 					
 					
 					// Updated the data Nodes now to send out files.
-					updateDataNodes();
+					updateDataNodes(); 
 					
 					for(Entry<String, DataNode> entry : list_DataNode.entrySet()){
 						

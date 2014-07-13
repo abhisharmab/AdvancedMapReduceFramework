@@ -49,10 +49,10 @@ public class InputFileInfo  implements Serializable{
 		this.paritionNumber = paritionNumber;
 	}
 	public void addFileParitionInfo(String dataNodeName, String partitionFileName){
-	
+	 
 		if(getPartitions().containsKey(dataNodeName)){
 			getPartitions().get(dataNodeName).add(partitionFileName);
-		} else {
+		} else { 
 			
 			
 			List<String> fileNames = new ArrayList<String>();

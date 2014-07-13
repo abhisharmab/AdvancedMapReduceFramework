@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 /**
- * @author Douglas Rew
+ * @author Douglas Rew 
  *
  */
 public interface NameNodeMaster extends Remote{

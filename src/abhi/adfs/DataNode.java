@@ -8,7 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * @author Douglas Rew
+ * @author Douglas Rew 
  *
  */
 public interface DataNode extends Remote {

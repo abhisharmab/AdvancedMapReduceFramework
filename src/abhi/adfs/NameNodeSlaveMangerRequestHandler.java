@@ -35,7 +35,7 @@ public class NameNodeSlaveMangerRequestHandler  implements Runnable {
 				
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e.printStackTrace(); 
 				}
 				
 		}

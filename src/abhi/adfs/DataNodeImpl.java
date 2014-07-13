@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 /**
- * @author Douglas Rew
+ * @author Douglas Rew 
  *
  */
 public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
