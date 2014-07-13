@@ -5,6 +5,8 @@ package abhi.mapreduce;
 
 import java.io.IOException;
 
+//MIGHT NOT NEED THIS FILE AT ALL> LET'S KEEP THINGS SIMPLE
+
 /**
  * @author abhisheksharma
  *

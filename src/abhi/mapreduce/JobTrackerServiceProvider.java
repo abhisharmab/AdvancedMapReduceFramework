@@ -9,6 +9,8 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author abhisheksharma
  *
+ *
+ * REMOTE REF FOR THE JOBTRACKER as well.
  * This is a remote reference for the JobTracker which lives in the RMI registry. 
  * Everyone who needs to communicate with the JobTracker will get a reference of this and talk to the JobTrackers
  * 
