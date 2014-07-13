@@ -17,11 +17,14 @@ import java.io.IOException;
  * These are the set of necessary services that must be provided by the JobClient
  *
  */
-public interface IHandleClientRequest {
-	
+public interface IClientServices {
+		
 	//Used to submit job to the JobClient which will further submit it to the Job Tracker
-	public void submitJob(JobConf jobConf) throws FileNotFoundException, IOException;
+	public boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException;
+	
 	
 	//Reporting status of the Job on the user's command terminal
-	public boolean monitorandPrintJobInfo(JobConf jobConf, IRunningJobInfo job) throws IOException, InterruptedException;
+	// This method will periodically get information from JobTracker about the JOB and update on the terminal 
+	// This will happen until the JOB is completed, dies, terminated or maybe cancelled explicitly by the user
+	public void monitorandPrintJobInfo(JobConf jobConf, IRunningJobInfo job) throws IOException, InterruptedException;
 }

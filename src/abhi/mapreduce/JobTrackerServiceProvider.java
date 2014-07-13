@@ -9,6 +9,8 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author abhisheksharma
  *
+ *
+ * REMOTE REF FOR THE JOBTRACKER as well.
  * This is a remote reference for the JobTracker which lives in the RMI registry. 
  * Everyone who needs to communicate with the JobTracker will get a reference of this and talk to the JobTrackers
  * 
@@ -26,11 +28,11 @@ import java.rmi.server.UnicastRemoteObject;
  *  	2. Report anything special or any needed information etx.
  *
  */
-public class JobTrackerRemoteRef extends UnicastRemoteObject implements IJobTrackerServices {
+public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJobTrackerServices {
 
 	private JobTracker jobTracker;
 	
-	protected JobTrackerRemoteRef() throws RemoteException {
+	protected JobTrackerServiceProvider() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
 	}
