@@ -3,7 +3,9 @@
  */
 package abhi.adfs;
 
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -22,9 +24,12 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	private static String master_Name;
 	private static HashMap<String, ArrayList<String>> list_distributed_files; 
 	
+	private static HashMap<String, DataNode> list_dataNode;
+	
 	public NameNodeMasterImpl() throws RemoteException {
 		super();
 		list_distributed_files = new HashMap<String, ArrayList<String>>();
+		list_dataNode = new HashMap<String, DataNode>();
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -41,6 +46,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 			
 			// This is for testing
 			System.out.println(list_distributed_files);
+
 			
 			
 			// This should trigger restructure in the files.
@@ -49,7 +55,9 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 			list_distributed_files.put(slave_name, list);
 			
 		}
-		
+	
+		// Grabbing the stub for future use.
+		registerDataNode(slave_name);
 		return true;
 		
 
@@ -103,4 +111,25 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 		System.out.println("This is me!!!!!");
 	}
 
+	void registerDataNode(String dataNodeName){
+		
+        try {
+			DataNode dataNode = (DataNode) Naming.lookup(dataNodeName);
+			System.out.println("Looked up datanNode : " + dataNodeName);
+			
+			list_dataNode.put(dataNodeName, dataNode);
+			
+			System.out.println(list_dataNode);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+	}
 }
