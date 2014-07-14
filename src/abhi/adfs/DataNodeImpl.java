@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 /**
- * @author Douglas Rew
+ * @author Douglas Rew 
  *
  */
 public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
@@ -25,8 +25,18 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	private List<String> fileList;
 	private static String directory = "adsf_files";
 	
-	protected DataNodeImpl() throws RemoteException {
+	// This is for testing
+	private String pid = null;
+	
+	protected DataNodeImpl(String pid) throws RemoteException {
 		super();
+		
+		// for debug
+		this.pid=pid;
+		directory = directory +"_" + pid;
+		//
+		
+		
 		checkDirectory();
 		fileList = new ArrayList<String>();
 		
@@ -131,6 +141,14 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 		} else {
 			return false;	
 		}
+	}
+
+
+	// This method is used to check the liveness of the DataNode.
+	@Override
+	public boolean ping() throws RemoteException {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 
