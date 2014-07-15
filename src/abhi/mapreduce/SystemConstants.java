@@ -14,6 +14,27 @@ import java.util.ResourceBundle;
  */
 public class SystemConstants {
 	
+	public enum JobStatus 
+	{
+		    INITIALIZED, 
+		    INPROGRESS, 
+		    FAILED, 
+		    SUCCEEDED
+	}
+	
+	public enum TaskType 
+	{
+		    MAPPER, 
+		    REDUCER
+	}
+	
+	public enum TaskStatus
+	{
+	    INITIALIZED, 
+	    INPROGRESS, 
+	    FAILED, 
+	    SUCCEEDED
+	}
 	private static final ResourceBundle sysConfig = ResourceBundle.getBundle("Configuration", Locale.getDefault());
 	
 	//----Many of the System Configuration and System Constants are Declared here --//
