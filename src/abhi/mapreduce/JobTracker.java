@@ -6,6 +6,7 @@ package abhi.mapreduce;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.List;
 
 
 /**
@@ -26,6 +27,11 @@ public class JobTracker {
 	
 	//This is the face of the JobTracker exposed to the rest of the world via RMIRegsitry
 	private JobTrackerServiceProvider jtServiceProvider;
+	
+	//This is a cache of all the Task Tracker Reference from the RMI Registry 
+	//As we need the taskTrackers we will fetch the reference once and then keep it locally until there is a problem 
+	List<TaskTrackerServices> cachedTaskTrackers;
+	
 	
 	 public JobTracker()
 	 {

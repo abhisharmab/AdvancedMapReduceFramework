@@ -4,6 +4,7 @@
 package abhi.mapreduce;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import abhi.mapreduce.SystemConstants.JobStatus;
@@ -36,6 +37,11 @@ public class JobInfo implements Serializable {
 	private JobStatus jobStatus;
 	
 	private List<TaskProgress> progressofallTasks;
+	
+	public JobInfo()
+	{
+		this.progressofallTasks = new ArrayList<TaskProgress>();
+	}
 	
 	/**
 	 * @return the jobID
