@@ -20,6 +20,8 @@ public class SystemConstants {
 	public static final String REGISTRY_HOST = "REGISTRY.HOST";
 	public static final String REGISTRY_PORT = "REGISTRY.PORT";
 	public static final String JOBTRACKER_SERVICE_NAME = "JOBTRACKER.SERVICE";
+	public static final String FILE_PARITION_SIZE = "FILE.PARTITION.SIZE";
+	public static final String REPLICATION = "REPLICATION";
 
 	
 	public static String getConfig(String configName) 
