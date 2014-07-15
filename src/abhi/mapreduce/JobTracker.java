@@ -55,7 +55,7 @@ public class JobTracker {
 	
 	  public static void main(String[] args) 
 	  {
-		JobTracker jb = new JobTracker();
+		JobTracker jt = new JobTracker();
 	  }
 
 }
