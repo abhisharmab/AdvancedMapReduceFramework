@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
+
 
 
 /**
@@ -32,6 +34,8 @@ public class JobTracker {
 	//As we need the taskTrackers we will fetch the reference once and then keep it locally until there is a problem 
 	List<TaskTrackerServices> cachedTaskTrackers;
 	
+	 //All the Jobs Information that has ever been requested to be performed by the JobTracker
+	 private Map<Integer, JobInfo> jobs;
 	
 	 public JobTracker()
 	 {

@@ -98,8 +98,6 @@ public class JobInfo implements Serializable {
 	public void setProgressofallTasks(List<TaskProgress> progressofallTasks) {
 		this.progressofallTasks = progressofallTasks;
 	}
-	
 
-	
 	
 }
