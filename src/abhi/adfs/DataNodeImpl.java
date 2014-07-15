@@ -7,13 +7,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.rmi.Naming;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 /**
  * @author Douglas Rew 
@@ -149,6 +146,13 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	public boolean ping() throws RemoteException {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+
+	@Override
+	public List<String> getFileList() throws RemoteException {
+		// TODO Auto-generated method stub
+		return fileList;
 	}
 
 
