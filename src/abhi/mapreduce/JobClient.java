@@ -70,7 +70,7 @@ public class JobClient implements IClientServices {
 	}
 
 	@Override
-	public boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException {
+	public boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException {
 		//1. Check if the Job Configuration is Valid
 		if(jobConf == null || !IsJobConfValid(jobConf))
 		{
@@ -107,7 +107,7 @@ public class JobClient implements IClientServices {
 			jobConf.setJobName(String.valueOf(uniqueJobID));
 		
 	    try {
-	        if (this.jobTrackerServiceProvider.submitJob(jobConf)) 	    
+	        if (this.jobTrackerServiceProvider.submitJob(jobConf, targetCode)) 	    
 	        {
 	          System.out.println("JobClient submmited Job successfully.");
 	          return true;
@@ -192,5 +192,6 @@ public class JobClient implements IClientServices {
 		return true;
 			
 	}
+
 	
 }
