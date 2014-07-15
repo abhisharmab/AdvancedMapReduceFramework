@@ -21,7 +21,7 @@ public interface IJobTrackerServices extends Remote{
 	  public int requestJobID() throws RemoteException;
 
 	  //JobClient calls this Method to SubmitaJob
-	  public boolean submitJob(JobConf jconf) throws RemoteException;
+	  public boolean submitJob(JobConf jconf, Object targetCode) throws RemoteException;
 	  
 	  //TaskManager calls this to Update JobTracker about its status. 
 	  //This is pretty much the status of each node

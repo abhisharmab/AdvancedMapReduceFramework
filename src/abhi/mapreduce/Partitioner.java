@@ -3,6 +3,8 @@
  */
 package abhi.mapreduce;
 
+import java.io.Serializable;
+
 /**
  * @author abhisheksharma
  *
@@ -11,7 +13,7 @@ package abhi.mapreduce;
  *Generally in Hadoop this is just a HashFucntion of the key based on the number of reducers
  *choose for the job.
  */
-public interface Partitioner<KOUT> {
+public interface Partitioner<KOUT> extends Serializable{
 
 	//The Paritioner of the App. Programmer Side will implement this method.
 	public int getPartition(KOUT key, int numofReducers);

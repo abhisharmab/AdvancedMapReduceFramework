@@ -22,6 +22,7 @@ public class SystemConstants {
 	public static final String JOBTRACKER_SERVICE_NAME = "JOBTRACKER.SERVICE";
 	public static final String FILE_PARITION_SIZE = "FILE.PARTITION.SIZE";
 	public static final String REPLICATION = "REPLICATION";
+	public static final String NAMENODE_SERVICE_NAME = "NAMENODE.SERVICE";
 
 	
 	public static String getConfig(String configName) 

@@ -68,12 +68,8 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	
 	public static void main(String args[])
     {
-		if (args.length != 1) {
-			System.err.println("Usage: NameNodeMaster <RMI_port> ");
-			return;
-		}
-		
-		
+
+
         try
         {
         	master_Name = "NameNodeMaster";
@@ -162,6 +158,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 		List<String> live_DataNode = new ArrayList<String>();
 		Iterator iter = list_dataNode.entrySet().iterator();
 		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
 			Entry<String, DataNode> dn = (Entry<String, DataNode>) iter.next();
 		
 			try{

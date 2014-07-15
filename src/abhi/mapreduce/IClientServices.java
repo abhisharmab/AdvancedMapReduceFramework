@@ -20,11 +20,13 @@ import java.io.IOException;
 public interface IClientServices {
 		
 	//Used to submit job to the JobClient which will further submit it to the Job Tracker
-	public boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException;
+	boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException;
 	
 	
 	//Reporting status of the Job on the user's command terminal
 	// This method will periodically get information from JobTracker about the JOB and update on the terminal 
 	// This will happen until the JOB is completed, dies, terminated or maybe cancelled explicitly by the user
 	public void monitorandPrintJobInfo(JobConf jobConf, IRunningJobInfo job) throws IOException, InterruptedException;
+
+
 }

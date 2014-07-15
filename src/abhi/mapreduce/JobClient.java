@@ -9,6 +9,8 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import abhi.adfs.NameNodeMaster;
+
 /**
  * @author abhisheksharma
  *
@@ -32,20 +34,33 @@ public class JobClient implements IClientServices {
 
 	//Remote Reference of the JobTracker Services to that we can Call Services upon it
 	private IJobTrackerServices jobTrackerServiceProvider;
-
+	private NameNodeMaster nameNodeMasterReference; 
+	Registry rmiRegistry = null;
 	
 	public JobClient()
 	{
 		try
 		{
 			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REGISTRY_PORT));
-			Registry registry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
-			this.jobTrackerServiceProvider = (IJobTrackerServices) registry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME));
+			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
+			this.jobTrackerServiceProvider = (IJobTrackerServices) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME));
+		
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
 			System.err.println("Error occurred in communcating with JobTracker");
 			System.err.println("Ensure Jobtracker is running and check configuration");
+		}
+		
+		try
+		{
+			//Check with Douglas
+			this.nameNodeMasterReference = (NameNodeMaster)rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
+			
+		}
+		catch(NumberFormatException | RemoteException | NotBoundException e)
+		{
+			System.err.println("Error occurred in communcating with NameNode via the Registry");
 		}
 
 	}
@@ -55,14 +70,31 @@ public class JobClient implements IClientServices {
 	}
 
 	@Override
-	public boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException {
+	public boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException {
+		//1. Check if the Job Configuration is Valid
 		if(jobConf == null || !IsJobConfValid(jobConf))
 		{
 			System.err.println("Invalid Job Configuration Submitted. Please check your Job Source Code and Config");
 			return false;
 		}
 		
-		//Piggy-back on this JobId to Report Progress for the Client about the Job that he request to Run
+		//2. TODO: Abhi make sure the INPUT and OUTPUT directory exist and is valid
+		
+		
+		//3. Talk to the NameNode to make check the FILE is already broken
+		// If the file is NOT broken-up and ready then Talk to NameNodeSlaveManager and ask him to split it
+		
+		//TODO: Abhi check-if this is what Douglas wants. InputPath
+		
+		if(!nameNodeMasterReference.checkFileExistance(jobConf.getInputPath()))
+		{
+			 
+			//TODO: Abhi I need methods from Douglas to call upon this stuff.
+			//Call Upon the NameNodeSLaveManager to spilt the file.
+		}
+		
+		// If the file is broken-up and ready. No-worries then. Proceed with sending command to JobTracker 
+		//Piggyback on this JobId to Report Progress for the Client about the Job that he request to Run
 		int uniqueJobID = requestJobIDfromJobTracker();
 		if(uniqueJobID <= 0){
 		      System.err.println("The system is not available for submitting new job.");
@@ -75,7 +107,7 @@ public class JobClient implements IClientServices {
 			jobConf.setJobName(String.valueOf(uniqueJobID));
 		
 	    try {
-	        if (this.jobTrackerServiceProvider.submitJob(jobConf)) 	    
+	        if (this.jobTrackerServiceProvider.submitJob(jobConf, targetCode)) 	    
 	        {
 	          System.out.println("JobClient submmited Job successfully.");
 	          return true;
@@ -160,5 +192,6 @@ public class JobClient implements IClientServices {
 		return true;
 			
 	}
+
 	
 }

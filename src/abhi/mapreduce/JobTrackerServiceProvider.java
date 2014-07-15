@@ -55,7 +55,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	 * @see abhi.mapreduce.IJobTrackerServices#submitJob(abhi.mapreduce.JobConf)
 	 */
 	@Override
-	public boolean submitJob(JobConf jconf) throws RemoteException {
+	public boolean submitJob(JobConf jconf, Object targetCode) throws RemoteException {
 		// TODO Auto-generated method stub
 		return false;
 	}
