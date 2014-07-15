@@ -56,6 +56,7 @@ public class JobClient implements IClientServices {
 		{
 			//Check with Douglas
 			this.nameNodeMasterReference = (NameNodeMaster)rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
+			
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
@@ -81,9 +82,16 @@ public class JobClient implements IClientServices {
 		
 		
 		//3. Talk to the NameNode to make check the FILE is already broken
-		// If the file is NOT broken-up and ready then Talk to NameNodeSlaveManager and ask him to spilt it
+		// If the file is NOT broken-up and ready then Talk to NameNodeSlaveManager and ask him to split it
 		
+		//TODO: Abhi check-if this is what Douglas wants. InputPath
+		
+		if(!nameNodeMasterReference.checkFileExistance(jobConf.getInputPath()))
+		{
+			 
 			//TODO: Abhi I need methods from Douglas to call upon this stuff.
+			//Call Upon the NameNodeSLaveManager to spilt the file.
+		}
 		
 		// If the file is broken-up and ready. No-worries then. Proceed with sending command to JobTracker 
 		//Piggyback on this JobId to Report Progress for the Client about the Job that he request to Run

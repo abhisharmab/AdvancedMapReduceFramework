@@ -4,6 +4,7 @@
 package abhi.mapreduce;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
@@ -18,7 +19,12 @@ import java.util.Iterator;
  * @param <K3>
  * @param <V3>
  */
-public abstract class Reducer<K2,V2,K3,V3> {
+public abstract class Reducer<K2,V2,K3,V3> implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	//Called once at the beginning to setup the Reduce Task or perform some pre-processing as per Application Need
 	protected void setup() throws IOException, InterruptedException {};

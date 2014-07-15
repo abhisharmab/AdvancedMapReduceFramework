@@ -4,6 +4,7 @@
 package abhi.mapreduce;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * @author abhisheksharma
@@ -19,7 +20,13 @@ import java.io.IOException;
  * @param <VOUT>
  */
 
-public abstract class Mapper<KIN, VIN, KOUT, VOUT> {
+public abstract class Mapper<KIN, VIN, KOUT, VOUT> implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 
 	//Called once at the beginning to setup the Map Task or perform some preprocessing as per Application Need
 	protected void setup() throws IOException, InterruptedException {};
