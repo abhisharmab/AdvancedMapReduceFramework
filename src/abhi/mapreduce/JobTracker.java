@@ -5,20 +5,16 @@ package abhi.mapreduce;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.Map.Entry;
 
 import abhi.adfs.NameNodeManager;
-
-
-
-
 
 
 /**
@@ -60,14 +56,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	private Map<Integer, TaskMetaData> reduceTasks;
 
 	// the map task queue lined up for execution
-	private Queue<TaskMetaData> queueofMapTasks;
+	private Map<String,TaskMetaData> queueofMapTasks;
 
 	// the reduce task queue lined up for execution
-	private Queue<TaskMetaData> queueofReduceTasks;
+	private Map<String, TaskMetaData> queueofReduceTasks;
 
 	// the nameNodeReference for finding out the file-splits
 	private NameNodeManager nameNodeReference;
-	
+
 	public JobTracker() throws RemoteException
 	{
 		try 
@@ -75,6 +71,12 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			//Register itself to the RMI Registry
 			this.jtServiceProvider = new JobTrackerServiceProvider();
 			Naming.rebind(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME), this.jtServiceProvider);
+
+			//TODO: Abhi. Get the RemoteReference of the Name Node Registry 
+			int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
+			Registry nameNodermiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),nameNodeRegistryPort);
+			this.nameNodeReference = (NameNodeManager) nameNodermiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
+
 
 			//Initialize the Data Structures
 			this.jobIDCounter = 1;
@@ -84,29 +86,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
 			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
 
+			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
+			this.queueofMapTasks = new HashMap<String, TaskMetaData>();
+			this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
 
-			//Priority Queues for the Map and Reduce Task
-			this.queueofMapTasks = (Queue<TaskMetaData>) (new PriorityQueue<TaskMetaData>(10,
-					new Comparator<TaskMetaData>() {
-
-				@Override
-				public int compare(TaskMetaData o1, TaskMetaData o2) {
-					return o1.getJobID() - o2.getJobID();
-				}
-
-			}));
-
-			this.queueofReduceTasks = (Queue<TaskMetaData>) (new PriorityQueue<TaskMetaData>(10,
-					new Comparator<TaskMetaData>() {
-
-				@Override
-				public int compare(TaskMetaData o1, TaskMetaData o2) {
-					return o1.getJobID() - o2.getJobID();
-				}
-
-			}));
-
-		} catch (RemoteException | MalformedURLException e) {
+		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			System.err.println("Could not Register to the RMI Registry");
 			e.printStackTrace();
 		}
@@ -127,11 +111,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 
 	//Get the next MapperTask in Line to be Processed
-	public TaskMetaData getNextMapperTaskinLine()
+	public TaskMetaData getNextMapperTaskinLineforNode(String taskTrackerName)
 	{
 		while(!this.mapTasks.isEmpty())
 		{
-			TaskMetaData task = this.queueofMapTasks.poll();
+			TaskMetaData task = this.queueofMapTasks.get(taskTrackerName);
 			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
 			{
 				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
@@ -145,11 +129,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	}
 
 	//Get the next ReducerTask in-line to be Processed
-	public TaskMetaData getNextReducerTaskinLine()
+	public TaskMetaData getNextReducerTaskinLineforNode(String taskTrackerName)
 	{
 		while(!this.reduceTasks.isEmpty())
 		{
-			TaskMetaData task = this.queueofReduceTasks.poll();
+			TaskMetaData task = this.queueofReduceTasks.get(taskTrackerName);
 			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
 			{
 				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
@@ -204,6 +188,59 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
+	//This method actual picks up the Map and Reduce tasks choosen as per Strategy and asked the TaskTracker to Run it
+	public void assignTasks()
+	{
+		Map<Integer, String> strategy = null;
+
+		// use the system's scheduler to generate the scheduling schemes
+		synchronized (this.taskTrackers) {strategy = makeStrategy();}
+
+		if (strategy == null)
+			return;
+
+		for (Entry<Integer, String> entry : strategy.entrySet()) {
+			Integer taskid = entry.getKey();
+
+			TaskMetaData task = null;
+
+			if (this.mapTasks.containsKey(taskid)) {
+				task = this.mapTasks.get(taskid);
+			}
+
+			if (this.reduceTasks.containsKey(taskid)) {
+				task = this.reduceTasks.get(taskid);
+			}
+
+			if (task == null)
+				continue;
+
+			// find the specific task tracker
+			TaskTrackerInfo targetTasktracker = this.taskTrackers.get(entry.getValue());
+
+			// assign the task to the task-tracker
+			boolean result = false;
+			try 
+			{
+				//TODO:Abhi -- Check this code. Written late at Night
+				result = targetTasktracker.getTaskTrackerReference().executeTask();
+				//The Execute Method Needs to be changed
+			} catch (Exception e) {
+				result = false;
+			}
+			if (result) {
+				// if this task has been submitted to a task-tracker successfully
+				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
+			} else {
+				// if this task is failed to be submitted, place it back on the Map
+				if (task.isMapperTask()) {
+					this.queueofMapTasks.put(entry.getValue(), task);
+				} else {
+					this.queueofMapTasks.put(entry.getValue(), task);
+				}
+			}
+		}
+	}
 
 
 	public static void main(String[] args) 
@@ -218,9 +255,47 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 
 	@Override
-	public Map<Integer, String> makeStrategy() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<Integer, String> makeStrategy() 
+	{
+		Map<Integer, String> taskStrategy= new HashMap<Integer, String>();
+
+		for (Entry<String, TaskTrackerInfo> entry : taskTrackers.entrySet()) {
+			TaskTrackerInfo tasktracker = entry.getValue();
+
+			synchronized (tasktracker) {
+				// fill up all the available map computer power
+				if (tasktracker.getNumOfMaps() > 0) {
+					int slotnum = tasktracker.getNumOfMaps();
+
+					TaskMetaData task = null;
+					for (int i = 0; i < slotnum && (task = this.getNextMapperTaskinLineforNode(tasktracker.getTaskTrackerName())) != null; i++) {
+						taskStrategy.put(task.getTaskID(), tasktracker.getTaskTrackerName());
+					}
+				}
+
+				// try to use all the reduce compute power
+				if (tasktracker.getNumOfReduces() > 0) {
+					int slotnum = tasktracker.getNumOfReduces();
+
+					TaskMetaData task = null;
+					for (int i = 0; i < slotnum && (task = this.getNextReducerTaskinLineforNode(tasktracker.getTaskTrackerName())) != null; i++) {
+						taskStrategy.put(task.getTaskID(), tasktracker.getTaskTrackerName());
+					}
+				}
+			}
+		}
+		return taskStrategy;
 	}
 
+
+	//TODO:Abhi
+	public void submitJob(JobInfo jobInfo) {
+
+		//1. Talk to the NameNode and get the Chunk Information 
+		//2. Construct fresh objects of MapTask and ReduceTasks (TaskMetaData basically)
+		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
+		//4. Add this JOb into the Jobs Data Structure 
+		//5. Set the status of the Job In-Progress
+	}
 }
+

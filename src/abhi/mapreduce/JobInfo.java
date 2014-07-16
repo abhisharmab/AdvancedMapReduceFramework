@@ -40,8 +40,9 @@ public class JobInfo implements Serializable {
 	
 	private JobConf jobConf;
 	
-	public JobInfo()
+	public JobInfo(JobConf jobConf)
 	{
+		this.jobConf = jobConf;
 		this.progressofallTasks = new ArrayList<TaskProgress>();
 	}
 	
