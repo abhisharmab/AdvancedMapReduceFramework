@@ -7,6 +7,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 
+
 /**
  * @author abhisheksharma
  *
@@ -26,4 +27,8 @@ public interface IJobTrackerServices extends Remote{
 	  //TaskManager calls this to Update JobTracker about its status. 
 	  //This is pretty much the status of each node
 	  public void updateTaskManagerStatus(Object status) throws RemoteException;
+	  
+	  //This is for the Reduce Tasks on the same machine to check the status of the Mapper
+	  //Reducers must start once the Map Job have spilt the respective files.
+	  public SystemConstants.MapJobsStatus reportMapStatus(int taskID) throws RemoteException;
 }

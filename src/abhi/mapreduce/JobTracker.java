@@ -11,7 +11,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import abhi.adfs.NameNodeManager;
@@ -157,7 +159,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
-
 	//Check_Out a Task Tracker coz maybe its Dead
 	public void checkOutTaskTracker(String name) {
 		if (name == null)
@@ -297,6 +298,34 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
 		//4. Add this JOb into the Jobs Data Structure 
 		//5. Set the status of the Job In-Progress
+		//6. Assign the and distributed the Tasks
 	}
+
+	
+	//This function is to the check the status of the Map Phase for a particular Job
+	public SystemConstants.MapJobsStatus checkMapPhaseStatus(int taskID) {
+		TaskMetaData task = this.reduceTasks.get(taskID);
+
+		if (task == null) {
+			return SystemConstants.MapJobsStatus.INPROGRESS;
+		}
+
+		JobInfo job = this.jobs.get(task.getJobID());
+
+		if (job == null || job.getJobStatus() == SystemConstants.JobStatus.FAILED) {
+			return SystemConstants.MapJobsStatus.FAILED;
+		}
+
+		List<TaskProgress> mapTasksProgress = job.getProgressofallTasks();
+		for (TaskProgress mtaskProgress : mapTasksProgress) {
+			if (this.mapTasks.containsKey(mtaskProgress.getTaskID()) && !this.mapTasks.get(mtaskProgress.getTaskID()).isTaskDone())
+				return SystemConstants.MapJobsStatus.INPROGRESS;
+		}
+
+		// if all map tasks finished, then return FINISHED
+		return SystemConstants.MapJobsStatus.SUCCEEDED;
+	}
+
+
 }
 

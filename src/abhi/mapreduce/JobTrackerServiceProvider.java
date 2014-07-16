@@ -6,6 +6,8 @@ package abhi.mapreduce;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 
+import abhi.mapreduce.SystemConstants.MapJobsStatus;
+
 /**
  * @author abhisheksharma
  *
@@ -60,6 +62,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		JobInfo jobInfo = new JobInfo(jconf);
 		
 		this.jobTracker.submitJob(jobInfo);
+		
 	
 		return false;
 	}
@@ -71,6 +74,11 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	public void updateTaskManagerStatus(Object status) throws RemoteException {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public MapJobsStatus reportMapStatus(int taskID) throws RemoteException {
+		return this.jobTracker.checkMapPhaseStatus(taskID);
 	}
 
 }
