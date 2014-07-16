@@ -44,7 +44,8 @@ public class SystemConstants {
 	public static final String FILE_PARITION_SIZE = "FILE.PARTITION.SIZE";
 	public static final String REPLICATION = "REPLICATION";
 	public static final String NAMENODE_SERVICE_NAME = "NAMENODE.SERVICE";
-
+	public static final String ADFS_DIRECTORY="ADFS.DIRECTORY"; 
+	public static final String JAR_DIRECTORY="JAR.DIRECTORY";
 	
 	public static String getConfig(String configName) 
 	{
