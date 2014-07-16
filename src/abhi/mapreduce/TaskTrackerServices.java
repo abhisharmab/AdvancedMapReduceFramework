@@ -12,6 +12,8 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTrackerServices{
 
+	private TaskTracker taskTrackerReference; 
+	
 	protected TaskTrackerServices() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
@@ -26,6 +28,12 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 	public boolean executeTask() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void updateWorkerStatu(Object status) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

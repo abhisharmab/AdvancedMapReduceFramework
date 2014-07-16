@@ -3,6 +3,8 @@
  */
 package abhi.mapreduce;
 
+import java.rmi.RemoteException;
+
 /**
  * @author abhisheksharma
  * 
@@ -16,6 +18,9 @@ package abhi.mapreduce;
 
 public interface ITaskTrackerServices {
 
-	//This is an execution Signal
-	public boolean executeTask();
+	//This is an execution Signal send to the TaskTracker by the JobTracker
+	public boolean executeTask() throws RemoteException; 
+	
+	//This is for each of the worker on the TaskManager side to update status of the TaskTracker
+	public void updateWorkerStatu(Object status) throws RemoteException; 
 }

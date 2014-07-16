@@ -233,9 +233,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
 			} else {
 				// if this task is failed to be submitted, place it back on the Map
-				if (task.isMapperTask()) {
+				if (task.isMapperTask()) 
+				{
 					this.queueofMapTasks.put(entry.getValue(), task);
-				} else {
+				} else 
+				{
 					this.queueofMapTasks.put(entry.getValue(), task);
 				}
 			}
