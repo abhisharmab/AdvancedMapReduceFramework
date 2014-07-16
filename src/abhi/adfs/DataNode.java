@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Douglas Rew 
  *
- */
+ */ 
 public interface DataNode extends Remote {
 	
 	public boolean submit(String filename, String data) throws RemoteException;

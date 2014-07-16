@@ -35,7 +35,7 @@ public class FileSpliter {
 				data.append("\n"+temp);
 			}
 			
-			paritionSize++;
+			paritionSize++; 
 			return data.toString();
 		} else {
 			return null;

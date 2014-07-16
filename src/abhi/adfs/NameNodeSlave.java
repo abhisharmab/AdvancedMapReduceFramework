@@ -12,7 +12,7 @@ import java.util.List;
  *
  */
 public interface NameNodeSlave extends Remote{
-	
+	 
 
 	public boolean dump(String fileName)  throws RemoteException;
 	public boolean ping() throws RemoteException;

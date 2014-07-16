@@ -176,7 +176,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 			String bindName = "rmi://" +local_Ipaddress + ":"+ portNumber+ "/" + name; 
     		System.out.println("Bind Name : " + bindName);
             System.out.println("Registering DataNode as : " + bindName);
-         
+           
             
         	DataNodeImpl dataNode = new DataNodeImpl();
         	Naming.rebind(bindName, dataNode);

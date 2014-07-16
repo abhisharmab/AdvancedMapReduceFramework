@@ -167,7 +167,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	@Override
 	public List<String> getDataNodes() throws RemoteException {
 		// TODO Auto-generated method stub
-		
+		 
 		List<String> live_DataNode = new ArrayList<String>();
 		Iterator iter = list_dataNode.entrySet().iterator();
 		while(iter.hasNext()){

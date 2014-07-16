@@ -61,7 +61,7 @@ public class InputFileInfo  implements Serializable{
 			List<String> fileNames = new ArrayList<String>();
 			fileNames.add(partitionFileName);
 			getPartitions().put(dataNodeName, fileNames);
-		}
+		} 
 		
 		
 		// Debug

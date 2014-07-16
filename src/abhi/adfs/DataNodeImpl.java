@@ -95,7 +95,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 				writer = new BufferedWriter(new FileWriter(file));
 				writer.write(data);
 				System.out.println("File " + filename + " has been created.");
-				fileList.add(filename);
+				fileList.add(filename); 
 			} else {
 				System.out.println("File is already existing.");
 			}

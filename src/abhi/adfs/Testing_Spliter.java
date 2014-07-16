@@ -29,7 +29,7 @@ public class Testing_Spliter {
 		Scanner scan = new Scanner(System.in);
 		String filename = scan.nextLine();
 		
-		
+		 
 		FileSpliter spliter;
 		try {
 			spliter = new FileSpliter(filename, (double) (1024*1024*0.01));

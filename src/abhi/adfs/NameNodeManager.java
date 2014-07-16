@@ -83,7 +83,7 @@ public class NameNodeManager {
 			
 			if( option.contains("--dump")){
 				String input_filename = (String)args[1];
-				try {
+				try { 
 					if(slave.dump(input_filename)){
 						System.out.println("File : " + input_filename + " has been distributed.");
 					} else {
