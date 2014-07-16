@@ -501,6 +501,41 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		return index % list_DataNode.size();
 	}
 
+	@Override
+	public boolean dumpJar(String fileName) throws RemoteException {
+		
+			updateDataNodes();
+			
+			Scanner scan;
+			try {
+				scan = new Scanner(new File(fileName));
+				StringBuilder data = new StringBuilder();
+				
+				while(scan.hasNext()){
+					String temp = scan.next();
+					data.append(temp);
+				}
+				
+				List<DataNode> nodes = new ArrayList<DataNode>(list_DataNode.values());
+				for(DataNode node : nodes){
+					node.submitJar(fileName, data.toString());
+					
+				}
+				
+				
+				scan.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+
+			
+				
+
+		return false;
+	}
+
 	
 }
  

@@ -46,6 +46,7 @@ public class NameNodeManager {
 		System.out.println(args.length);
 		if ( !(1 <= args.length && args.length <= 2)) {
 			System.err.println("Usage: NameNodeManager --dump <Input File Name>");
+			System.err.println("Usage: NameNodeManager --dumpJar <Jar File Name>");
 			System.err.println("Usage: NameNodeManager --remove <File Name>");
 			System.err.println("Usage: NameNodeManager --cat ");
 			System.err.println("Usage: NameNodeManager --help");
@@ -54,7 +55,7 @@ public class NameNodeManager {
 		
 		
 		String option = (String) args[0];
-		if(option.contains("--dump") || option.contains("--remove") || option.contains("--cat")){
+		if(option.contains("--dumpJar") || option.contains("--dump") || option.contains("--remove") || option.contains("--cat")){
 			try
 	        {
 	    	   if(System.getSecurityManager() == null){
@@ -93,6 +94,18 @@ public class NameNodeManager {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else if( option.contains("--dumpJar")){
+					String input_filename = (String)args[1];
+					try { 
+						if(slave.dumpJar(input_filename)){
+							System.out.println("Jar : " + input_filename + " has been distributed.");
+						} else {
+							System.out.println("Error has been occured while distributing the file.");
+						}
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 			} else if (option.contains("--remove")){
 				String remove_filename = (String) args[1];
 				try {

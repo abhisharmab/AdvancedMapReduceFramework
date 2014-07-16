@@ -15,6 +15,7 @@ public interface NameNodeSlave extends Remote{
 	 
 
 	public boolean dump(String fileName)  throws RemoteException;
+	public boolean dumpJar(String fileName)  throws RemoteException;
 	public boolean ping() throws RemoteException;
 	public boolean remove(String fileName) throws RemoteException;
 	public List<String> getDataNodeFiles() throws RemoteException;
