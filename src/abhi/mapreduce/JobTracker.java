@@ -290,7 +290,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 	//TODO:Abhi
 	public void submitJob(JobInfo jobInfo) {
-
 		//1. Talk to the NameNode and get the Chunk Information 
 		//2. Construct fresh objects of MapTask and ReduceTasks (TaskMetaData basically)
 		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
