@@ -18,7 +18,7 @@ public class FileSpliter {
 	private Long fileSize;
 	private Integer paritionSize;
 	private String fileName;
-	private Scanner scan;
+	private static Scanner scan;
 	
 	public FileSpliter(String fileName, Long fileSize) throws FileNotFoundException{
 		this.fileName = fileName;
