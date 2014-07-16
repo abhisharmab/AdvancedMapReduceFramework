@@ -22,18 +22,10 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	private List<String> fileList;
 	private static String directory = "adsf_files";
 	
-	// This is for testing
-	private String pid = null;
+
 	
-	protected DataNodeImpl(String pid) throws RemoteException {
+	protected DataNodeImpl() throws RemoteException {
 		super();
-		
-		// for debug
-		this.pid=pid;
-		directory = directory +"_" + pid;
-		//
-		
-		
 		checkDirectory();
 		fileList = new ArrayList<String>();
 		
@@ -67,6 +59,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 		if( file.exists()){
 			if(file.delete()){
 				System.out.println("File : " + filename + " has been deleted.");
+				fileList.remove(filename);
 				return true;
 			} else {
 				System.out.println("Error in deleting the file : " + filename);
@@ -102,6 +95,9 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 				writer = new BufferedWriter(new FileWriter(file));
 				writer.write(data);
 				System.out.println("File " + filename + " has been created.");
+				fileList.add(filename);
+			} else {
+				System.out.println("File is already existing.");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -7,12 +7,16 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+
+import abhi.mapreduce.SystemConstants;
 
 /**
  * @author Douglas Rew
@@ -25,6 +29,10 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	 */
 	private static final long serialVersionUID = 2917579042804203973L;
 	private static String master_Name;
+	
+	
+	private static String ipAddress = null;
+	private static String portNumber = null;
 	
 	// This will keep track of the file information.
 	private static List<InputFileInfo> list_fileInfo;
@@ -72,9 +80,13 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 
         try
         {
+    		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
+            ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
+            
         	master_Name = "NameNodeMaster";
             System.out.println("Registering NameNodeMaster as : NameNodeMaster");
             NameNodeMasterImpl master = new NameNodeMasterImpl();
+            //Registry registry = LocateRegistry.getRegistry(ipAddress, Integer.parseInt(portNumber));
             Naming.rebind(master_Name, master);
             System.out.println("NameNodeMaster: Ready...");
         }
@@ -93,8 +105,9 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	void registerDataNode(String dataNodeName){
 		
         try {
+        	System.out.println("Looked up datanNode : " + dataNodeName);
 			DataNode dataNode = (DataNode) Naming.lookup(dataNodeName);
-			System.out.println("Looked up datanNode : " + dataNodeName);
+			
 			
 			list_dataNode.put(dataNodeName, dataNode);
 			

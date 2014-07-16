@@ -15,14 +15,15 @@ import java.util.Scanner;
  */
 public class FileSpliter {
 
-	private Long fileSize;
+	private Double fileSize;
 	private Integer paritionSize;
 	private String fileName;
 	private Scanner scan;
 	
-	public FileSpliter(String fileName, Long fileSize) throws FileNotFoundException{
+	public FileSpliter(String fileName, Double file_size) throws FileNotFoundException{
 		this.fileName = fileName;
-		this.fileSize = fileSize;
+		this.fileSize = file_size;
+		paritionSize = 0;
 		scan = new Scanner(new File(fileName));
 	}
 	
@@ -34,7 +35,7 @@ public class FileSpliter {
 				data.append("\n"+temp);
 			}
 			
-			setParitionSize(getParitionSize() + 1);
+			paritionSize++;
 			return data.toString();
 		} else {
 			return null;

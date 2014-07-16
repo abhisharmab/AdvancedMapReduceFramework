@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -26,6 +27,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -54,11 +56,13 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	private static String ipAddress = null;
 	private static String portNumber = null;
 	private static NameNodeMaster nameNodeMaster;
-	private static HashMap<String, DataNode> list_DataNode;
+	private static LinkedHashMap<String, DataNode> list_DataNode;
 	private static DataNode myDataNode = null;
 	private static String myDataNodeName = null;
 	private static List<InputFileInfo> list_inputFileInfo;
 	private static String identifier = null;
+	
+	private static Integer rotationIndex = null;
 
 
 	
@@ -78,7 +82,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		// These are debugging prints.
     	try {
     		System.out.println(ManagementFactory.getRuntimeMXBean().getName());
-			System.out.println(InetAddress.getLocalHost());
+			System.out.println(InetAddress.getLocalHost().getHostAddress());
 			setIdentifier(InetAddress.getLocalHost().getCanonicalHostName());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -86,12 +90,14 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		}
 
 		
+    	rotationIndex = 1;
+    	
     	// Grab rmiregistry information
 		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
         ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
 		
         //Initialize lists
-		list_DataNode = new HashMap<String, DataNode>();
+		list_DataNode = new LinkedHashMap<String, DataNode>();
 		list_inputFileInfo = new ArrayList<InputFileInfo>();
 		
 
@@ -113,21 +119,30 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
     }
 	
 	public static void registerToRmi(){
-    	String name= "NameNodeSlave_"+getIdentifier();
-		String bindName = "rmi://" +ipAddress + ":"+ portNumber+ "/" + name; 
-		
-        System.out.println("Registering NameNodeSlave as : " + bindName);
+ 		
+        
         try {
         	NameNodeSlaveImpl slave = new NameNodeSlaveImpl();
-			Naming.rebind(name, slave);
+        	String local_Ipaddress = InetAddress.getLocalHost().getHostAddress();
+           	String name= "NameNodeSlave_"+getIdentifier();
+    		String bindName = "rmi://" +local_Ipaddress + ":"+ portNumber+ "/" + name; 
+    		System.out.println("Registering NameNodeSlave as : " + bindName);
+    		
+    		Naming.rebind(bindName, slave);
+    		
+    		System.out.println("NameNodeSlaveImpl: Ready...");
 		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-        System.out.println("NameNodeSlaveImpl: Ready...");
+		} 
+
+        
         
 
 	}
@@ -154,25 +169,18 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		
 		// Generated an unique name.
 		
-		
-        try{
-        	// Debug
-        	
-        	
-        	
-        	
-        	String name= "DataNode_"+getIdentifier();
-    		String bindName = "rmi://" +ipAddress + ":"+ portNumber+ "/" + name; 
+	
+    	try {
+    		String name= "DataNode_"+getIdentifier();
+        	String local_Ipaddress = InetAddress.getLocalHost().getHostAddress();
+			String bindName = "rmi://" +local_Ipaddress + ":"+ portNumber+ "/" + name; 
     		System.out.println("Bind Name : " + bindName);
             System.out.println("Registering DataNode as : " + bindName);
          
             
-            
-            
-        	DataNodeImpl dataNode = new DataNodeImpl(getIdentifier());
-        	
-        	Naming.bind(bindName, dataNode);
-        	
+        	DataNodeImpl dataNode = new DataNodeImpl();
+        	Naming.rebind(bindName, dataNode);
+           	
         	myDataNode = dataNode;
         	myDataNodeName = bindName;
             System.out.println("DataNode: Ready...");
@@ -188,16 +196,15 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
             } else {
             	System.out.println("Error in registering.");
             }
-        
-        } catch (RemoteException e){
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e){
         	e.printStackTrace();
-	    } catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 	
 //	public static String getPID(){
@@ -212,7 +219,15 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		try {
 			List<String> live_DataNodes = nameNodeMaster.getDataNodes();
 			
-			if(checkDataNodes(live_DataNodes)){
+			
+			// Debug
+			System.out.println("Print out data nodes from the master");
+			for(String name : live_DataNodes){
+				System.out.println("+++++++" + name);
+			}
+			
+			
+			if(!checkDataNodes(live_DataNodes)){
 				list_DataNode.clear();
 				for(String live_nodes : live_DataNodes){
 					// If we do not have the Reference of the DataNode we need to get it.
@@ -377,9 +392,12 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 				} else { // We need to partition the file now
 					
 					// Get file partition Size
-					Long file_size = Long.parseLong(SystemConstants.getConfig(SystemConstants.FILE_PARITION_SIZE));
+					Double partition_size = Double.parseDouble(SystemConstants.getConfig(SystemConstants.FILE_PARITION_SIZE));
+					System.out.println("fileSize   " + partition_size);
+					
 					// 1024*1024 will be 1MB. We are adjusting the size by ratio of 1MB
-					file_size = 1024*1024*file_size;
+					Double file_size = 1024*1024*partition_size;
+					
 					
 					// Get replication number for the file
 					Integer replication = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REPLICATION));
@@ -387,42 +405,26 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 					// but for now lets just save it in multiple locations.
 					InputFileInfo fileInfo = new InputFileInfo(fileName);
 					
-					
-					//Start from here
-					
-//					FileSpliter spliter;
-//					try {
-//						spliter = new FileSpliter(fileName, file_size);
-//						
-//						
-//						String data = spliter.getNextBlock();
-//						while (data != null){
-//							
-//							String paritioned_fileName = fileName+"_"+spliter.getParitionSize().toString();
-//							submit(paritioned_fileName, data);
-//							data = new String();
-//							data = spliter.getNextBlock();
-//							
-//							
-//							System.out.println("------------------------------------------------------");
-//						}
-//					
-//					
-//					
-//					
-//					
-//					// Updated the data Nodes now to send out files.
-//					updateDataNodes(); 
-//					
-//					for(Entry<String, DataNode> entry : list_DataNode.entrySet()){
-//						
-//						System.out.println(entry.getKey());
-//						System.out.println(entry.getValue());
-//						entry.getValue().submit(partition_name, builder.toString());
-//						fileInfo.addFileParitionInfo(entry.getKey(), partition_name);
-//						
-//					}
-					
+					FileSpliter spliter;
+						try {
+							spliter = new FileSpliter(fileName, file_size);
+							String data = spliter.getNextBlock();
+							while (data != null){
+								String paritioned_fileName = fileName+"_"+spliter.getParitionSize().toString();
+								sendOutFile(data,paritioned_fileName,replication,fileInfo);
+								
+								data = new String();
+								data = spliter.getNextBlock();
+							}
+
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+											
 					
 					
 					list_inputFileInfo.add(fileInfo);
@@ -473,6 +475,32 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 			return false;
 		}
 	}
+
+	public void sendOutFile(String data, String fileName, Integer replication, InputFileInfo info){
+		
+		List<DataNode> values = new ArrayList<DataNode>(list_DataNode.values());
+		List<String> keys = new ArrayList<String>(list_DataNode.keySet());
+		for(int i = 0; i < replication; i++){
+			Integer index = getRotationIndex();
+			System.out.println("this is the index   " + index);
+			try {
+				System.out.println("Sending file too   " + keys.get(index) + "   : " + fileName);
+				info.addFileParitionInfo(keys.get(index), fileName);
+				values.get(index).submit(fileName, data);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	public static Integer getRotationIndex() {
+		Integer index = rotationIndex++;
+		
+		return index % list_DataNode.size();
+	}
+
 	
 }
  

@@ -5,13 +5,26 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
+import abhi.mapreduce.SystemConstants;
+
 public class Testing_Spliter {
 
 	public static void main(String[] args) {
+		
+
+		try {
+			System.out.println(InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		// TODO Auto-generated method stub
 		Scanner scan = new Scanner(System.in);
 		String filename = scan.nextLine();
@@ -19,7 +32,7 @@ public class Testing_Spliter {
 		
 		FileSpliter spliter;
 		try {
-			spliter = new FileSpliter(filename, (long) (1024*1024*0.01));
+			spliter = new FileSpliter(filename, (double) (1024*1024*0.01));
 			String data = spliter.getNextBlock();
 			Integer numbering = 0;
 			while (data != null){
@@ -59,6 +72,8 @@ public class Testing_Spliter {
 		
 	}
 
+	
+	
 	public static boolean submit(String filename, String data) throws RemoteException {
 		// TODO Auto-generated method stub
 		
