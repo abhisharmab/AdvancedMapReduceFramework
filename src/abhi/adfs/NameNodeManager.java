@@ -62,16 +62,16 @@ public class NameNodeManager {
 	    	   }
 	        	
 	    	   
-		   		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
-		        ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
+//		   		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
+//		        ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
 	        
 	        
 		        String identifer = InetAddress.getLocalHost().getCanonicalHostName();
 		        String nameNodeSlave = "NameNodeSlave_" + identifer;
-	        	String lookup_name = "rmi://" +ipAddress + ":"+ portNumber+ "/" + nameNodeSlave;
+	        //	String lookup_name = "rmi://" +ipAddress + ":"+ portNumber+ "/" + nameNodeSlave;
 	        
-	        	System.out.println(lookup_name);
-	        	slave =  (NameNodeSlave) Naming.lookup(lookup_name);
+//	        	System.out.println(lookup_name);
+	        	slave =  (NameNodeSlave) Naming.lookup(nameNodeSlave);
 	    		System.out.println("NameNodeSlave has been looked up.");
 	    	} catch (Exception e){
 	    		e.printStackTrace();
@@ -83,7 +83,7 @@ public class NameNodeManager {
 			
 			if( option.contains("--dump")){
 				String input_filename = (String)args[1];
-				try {
+				try { 
 					if(slave.dump(input_filename)){
 						System.out.println("File : " + input_filename + " has been distributed.");
 					} else {
@@ -130,10 +130,6 @@ public class NameNodeManager {
  
     }
 
-
-	public static void lookUpNameNodeMaster(){
-	      
-	}
 
 }
  

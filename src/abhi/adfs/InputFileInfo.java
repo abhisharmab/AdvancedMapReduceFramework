@@ -51,14 +51,17 @@ public class InputFileInfo  implements Serializable{
 	public void addFileParitionInfo(String dataNodeName, String partitionFileName){
 	 
 		if(getPartitions().containsKey(dataNodeName)){
-			getPartitions().get(dataNodeName).add(partitionFileName);
+			
+			if(!getPartitions().get(dataNodeName).contains(partitionFileName)){
+				getPartitions().get(dataNodeName).add(partitionFileName);
+			}
 		} else { 
 			
 			
 			List<String> fileNames = new ArrayList<String>();
 			fileNames.add(partitionFileName);
 			getPartitions().put(dataNodeName, fileNames);
-		}
+		} 
 		
 		
 		// Debug
