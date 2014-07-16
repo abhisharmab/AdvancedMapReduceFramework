@@ -3,8 +3,10 @@
  */
 package abhi.adfs;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -506,34 +508,33 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		
 			updateDataNodes();
 			
-			Scanner scan;
+			File file = new File(fileName);
+			byte buffer[] = new byte[(int)file.length()];
 			try {
-				scan = new Scanner(new File(fileName));
-				StringBuilder data = new StringBuilder();
+			     BufferedInputStream input = new
+			       BufferedInputStream(new FileInputStream(fileName));
+			     input.read(buffer,0,buffer.length);
+			     input.close();
+			     
+			} catch(Exception e) {
+			     System.out.println("FileServant Error: "+e.getMessage());
+			     e.printStackTrace();
+			     return false;
+			}
+			List<DataNode> nodes = new ArrayList<DataNode>(list_DataNode.values());
+			for(DataNode node : nodes){
+				System.out.println("byte length   " + buffer.length);
+				node.submitJar(fileName, buffer, (int) buffer.length);
 				
-				while(scan.hasNext()){
-					String temp = scan.next();
-					data.append(temp);
-				}
-				
-				List<DataNode> nodes = new ArrayList<DataNode>(list_DataNode.values());
-				for(DataNode node : nodes){
-					node.submitJar(fileName, data.toString());
-					
-				}
-				
-				
-				scan.close();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			
+			
+			
+			return true;
+			
 
 			
-				
-
-		return false;
+		
 	}
 
 	

@@ -3,8 +3,11 @@
  */
 package abhi.adfs;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -32,6 +35,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 		directory = SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY);
 		jar_directory = SystemConstants.getConfig(SystemConstants.JAR_DIRECTORY);
 		checkDirectory();
+		checkJarDirectory();
 		fileList = new ArrayList<String>();
 		
 	}
@@ -56,7 +60,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 			System.out.println("Jar Directory for distributed file system exists.");
 		} else {
 			System.out.println("There is no existing directory.");
-			System.out.println("Creating directory : " +directory);
+			System.out.println("Creating directory : " +jar_directory);
 			dir.mkdir();
 		}
 	}
@@ -175,52 +179,32 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 
 
 	@Override
-	public boolean submitJar(String filename, String data)
+	public boolean submitJar(String filename, byte data[], int length)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-		
-		BufferedWriter writer = null;
-		File file = new File(getPathJar(filename));
-		
-		
+
+
+	
+		BufferedOutputStream output;
 		try {
-			if( file.createNewFile()){
-				
-				writer = new BufferedWriter(new FileWriter(file));
-				writer.write(data);
-				System.out.println("Jar " + filename + " has been created.");
-			} else {
-				System.out.println("File is already existing, deleting the existing one and resaving it.");
-				if(file.delete()){
-					file.createNewFile();
-					writer = new BufferedWriter(new FileWriter(file));
-					writer.write(data);
-					System.out.println("Jar " + filename + " has been created.");
-				} else {
-					System.out.println("Error while deleting the old JAR file.");
-				}
-				
-			}
+			output = new
+				 BufferedOutputStream(new FileOutputStream(getPathJar(filename)));
+	        output.write(data,0,length);
+	        output.flush();
+	        output.close();
+	        return true;
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			return false;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.out.println(e.toString());
+			e.printStackTrace();
 			return false;
-		} finally {
-		
-			try {
-				if(writer !=null){
-					writer.close();
-					return true;
-				}
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println(e.toString());
-				return false;
-			}
-			
+		} catch (Exception e){
+			e.printStackTrace();
+			return false;
 		}
-		return false;
+		
 	}
 
 

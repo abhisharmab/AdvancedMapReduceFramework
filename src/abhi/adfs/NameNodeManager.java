@@ -46,7 +46,7 @@ public class NameNodeManager {
 		System.out.println(args.length);
 		if ( !(1 <= args.length && args.length <= 2)) {
 			System.err.println("Usage: NameNodeManager --dump <Input File Name>");
-			System.err.println("Usage: NameNodeManager --dumpJar <Jar File Name>");
+			System.err.println("Usage: NameNodeManager --jar <Jar File Name>");
 			System.err.println("Usage: NameNodeManager --remove <File Name>");
 			System.err.println("Usage: NameNodeManager --cat ");
 			System.err.println("Usage: NameNodeManager --help");
@@ -55,7 +55,7 @@ public class NameNodeManager {
 		
 		
 		String option = (String) args[0];
-		if(option.contains("--dumpJar") || option.contains("--dump") || option.contains("--remove") || option.contains("--cat")){
+		if(option.equals("--jar") || option.equals("--dump") || option.equals("--remove") || option.equals("--cat")){
 			try
 	        {
 	    	   if(System.getSecurityManager() == null){
@@ -82,7 +82,7 @@ public class NameNodeManager {
 	    		
 	    	}
 			
-			if( option.contains("--dump")){
+			if( option.equals("--dump")){
 				String input_filename = (String)args[1];
 				try { 
 					if(slave.dump(input_filename)){
@@ -94,7 +94,7 @@ public class NameNodeManager {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else if( option.contains("--dumpJar")){
+			} else if( option.equals("--jar")){
 					String input_filename = (String)args[1];
 					try { 
 						if(slave.dumpJar(input_filename)){
@@ -106,7 +106,7 @@ public class NameNodeManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-			} else if (option.contains("--remove")){
+			} else if (option.equals("--remove")){
 				String remove_filename = (String) args[1];
 				try {
 					if(slave.remove(remove_filename)){
@@ -118,7 +118,7 @@ public class NameNodeManager {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else if ( option.contains("--cat")){
+			} else if ( option.equals("--cat")){
 				List<String> files = null;
 				try {
 					files = slave.getDataNodeFiles();
@@ -134,6 +134,7 @@ public class NameNodeManager {
 				
 		} else {
 			System.err.println("Usage: NameNodeManager --dump <Input File Name>");
+			System.err.println("Usage: NameNodeManager --jar <Jar File Name>");
 			System.err.println("Usage: NameNodeManager --remove <File Name>");
 			System.err.println("Usage: NameNodeManager --cat ");
 			System.err.println("Usage: NameNodeManager --help");

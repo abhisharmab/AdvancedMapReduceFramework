@@ -1,8 +1,12 @@
 package abhi.adfs;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -16,6 +20,52 @@ import abhi.mapreduce.SystemConstants;
 public class Testing_Spliter {
 
 	public static void main(String[] args) {
+		
+		
+		File file = new File("acts.jar");
+		byte buffer[] = new byte[(int)file.length()];
+		try {
+		     BufferedInputStream input = new
+		       BufferedInputStream(new FileInputStream("acts.jar"));
+		     input.read(buffer,0,buffer.length);
+		     input.close();
+		     
+		   //  System.out.println(new String(buffer));
+		} catch (Exception e){
+			System.out.println("wfwf");
+		}
+		
+		
+		File file2 = new File("acts2.jar");
+		BufferedOutputStream output;
+		try {
+			output = new
+				 BufferedOutputStream(new FileOutputStream(file2.getName()));
+	        output.write(buffer,0,buffer.length);
+	        output.flush();
+	        output.close();
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 
 		try {
