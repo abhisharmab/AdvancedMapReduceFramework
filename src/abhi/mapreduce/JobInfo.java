@@ -38,6 +38,8 @@ public class JobInfo implements Serializable {
 	
 	private List<TaskProgress> progressofallTasks;
 	
+	private JobConf jobConf;
+	
 	public JobInfo()
 	{
 		this.progressofallTasks = new ArrayList<TaskProgress>();
@@ -97,6 +99,20 @@ public class JobInfo implements Serializable {
 	 */
 	public void setProgressofallTasks(List<TaskProgress> progressofallTasks) {
 		this.progressofallTasks = progressofallTasks;
+	}
+
+	/**
+	 * @return the jobConf
+	 */
+	public JobConf getJobConf() {
+		return jobConf;
+	}
+
+	/**
+	 * @param jobConf the jobConf to set
+	 */
+	public void setJobConf(JobConf jobConf) {
+		this.jobConf = jobConf;
 	}
 
 	

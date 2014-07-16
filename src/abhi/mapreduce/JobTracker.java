@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import abhi.adfs.NameNodeManager;
+
 
 
 
@@ -33,7 +35,7 @@ import java.util.Queue;
  * 5. Maintain a list of all the nodes and their respective status. Make sure they are alive.
  * 6. Periodically update JobClient about the particular running job.
  */
-public class JobTracker {
+public class JobTracker implements IDefineSchedulingStrategy{
 
 	//The counter that will incrementing as we add more Jobs
 	private int jobIDCounter;
@@ -63,7 +65,9 @@ public class JobTracker {
 	// the reduce task queue lined up for execution
 	private Queue<TaskMetaData> queueofReduceTasks;
 
-
+	// the nameNodeReference for finding out the file-splits
+	private NameNodeManager nameNodeReference;
+	
 	public JobTracker() throws RemoteException
 	{
 		try 
@@ -108,18 +112,55 @@ public class JobTracker {
 		}
 
 	}
-	
+
 
 	//Methods for JobTracker to assign new TaskIDs and JobIDs
-	 public int nextJobId()
-	 {
-		 return ++this.jobIDCounter;
-	 }
+	public int nextJobId()
+	{
+		return ++this.jobIDCounter;
+	}
 
-	 public int nextTaskId()
-	 {
-		 return ++this.taskIDCounter;
-	 }
+	public int nextTaskId()
+	{
+		return ++this.taskIDCounter;
+	}
+
+
+	//Get the next MapperTask in Line to be Processed
+	public TaskMetaData getNextMapperTaskinLine()
+	{
+		while(!this.mapTasks.isEmpty())
+		{
+			TaskMetaData task = this.queueofMapTasks.poll();
+			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
+			{
+				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
+			}
+			else
+			{
+				return task;
+			}
+		}
+		return null;
+	}
+
+	//Get the next ReducerTask in-line to be Processed
+	public TaskMetaData getNextReducerTaskinLine()
+	{
+		while(!this.reduceTasks.isEmpty())
+		{
+			TaskMetaData task = this.queueofReduceTasks.poll();
+			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
+			{
+				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
+			}
+			else
+			{
+				return task;
+			}
+		}
+		return null;
+	}
 
 
 	//We need to make sure we check-in all the TaskTrackers that send us heart-beat
@@ -131,37 +172,37 @@ public class JobTracker {
 			this.taskTrackers.put(taskTrackerInfo.getTaskTrackerName(), taskTrackerInfo);
 		}
 	}
-	
-	
-	  //Check_Out a Task Tracker coz maybe its Dead
-	  public void checkOutTaskTracker(String name) {
-	    if (name == null)
-	      return;
 
-	    if (this.taskTrackers.containsKey(name)) {
-	      this.taskTrackers.remove(name);
 
-	    }
-	  }
-	
-	  /**
-	   * get the whole list of task trackers
-	   * 
-	   * @return
-	   */
-	  public Map<String, TaskTrackerInfo> getTaskTrackers() {
-	    return Collections.unmodifiableMap(this.taskTrackers);
-	  }
+	//Check_Out a Task Tracker coz maybe its Dead
+	public void checkOutTaskTracker(String name) {
+		if (name == null)
+			return;
 
-	  
-	  //Retrieve a specific task tracker
-	  public TaskTrackerInfo getTaskTracker(String id) {
-	    if (this.taskTrackers.containsKey(id)) {
-	      return this.taskTrackers.get(id);
-	    } else {
-	      return null;
-	    }
-	  }
+		if (this.taskTrackers.containsKey(name)) {
+			this.taskTrackers.remove(name);
+
+		}
+	}
+
+	/**
+	 * get the whole list of task trackers
+	 * 
+	 * @return
+	 */
+	public Map<String, TaskTrackerInfo> getTaskTrackers() {
+		return Collections.unmodifiableMap(this.taskTrackers);
+	}
+
+
+	//Retrieve a specific task tracker
+	public TaskTrackerInfo getTaskTracker(String id) {
+		if (this.taskTrackers.containsKey(id)) {
+			return this.taskTrackers.get(id);
+		} else {
+			return null;
+		}
+	}
 
 
 
@@ -173,6 +214,13 @@ public class JobTracker {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+	@Override
+	public Map<Integer, String> makeStrategy() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
