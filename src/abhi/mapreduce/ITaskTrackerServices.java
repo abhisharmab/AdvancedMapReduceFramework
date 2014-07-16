@@ -16,4 +16,6 @@ package abhi.mapreduce;
 
 public interface ITaskTrackerServices {
 
+	//This is an execution Signal
+	public boolean executeTask();
 }

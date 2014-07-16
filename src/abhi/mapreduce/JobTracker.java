@@ -5,10 +5,16 @@ package abhi.mapreduce;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import abhi.adfs.NameNodeManager;
 
 
 /**
@@ -25,37 +31,271 @@ import java.util.Map;
  * 5. Maintain a list of all the nodes and their respective status. Make sure they are alive.
  * 6. Periodically update JobClient about the particular running job.
  */
-public class JobTracker {
-	
+public class JobTracker implements IDefineSchedulingStrategy{
+
+	//The counter that will incrementing as we add more Jobs
+	private int jobIDCounter;
+
+	//The counter that will incrementing as we add more Tasks
+	private int taskIDCounter;
+
 	//This is the face of the JobTracker exposed to the rest of the world via RMIRegsitry
 	private JobTrackerServiceProvider jtServiceProvider;
-	
+
 	//This is a cache of all the Task Tracker Reference from the RMI Registry 
 	//As we need the taskTrackers we will fetch the reference once and then keep it locally until there is a problem 
-	List<TaskTrackerServices> cachedTaskTrackers;
-	
-	 //All the Jobs Information that has ever been requested to be performed by the JobTracker
-	 private Map<Integer, JobInfo> jobs;
-	
-	 public JobTracker()
-	 {
+	private Map<String, TaskTrackerInfo> taskTrackers;
+
+	//All the Jobs Information that has ever been requested to be performed by the JobTracker
+	private Map<Integer, JobInfo> jobs;
+
+	//List of all the MapTasks in the System
+	private Map<Integer, TaskMetaData> mapTasks;
+
+	//List of all the ReduceTasks in the System
+	private Map<Integer, TaskMetaData> reduceTasks;
+
+	// the map task queue lined up for execution
+	private Map<String,TaskMetaData> queueofMapTasks;
+
+	// the reduce task queue lined up for execution
+	private Map<String, TaskMetaData> queueofReduceTasks;
+
+	// the nameNodeReference for finding out the file-splits
+	private NameNodeManager nameNodeReference;
+
+	public JobTracker() throws RemoteException
+	{
 		try 
 		{
 			//Register itself to the RMI Registry
 			this.jtServiceProvider = new JobTrackerServiceProvider();
 			Naming.rebind(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME), this.jtServiceProvider);
-			
-		} catch (RemoteException | MalformedURLException e) {
+
+			//TODO: Abhi. Get the RemoteReference of the Name Node Registry 
+			int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
+			Registry nameNodermiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),nameNodeRegistryPort);
+			this.nameNodeReference = (NameNodeManager) nameNodermiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
+
+
+			//Initialize the Data Structures
+			this.jobIDCounter = 1;
+			this.taskIDCounter = 1; 
+
+			this.mapTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
+			this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
+			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
+
+			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
+			this.queueofMapTasks = new HashMap<String, TaskMetaData>();
+			this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
+
+		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			System.err.println("Could not Register to the RMI Registry");
 			e.printStackTrace();
 		}
-		 
-	 }
-	
-	
-	  public static void main(String[] args) 
-	  {
-		JobTracker jb = new JobTracker();
-	  }
 
+	}
+
+
+	//Methods for JobTracker to assign new TaskIDs and JobIDs
+	public int nextJobId()
+	{
+		return ++this.jobIDCounter;
+	}
+
+	public int nextTaskId()
+	{
+		return ++this.taskIDCounter;
+	}
+
+
+	//Get the next MapperTask in Line to be Processed
+	public TaskMetaData getNextMapperTaskinLineforNode(String taskTrackerName)
+	{
+		while(!this.mapTasks.isEmpty())
+		{
+			TaskMetaData task = this.queueofMapTasks.get(taskTrackerName);
+			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
+			{
+				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
+			}
+			else
+			{
+				return task;
+			}
+		}
+		return null;
+	}
+
+	//Get the next ReducerTask in-line to be Processed
+	public TaskMetaData getNextReducerTaskinLineforNode(String taskTrackerName)
+	{
+		while(!this.reduceTasks.isEmpty())
+		{
+			TaskMetaData task = this.queueofReduceTasks.get(taskTrackerName);
+			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
+			{
+				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
+			}
+			else
+			{
+				return task;
+			}
+		}
+		return null;
+	}
+
+
+	//We need to make sure we check-in all the TaskTrackers that send us heart-beat
+	//If we already have added them just ignore otherwise add it to the TaskTrackerInfo List
+	public void checkInTaskTracker(TaskTrackerInfo taskTrackerInfo)
+	{
+		if(!this.taskTrackers.containsKey(taskTrackerInfo.getTaskTrackerName()))
+		{
+			this.taskTrackers.put(taskTrackerInfo.getTaskTrackerName(), taskTrackerInfo);
+		}
+	}
+
+
+	//Check_Out a Task Tracker coz maybe its Dead
+	public void checkOutTaskTracker(String name) {
+		if (name == null)
+			return;
+
+		if (this.taskTrackers.containsKey(name)) {
+			this.taskTrackers.remove(name);
+
+		}
+	}
+
+	/**
+	 * get the whole list of task trackers
+	 * 
+	 * @return
+	 */
+	public Map<String, TaskTrackerInfo> getTaskTrackers() {
+		return Collections.unmodifiableMap(this.taskTrackers);
+	}
+
+
+	//Retrieve a specific task tracker
+	public TaskTrackerInfo getTaskTracker(String id) {
+		if (this.taskTrackers.containsKey(id)) {
+			return this.taskTrackers.get(id);
+		} else {
+			return null;
+		}
+	}
+
+	//This method actual picks up the Map and Reduce tasks choosen as per Strategy and asked the TaskTracker to Run it
+	public void assignTasks()
+	{
+		Map<Integer, String> strategy = null;
+
+		// use the system's scheduler to generate the scheduling schemes
+		synchronized (this.taskTrackers) {strategy = makeStrategy();}
+
+		if (strategy == null)
+			return;
+
+		for (Entry<Integer, String> entry : strategy.entrySet()) {
+			Integer taskid = entry.getKey();
+
+			TaskMetaData task = null;
+
+			if (this.mapTasks.containsKey(taskid)) {
+				task = this.mapTasks.get(taskid);
+			}
+
+			if (this.reduceTasks.containsKey(taskid)) {
+				task = this.reduceTasks.get(taskid);
+			}
+
+			if (task == null)
+				continue;
+
+			// find the specific task tracker
+			TaskTrackerInfo targetTasktracker = this.taskTrackers.get(entry.getValue());
+
+			// assign the task to the task-tracker
+			boolean result = false;
+			try 
+			{
+				//TODO:Abhi -- Check this code. Written late at Night
+				result = targetTasktracker.getTaskTrackerReference().executeTask();
+				//The Execute Method Needs to be changed
+			} catch (Exception e) {
+				result = false;
+			}
+			if (result) {
+				// if this task has been submitted to a task-tracker successfully
+				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
+			} else {
+				// if this task is failed to be submitted, place it back on the Map
+				if (task.isMapperTask()) {
+					this.queueofMapTasks.put(entry.getValue(), task);
+				} else {
+					this.queueofMapTasks.put(entry.getValue(), task);
+				}
+			}
+		}
+	}
+
+
+	public static void main(String[] args) 
+	{
+		try {
+			JobTracker jt = new JobTracker();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+	@Override
+	public Map<Integer, String> makeStrategy() 
+	{
+		Map<Integer, String> taskStrategy= new HashMap<Integer, String>();
+
+		for (Entry<String, TaskTrackerInfo> entry : taskTrackers.entrySet()) {
+			TaskTrackerInfo tasktracker = entry.getValue();
+
+			synchronized (tasktracker) {
+				// fill up all the available map computer power
+				if (tasktracker.getNumOfMaps() > 0) {
+					int slotnum = tasktracker.getNumOfMaps();
+
+					TaskMetaData task = null;
+					for (int i = 0; i < slotnum && (task = this.getNextMapperTaskinLineforNode(tasktracker.getTaskTrackerName())) != null; i++) {
+						taskStrategy.put(task.getTaskID(), tasktracker.getTaskTrackerName());
+					}
+				}
+
+				// try to use all the reduce compute power
+				if (tasktracker.getNumOfReduces() > 0) {
+					int slotnum = tasktracker.getNumOfReduces();
+
+					TaskMetaData task = null;
+					for (int i = 0; i < slotnum && (task = this.getNextReducerTaskinLineforNode(tasktracker.getTaskTrackerName())) != null; i++) {
+						taskStrategy.put(task.getTaskID(), tasktracker.getTaskTrackerName());
+					}
+				}
+			}
+		}
+		return taskStrategy;
+	}
+
+
+	//TODO:Abhi
+	public void submitJob(JobInfo jobInfo) {
+
+		//1. Talk to the NameNode and get the Chunk Information 
+		//2. Construct fresh objects of MapTask and ReduceTasks (TaskMetaData basically)
+		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
+		//4. Add this JOb into the Jobs Data Structure 
+		//5. Set the status of the Job In-Progress
+	}
 }
+

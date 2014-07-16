@@ -47,8 +47,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	 */
 	@Override
 	public int requestJobID() throws RemoteException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.jobTracker.nextJobId();
 	}
 
 	/* (non-Javadoc)
@@ -56,7 +55,12 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	 */
 	@Override
 	public boolean submitJob(JobConf jconf, Object targetCode) throws RemoteException {
-		// TODO Auto-generated method stub
+		if(jconf == null)
+			return false;
+		JobInfo jobInfo = new JobInfo(jconf);
+		
+		this.jobTracker.submitJob(jobInfo);
+	
 		return false;
 	}
 
