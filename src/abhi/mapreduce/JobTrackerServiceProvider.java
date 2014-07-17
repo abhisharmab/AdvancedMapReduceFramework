@@ -10,9 +10,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
 
-import mapreduce.JobMeta;
-import mapreduce.TaskMeta;
-import mapreduce.TaskProgress;
 import abhi.mapreduce.SystemConstants.MapJobsStatus;
 
 /**
