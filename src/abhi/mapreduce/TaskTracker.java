@@ -15,6 +15,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 
 
 /**
@@ -41,7 +46,7 @@ public class TaskTracker {
 
 	private String taskTrackerName;
 
-	private int hb_period;
+	private final int hb_period = 4;
 
 	private JobTrackerServiceProvider jobTrackerServiceProvider;
 
@@ -168,14 +173,35 @@ public class TaskTracker {
 			          }
 					
 			          //Send the update information to the JobTracker
+
+			          TrackerHeartBeat hb = null;
+			          synchronized (countofRunningMapperFieldAgents) {
+			            synchronized (countofRunningReducerFieldAgents) {
+			            	hb = new TrackerHeartBeat(taskTrackerName,
+			            			mapperSlotCapacity - countofRunningMapperFieldAgents,
+			                        reducerSlotCapacity  - countofRunningReducerFieldAgents,
+			                        currentTaskList, taskTrackerName);
+			            }
+			          }
+			          /* send update package */
+			          if (hb != null)
+			            try {
+			            	jobTrackerServiceProvider.updateTaskManagerStatus(hb);
+			            } catch (RemoteException e) {
+			              e.printStackTrace();
+			            }
 				}
 			}
 		});
-		
 
 		trackerTaskHealthMonitor.setDaemon(true);
 		trackerTaskStatusUpdater.setDaemon(true);
 
+	    ScheduledExecutorService schExecService = Executors.newScheduledThreadPool(2);
+	    ScheduledFuture<?> healthChecker = schExecService.scheduleAtFixedRate(trackerTaskHealthMonitor, 0,
+	            hb_period, TimeUnit.SECONDS);
+	    ScheduledFuture<?> statusUpdater = schExecService.scheduleAtFixedRate(trackerTaskStatusUpdater, 0,
+	    		hb_period, TimeUnit.SECONDS);
 	}
 
  
@@ -192,18 +218,7 @@ public class TaskTracker {
 	public void setTaskTrackerName(String taskTrackerName) {
 		this.taskTrackerName = taskTrackerName;
 	}
-	/**
-	 * @return the hb_period
-	 */
-	public int getHb_period() {
-		return hb_period;
-	}
-	/**
-	 * @param hb_period the hb_period to set
-	 */
-	public void setHb_period(int hb_period) {
-		this.hb_period = hb_period;
-	}
+
 	/**
 	 * @return the statusofAllTasks
 	 */

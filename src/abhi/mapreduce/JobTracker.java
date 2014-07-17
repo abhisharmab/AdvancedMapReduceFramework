@@ -292,6 +292,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	//TODO:Abhi
 	public void submitJob(JobInfo jobInfo) {
 		//1. Talk to the NameNode and get the Chunk Information 
+		 	//1.1 As the appropriate Slave to move the JAR to all the NODES
+		
 		//2. Construct fresh objects of MapTask and ReduceTasks (TaskMetaData basically)
 		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
 		//4. Add this JOb into the Jobs Data Structure 
@@ -314,7 +316,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			return SystemConstants.MapJobsStatus.FAILED;
 		}
 
-		List<TaskProgress> mapTasksProgress = job.getProgressofallTasks();
+		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
 		for (TaskProgress mtaskProgress : mapTasksProgress) {
 			if (this.mapTasks.containsKey(mtaskProgress.getTaskID()) && !this.mapTasks.get(mtaskProgress.getTaskID()).isTaskDone())
 				return SystemConstants.MapJobsStatus.INPROGRESS;

@@ -5,7 +5,10 @@ package abhi.mapreduce;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import abhi.mapreduce.SystemConstants.JobStatus;
 
@@ -36,14 +39,14 @@ public class JobInfo implements Serializable {
 	
 	private JobStatus jobStatus;
 	
-	private List<TaskProgress> progressofallTasks;
+	private ConcurrentHashMap<Integer,TaskProgress> progressofallTasks;
 	
 	private JobConf jobConf;
 	
 	public JobInfo(JobConf jobConf)
 	{
 		this.jobConf = jobConf;
-		this.progressofallTasks = new ArrayList<TaskProgress>();
+		this.setProgressofallTasks(new ConcurrentHashMap<Integer, TaskProgress>());
 	}
 	
 	/**
@@ -88,19 +91,6 @@ public class JobInfo implements Serializable {
 		this.jobName = jobName;
 	}
 
-	/**
-	 * @return the progressofallTasks
-	 */
-	public List<TaskProgress> getProgressofallTasks() {
-		return progressofallTasks;
-	}
-
-	/**
-	 * @param progressofallTasks the progressofallTasks to set
-	 */
-	public void setProgressofallTasks(List<TaskProgress> progressofallTasks) {
-		this.progressofallTasks = progressofallTasks;
-	}
 
 	/**
 	 * @return the jobConf
@@ -114,6 +104,20 @@ public class JobInfo implements Serializable {
 	 */
 	public void setJobConf(JobConf jobConf) {
 		this.jobConf = jobConf;
+	}
+
+	/**
+	 * @return the progressofallTasks
+	 */
+	public ConcurrentHashMap<Integer,TaskProgress> getProgressofallTasks() {
+		return progressofallTasks;
+	}
+
+	/**
+	 * @param progressofallTasks the progressofallTasks to set
+	 */
+	public void setProgressofallTasks(ConcurrentHashMap<Integer,TaskProgress> progressofallTasks) {
+		this.progressofallTasks = progressofallTasks;
 	}
 
 	

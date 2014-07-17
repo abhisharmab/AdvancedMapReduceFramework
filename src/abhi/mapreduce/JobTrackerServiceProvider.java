@@ -4,8 +4,15 @@
 package abhi.mapreduce;
 
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
+import java.util.Map;
 
+import mapreduce.JobMeta;
+import mapreduce.TaskMeta;
+import mapreduce.TaskProgress;
 import abhi.mapreduce.SystemConstants.MapJobsStatus;
 
 /**
@@ -71,9 +78,47 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	 * @see abhi.mapreduce.IJobTrackerServices#updateTaskManagerStatus(java.lang.Object)
 	 */
 	@Override
-	public void updateTaskManagerStatus(Object status) throws RemoteException {
-		// TODO Auto-generated method stub
+	public void updateTaskManagerStatus(Object hb) throws RemoteException {
+		if(hb instanceof TrackerHeartBeat)
+		{
+			
+			//Phase 1 of Update
+			TrackerHeartBeat heartBeat = (TrackerHeartBeat) hb;
+			
+			//Check if the JobTracker already has this 
+			TaskTrackerInfo taskTrackerInfo = this.jobTracker.getTaskTracker(heartBeat.getTaskTrackerName());
+			
+			//If not then check-in this TaskTRacker with the JObTracker
+			if(taskTrackerInfo == null)
+			{
+				try {
+					//TODO:Abhi to Fix this
+					Registry registry = LocateRegistry.getRegistry(heartBeat.getRmiHostName(), 1099);
+					TaskTrackerServices taskTrackerServiceReference =  (TaskTrackerServices) registry.lookup(heartBeat.getTaskTrackerServiceName());
+					
+					//Create a Fresh TaskTracker Info Object
+					taskTrackerInfo = new TaskTrackerInfo(heartBeat.getTaskTrackerName(), taskTrackerServiceReference, heartBeat.getMapperSlotsAvailable(), heartBeat.getReducerSlotsAvailable());
+					taskTrackerInfo.setTimestamp(System.currentTimeMillis());
+				
+					this.jobTracker.checkInTaskTracker(taskTrackerInfo);
+				
+				} catch (NotBoundException e) {
+					System.err.println("Could not get reference to the TaskTracker");
+				}
+				
+			}
+			else
+			{
+				taskTrackerInfo.setNumOfMaps(heartBeat.getMapperSlotsAvailable());
+				taskTrackerInfo.setNumOfReduces(heartBeat.getReducerSlotsAvailable());
+				taskTrackerInfo.setTimestamp(System.currentTimeMillis());
+			}
+			
+			
+			//Phase 2 of Update
 
+			
+		}
 	}
 
 	@Override
