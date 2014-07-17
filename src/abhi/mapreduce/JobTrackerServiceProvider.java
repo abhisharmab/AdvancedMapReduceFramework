@@ -37,7 +37,7 @@ import abhi.mapreduce.SystemConstants.MapJobsStatus;
 public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJobTrackerServices {
 
 	private JobTracker jobTracker;
-	
+
 	protected JobTrackerServiceProvider() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
@@ -64,10 +64,10 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		if(jconf == null)
 			return false;
 		JobInfo jobInfo = new JobInfo(jconf);
-		
+
 		this.jobTracker.submitJob(jobInfo);
-		
-	
+
+
 		return false;
 	}
 
@@ -78,13 +78,13 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	public void updateTaskManagerStatus(Object hb) throws RemoteException {
 		if(hb instanceof TrackerHeartBeat)
 		{
-			
+
 			//Phase 1 of Update
 			TrackerHeartBeat heartBeat = (TrackerHeartBeat) hb;
-			
+
 			//Check if the JobTracker already has this 
 			TaskTrackerInfo taskTrackerInfo = this.jobTracker.getTaskTracker(heartBeat.getTaskTrackerName());
-			
+
 			//If not then check-in this TaskTRacker with the JObTracker
 			if(taskTrackerInfo == null)
 			{
@@ -92,17 +92,17 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 					//TODO:Abhi to Fix this
 					Registry registry = LocateRegistry.getRegistry(heartBeat.getRmiHostName(), 1099);
 					TaskTrackerServices taskTrackerServiceReference =  (TaskTrackerServices) registry.lookup(heartBeat.getTaskTrackerServiceName());
-					
+
 					//Create a Fresh TaskTracker Info Object
 					taskTrackerInfo = new TaskTrackerInfo(heartBeat.getTaskTrackerName(), taskTrackerServiceReference, heartBeat.getMapperSlotsAvailable(), heartBeat.getReducerSlotsAvailable());
 					taskTrackerInfo.setTimestamp(System.currentTimeMillis());
-				
+
 					this.jobTracker.checkInTaskTracker(taskTrackerInfo);
-				
+
 				} catch (NotBoundException e) {
 					System.err.println("Could not get reference to the TaskTracker");
 				}
-				
+
 			}
 			else
 			{
@@ -110,11 +110,69 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 				taskTrackerInfo.setNumOfReduces(heartBeat.getReducerSlotsAvailable());
 				taskTrackerInfo.setTimestamp(System.currentTimeMillis());
 			}
-			
-			
-			//Phase 2 of Update
 
-			
+
+			//Phase 2 of Update
+			//Make sure the Task Exists on the JobTracker Side 
+			//Update the TaskMetaData on the JObTRackers
+			//Based on the status of the task take the appropriate action. 
+			List<TaskProgress> progressList = heartBeat.getStatusofAllTasks();
+			Map<Integer, TaskMetaData> mapTaskList = this.jobTracker.getAllMapTasks();
+			Map<Integer, TaskMetaData> reduceTaskList = this.jobTracker.getAllReduceTasks();
+
+			for(TaskProgress taskProgress : progressList)
+			{
+				TaskMetaData taskMetaData = null; 
+
+				if(mapTaskList.containsKey(taskProgress.getTaskID()))
+				{
+					taskMetaData = mapTaskList.get(taskProgress.getTaskID());
+				}
+				else if (reduceTaskList.containsKey(taskProgress.getTaskID()))
+				{
+					taskMetaData = reduceTaskList.get(taskProgress.getTaskID());
+				}
+
+				if(taskMetaData == null)
+					continue;
+
+				taskMetaData.setTaskProgress(taskProgress);
+
+				//Get the jobInfo
+				JobInfo jobInfo = this.jobTracker.getJobInfobyId(taskMetaData.getJobID());
+				jobInfo.updateTaskProgress(taskProgress);
+
+				if(taskProgress.getStatus() == SystemConstants.TaskStatus.INPROGRESS)
+				{
+					//Do Nothing. Update Data Structures and let the things run.
+				}
+				else if(taskProgress.getStatus() == SystemConstants.TaskStatus.SUCCEEDED)
+				{
+					//Remove the Task from the TaskTracker List since its done.
+					taskTrackerInfo.removeTask(taskProgress.getTaskID());
+
+					//Double check if this was the last task. Who knows maybe the Job is Done.
+					if(jobInfo.isJobDone())
+						jobInfo.setJobStatus(SystemConstants.JobStatus.SUCCEEDED);
+
+					//Something finished we might have space for more.
+					this.jobTracker.assignTasks();
+				}
+				else if(taskProgress.getStatus() == SystemConstants.TaskStatus.FAILED)
+				{
+					taskMetaData.increaseAttempts();
+					if(taskMetaData.getAttempts() <= TaskMetaData.MAXIMUM_TRIES)
+					{
+						this.jobTracker.queueUpTask(taskTrackerInfo.getTaskTrackerName(), taskMetaData);
+					}
+					else
+					{
+						jobInfo.setJobStatus(SystemConstants.JobStatus.FAILED);
+					}
+				}
+
+			}
+
 		}
 	}
 

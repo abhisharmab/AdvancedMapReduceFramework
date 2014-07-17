@@ -34,7 +34,7 @@ public class TaskMetaData implements Serializable{
 	  private TaskType taskType;
 
 	  //The maximum times we might try a task
-	  public final static int MAXIMUM_TRIES = 1;
+	  public final static int MAXIMUM_TRIES = 2;
 	  
 	  //the progress and status of one task
 	  private TaskProgress taskProgress;

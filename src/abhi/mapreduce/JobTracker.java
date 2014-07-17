@@ -98,6 +98,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 
 	}
+	
+	//Get a particular Job Info
+	public JobInfo getJobInfobyId(int jobID)
+	{
+		return this.jobs.get(jobID);
+	}
+	
+	
 
 
 	//Methods for JobTracker to assign new TaskIDs and JobIDs
@@ -243,7 +251,29 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
-
+	//Return the Map Tasks
+	public Map<Integer, TaskMetaData> getAllMapTasks()
+	{
+		//We do not want the other people in the world to be able to modified this.
+		return Collections.unmodifiableMap(this.mapTasks);
+	}
+	
+	//Return the Reduce Tasks
+	public Map<Integer, TaskMetaData> getAllReduceTasks()
+	{
+		//We do not want the other people in the world to be able to modified this.
+		return Collections.unmodifiableMap(this.reduceTasks);
+	}
+	
+	//Called to QueueUp A Task
+	public void queueUpTask(String taskTrackerName, TaskMetaData task)
+	{
+		if(task.isMapperTask())
+			this.queueofMapTasks.put(taskTrackerName, task);
+		else
+			this.queueofReduceTasks.put(taskTrackerName, task);
+	}
+	
 	public static void main(String[] args) 
 	{
 		try {

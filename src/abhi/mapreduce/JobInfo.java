@@ -119,6 +119,31 @@ public class JobInfo implements Serializable {
 	public void setProgressofallTasks(ConcurrentHashMap<Integer,TaskProgress> progressofallTasks) {
 		this.progressofallTasks = progressofallTasks;
 	}
-
 	
+	public void updateTaskProgress(TaskProgress taskProgress)
+	{
+		int taskID = taskProgress.getTaskID(); 
+		
+		//Remove the old progress
+		if(this.progressofallTasks.containsKey(taskID))
+			this.progressofallTasks.remove(taskID);
+		
+		//Add the new progress
+		this.progressofallTasks.put(taskID, taskProgress);
+		
+	}
+
+	public boolean isJobDone()
+	{
+		List<TaskProgress> list = Collections.list(this.progressofallTasks.elements());
+		
+		for(TaskProgress t : list)
+		{
+			if(t.getStatus() == SystemConstants.TaskStatus.SUCCEEDED)
+				continue; 
+			else
+				return false;
+		}
+		return true;
+	}
 }
