@@ -124,6 +124,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			}
 			else
 			{
+				//TODO: Abhi Make sure you synchronizedly delete the Entry from the Map(Queue) before returning
 				return task;
 			}
 		}
@@ -142,6 +143,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			}
 			else
 			{
+				//TODO: Abhi Make sure you synchronizedly delete the Entry from the Map(Queue) before returning
 				return task;
 			}
 		}
@@ -170,11 +172,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
-	/**
-	 * get the whole list of task trackers
-	 * 
-	 * @return
-	 */
+   //Get all the TaskTRackers. This will be needed for Scheduling Strategy
 	public Map<String, TaskTrackerInfo> getTaskTrackers() {
 		return Collections.unmodifiableMap(this.taskTrackers);
 	}

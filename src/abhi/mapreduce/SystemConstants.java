@@ -55,6 +55,10 @@ public class SystemConstants {
 	public static final String JAR_DIRECTORY="JAR.DIRECTORY";
 	public static final String NAMENODE_REGISTRY_HOST = "NAMENODE.REGISTRY.HOST";
 	public static final String NAMENODE_REGISTRY_PORT = "NAMENODE.REGISTRY.PORT";
+	
+	public static final String MAX_MAPPER_SLOTS = "MAX.MAPPER.SLOTS";	
+	public static final String MAX_REDUCER_SLOTS = "MAX.REDUCER.SLOTS";
+	
 
 	
 	public static String getConfig(String configName) 

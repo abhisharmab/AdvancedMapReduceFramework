@@ -14,8 +14,8 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 
 	private TaskTracker taskTrackerReference; 
 	
-	protected TaskTrackerServices() throws RemoteException {
-		super();
+	protected TaskTrackerServices(TaskTracker taskTracker) throws RemoteException {
+		this.taskTrackerReference = taskTracker;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -31,7 +31,7 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 	}
 
 	@Override
-	public void updateWorkerStatu(Object status) throws RemoteException {
+	public void updateFieldAgentStatus(Object status) throws RemoteException {
 		// TODO Auto-generated method stub
 		
 	}

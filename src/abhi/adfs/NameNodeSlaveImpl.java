@@ -75,11 +75,6 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	
 	public static void main(String args[])
     {
-		
-
-
-
-		
 
 		// These are debugging prints.
     	try {
@@ -512,7 +507,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 			byte buffer[] = new byte[(int)file.length()];
 			try {
 			     BufferedInputStream input = new
-			       BufferedInputStream(new FileInputStream(fileName));
+			     BufferedInputStream(new FileInputStream(fileName));
 			     input.read(buffer,0,buffer.length);
 			     input.close();
 			     
@@ -528,13 +523,8 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 				
 			}
 			
-			
-			
-			return true;
-			
+		return true;
 
-			
-		
 	}
 
 	

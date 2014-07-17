@@ -22,5 +22,5 @@ public interface ITaskTrackerServices {
 	public boolean executeTask() throws RemoteException; 
 	
 	//This is for each of the worker on the TaskManager side to update status of the TaskTracker
-	public void updateWorkerStatu(Object status) throws RemoteException; 
+	public void updateFieldAgentStatus(Object status) throws RemoteException; 
 }
