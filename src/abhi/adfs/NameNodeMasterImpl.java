@@ -10,11 +10,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import abhi.mapreduce.SystemConstants;
 
@@ -36,12 +40,15 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	
 	// This will keep track of the file information.
 	private static List<InputFileInfo> list_fileInfo;
-	private static HashMap<String, DataNode> list_dataNode;
+	private ConcurrentHashMap <String, DataNode> list_dataNode;
+	
+	private static Integer rotationIndex;
 	
 	public NameNodeMasterImpl() throws RemoteException {
 		super();
-		list_dataNode = new HashMap<String, DataNode>();
+		list_dataNode = new ConcurrentHashMap <String, DataNode>();
 		setList_fileInfo(new ArrayList<InputFileInfo>());
+		rotationIndex = 1;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -180,7 +187,10 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 				} 
 			} catch(RemoteException e){
 				System.out.println("There are dead dataNode this should be addressed");
+				String deadNode = dn.getKey();
 				iter.remove();
+				replicateFiles(dn.getKey());
+				
 				
 			}
 			
@@ -191,6 +201,77 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 		System.out.println(live_DataNode.toString());
 		return live_DataNode;
 	}
+	
+	public void replicateFiles(String dataNodeName){
+		System.out.println("This Data node is dead  " + dataNodeName);
+		System.out.println("Starting the replication process.");
+		
+		List<InputFileInfo> infoList = needValidations(dataNodeName);
+		
+		for(InputFileInfo info : infoList){
+			System.out.println("Info   " +info.getFileName());
+			for(String file : info.dataNodeDead(dataNodeName)){
+				System.out.println("This is the missing file  " + file);
+				String dataNode = info.fileExistInDataNode(file);
+				System.out.println("this is where the existing file is. " + dataNode);
+				Boolean found = Boolean.FALSE;
+				Integer counter = 0;
+				while(!found ){
+					Entry<String, DataNode> entry = getNextDataNodeEntry();
+					
+					try {
+						if(!entry.getValue().isExist(file)){
+							found = Boolean.TRUE;
+							// Got the data from an existing Node 
+							DataNode node = list_dataNode.get(dataNode);
+							
+							
+							System.out.println("I amm about to retrieve   " + file);
+							System.out.println("from    " + dataNode);
+							for(String fileaaa : node.getFileList()){
+								System.out.println("-------"+fileaaa);
+							}
+							String data = node.retrieve(file);
+							
+							// Get the new Node and submit the file
+							DataNode newNode = entry.getValue();
+							newNode.submit(file, data);
+							
+							// update the info
+							info.addFileParitionInfo(entry.getKey(), file);
+						} else {
+							// This is a limitation of the replication retry process.
+							// If the counter is over the size of the dataNode
+							// There is no need for replication. All files exist in the filesystem.
+							counter++;
+							if(counter >  list_dataNode.size()){
+								found = Boolean.TRUE;
+							}
+						}
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		}
+		
+		
+		
+		
+	}
+	public List<InputFileInfo> needValidations(String dataNode){
+		List<InputFileInfo> list = new ArrayList<InputFileInfo>();
+		for(InputFileInfo info : list_fileInfo){
+			if(info.isPartitionedInDataNode(dataNode)){
+				list.add(info);
+			}
+		}
+		
+		return list;
+	}
+
 
 	@Override
 	public boolean checkFileExistance(String fileName) throws RemoteException {
@@ -275,5 +356,18 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	public boolean ping() throws RemoteException {
 		// TODO Auto-generated method stub
 		return true;
+	}
+	
+	public Entry<String,DataNode> getNextDataNodeEntry(){
+		rotationIndex++;
+		Integer index = rotationIndex % list_dataNode.size(); 
+		System.out.println("rotationIndex  " + rotationIndex);
+		System.out.println("list_dataNode.size()  " + list_dataNode.size());
+		System.out.println("index  " + index);
+		List<String> keys = new ArrayList<String>(list_dataNode.keySet());
+		Map.Entry<String, DataNode> entry = 
+				new AbstractMap.SimpleEntry<String,DataNode>(keys.get(index), list_dataNode.get(keys.get(index)));
+		return entry;
+		
 	}
 }

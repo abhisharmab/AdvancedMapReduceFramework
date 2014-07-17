@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import abhi.mapreduce.SystemConstants;
 
@@ -151,7 +152,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	// This will be a check method for the exist partitioned file name.
 	@Override
 	public boolean isExist(String filename) throws RemoteException {
-	
+	System.out.println("isExist");
 		File file = new File(getPath(filename));
 		if( file.exists() && file.isFile()){
 			
@@ -204,6 +205,35 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 			e.printStackTrace();
 			return false;
 		}
+		
+	}
+
+
+	@Override
+	public String retrieve(String filename) throws RemoteException {
+		
+		System.out.println("retrieve     filename   " + filename);
+		System.out.println("getPath(filename)   " + getPath(filename));
+		Scanner scan;
+		try {
+			File file = new File(getPath(filename));
+			scan = new Scanner(file);
+			StringBuilder data = new StringBuilder();
+			while (scan.hasNextLine()){
+				String temp = scan.nextLine();
+				data.append("\n"+temp);
+			}
+			
+			scan.close();
+			return data.toString();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Cannot Retrieve filename : " + filename);
+			System.out.println("Please Check Again.");
+		}
+		
+		return null;
 		
 	}
 

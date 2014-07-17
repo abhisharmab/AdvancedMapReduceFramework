@@ -17,6 +17,7 @@ public interface DataNode extends Remote {
 	public boolean submit(String filename, String data) throws RemoteException;
 	public boolean submitJar(String filename, byte data[], int length) throws RemoteException;
 	public boolean remove(String filename) throws RemoteException;
+	public String retrieve(String filename) throws RemoteException;
 	public boolean isExist(String filename) throws RemoteException;
 	public List<String> getFileList() throws RemoteException;
 	public boolean ping() throws RemoteException;

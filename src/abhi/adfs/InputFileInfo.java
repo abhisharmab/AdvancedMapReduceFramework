@@ -14,8 +14,39 @@ public class InputFileInfo  implements Serializable{
 	private static final long serialVersionUID = 2521084379974491121L;
 	private String fileName;
 	private HashMap<String, List<String>> partitions;
-
+	private HashMap<String, List<String>> deadNodes;
 	private Integer paritionNumber;
+	private boolean valid;
+	
+	
+	public String fileExistInDataNode(String fileName){
+		for(Entry<String,List<String>> entry : getPartitions().entrySet()){
+			if(entry.getValue().contains(fileName)){
+				return entry.getKey();
+			}
+		}
+		return null;
+	}
+	
+	public boolean isPartitionedInDataNode(String dataNode){
+		return getPartitions().containsKey(dataNode);
+	}
+	
+	public List<String> dataNodeDead(String dataNodeName){
+		setValid(false);
+		for(Entry<String,List<String>> entry : getPartitions().entrySet()){
+			if(entry.getKey().equals(dataNodeName)){
+				getDeadNodes().put(entry.getKey(),entry.getValue());
+			}
+		}
+		
+		for(String key : getDeadNodes().keySet()){
+			getPartitions().remove(key);
+		}
+			
+		
+		return getDeadNodes().get(dataNodeName);
+	}
 	
 	public HashMap<String, List<String>> getPartitions() {
 		if(partitions == null){
@@ -74,4 +105,21 @@ public class InputFileInfo  implements Serializable{
 		}
 	}
 
+	public boolean isValid() {
+		return valid;
+	}
+
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+	public HashMap<String, List<String>> getDeadNodes() {
+		if(deadNodes == null){
+			deadNodes = new HashMap<String, List<String>>();
+		}
+		return deadNodes;
+		
+	}
+	public void setDeadNodes(HashMap<String, List<String>> deadNodes) {
+		this.deadNodes = deadNodes;
+	}
 }
