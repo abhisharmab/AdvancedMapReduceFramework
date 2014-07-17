@@ -113,9 +113,17 @@ public class TaskTracker {
 	
 	//Each of the Spawned Off Mapper or Reducer Field Agent Will Call Upon this Function to Update their Status
 	//Each field agent will have a reference of the main co-ordinating Boss that is the TaskTracker
-	public void updateFieldAgentStatus(Object status) throws RemoteException
+	public void updateFieldAgentStatus(TaskProgress progress) throws RemoteException
 	{
-		
+		synchronized(this.statusofAllTasks)
+		{
+			if(this.statusofAllTasks.containsKey(progress.getTaskID()))
+			{
+				this.statusofAllTasks.remove(progress.getTaskID());
+			}
+			
+			this.statusofAllTasks.put(progress.getTaskID(), progress);
+		}
 	}
 
 	public static void main(String[] args) {

@@ -32,7 +32,12 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 
 	@Override
 	public void updateFieldAgentStatus(Object status) throws RemoteException {
-		// TODO Auto-generated method stub
+		if(status instanceof TaskProgress)
+		{
+			TaskProgress progress = (TaskProgress) status;
+			
+			this.taskTrackerReference.updateFieldAgentStatus(progress);
+		}
 		
 	}
 
