@@ -4,7 +4,7 @@ import java.io.File;
 
 //Reference: http://docs.oracle.com/javase/7/docs/api/java/lang/ProcessBuilder.html#ProcessBuilder(java.lang.String...)
 
-public class Utility {
+public class JVMUtility {
 
   public static void startProcessinJVM(String[] args) throws Exception {
 	

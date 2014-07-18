@@ -29,9 +29,9 @@ public class TaskTrackerInfo implements Serializable{
 	  // the unique name of task tracker
 	  private String taskTrackerName;
 
-	  private int numOfMaps;
+	  private static int numOfMaps;
 
-	  private int numOfReduces;
+	  private static int numOfReduces;
 
 	  private long timestamp;
 
@@ -80,7 +80,7 @@ public class TaskTrackerInfo implements Serializable{
 	 * @param numOfMaps the numOfMaps to set
 	 */
 	public void setNumOfMaps(int numOfMaps) {
-		this.numOfMaps = numOfMaps;
+		TaskTrackerInfo.numOfMaps = numOfMaps;
 	}
 
 	/**
