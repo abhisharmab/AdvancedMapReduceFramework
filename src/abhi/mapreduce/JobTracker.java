@@ -13,8 +13,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import abhi.adfs.NameNodeManager;
 
@@ -62,7 +64,20 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 	// the reduce task queue lined up for execution
 	private Map<String, TaskMetaData> queueofReduceTasks;
-
+	
+	/*New Strategy*/
+	private Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks;
+	
+	private Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> reducerTasks;
+	
+	//The Data Structure that will be used for Scheduling Tasks
+	private ConcurrentHashMap<TaskMetaData, MapperPriorityQueue> mapTaskQueue;
+	
+	//The Data Structure that will be used for Scheduling Tasks
+	private ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue> reduceTaskQueue;
+	
+	/*New Strategy*/
+	
 	// the nameNodeReference for finding out the file-splits
 	private NameNodeManager nameNodeReference;
 
@@ -83,10 +98,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			//Initialize the Data Structures
 			this.jobIDCounter = 1;
 			this.taskIDCounter = 1; 
+			
+			//Job collections
+			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
 
+			//List of all the Tasks in the Systems.
 			this.mapTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
 			this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
-			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
+			
 
 			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
 			this.queueofMapTasks = new HashMap<String, TaskMetaData>();
@@ -356,6 +375,63 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		// if all map tasks finished, then return FINISHED
 		return SystemConstants.MapJobsStatus.SUCCEEDED;
 	}
+
+	/**
+	 * @return the mapTaskQueue
+	 */
+	public ConcurrentHashMap<TaskMetaData, MapperPriorityQueue> getMapTaskQueue() {
+		return mapTaskQueue;
+	}
+
+	/**
+	 * @param mapTaskQueue the mapTaskQueue to set
+	 */
+	public void setMapTaskQueue(ConcurrentHashMap<TaskMetaData, MapperPriorityQueue> mapTaskQueue) {
+		this.mapTaskQueue = mapTaskQueue;
+	}
+
+	/**
+	 * @return the reduceTaskQueue
+	 */
+	public ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue> getReduceTaskQueue() {
+		return reduceTaskQueue;
+	}
+
+	/**
+	 * @param reduceTaskQueue the reduceTaskQueue to set
+	 */
+	public void setReduceTaskQueue(ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue> reduceTaskQueue) {
+		this.reduceTaskQueue = reduceTaskQueue;
+	}
+
+	/**
+	 * @return the reducerTasks
+	 */
+	public Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> getReducerTasks() {
+		return reducerTasks;
+	}
+
+	/**
+	 * @param reducerTasks the reducerTasks to set
+	 */
+	public void setReducerTasks(Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> reducerTasks) {
+		this.reducerTasks = reducerTasks;
+	}
+
+	/**
+	 * @return the mapperTasks
+	 */
+	public Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> getMapperTasks() {
+		return mapperTasks;
+	}
+
+	/**
+	 * @param mapperTasks the mapperTasks to set
+	 */
+	public void setMapperTasks(Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks) {
+		this.mapperTasks = mapperTasks;
+	}
+
 
 
 }
