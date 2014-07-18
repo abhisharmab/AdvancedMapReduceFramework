@@ -7,8 +7,10 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import abhi.mapreduce.SystemConstants.MapJobsStatus;
 
@@ -68,7 +70,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		this.jobTracker.submitJob(jobInfo);
 
 		//Call this to assign Tasks
-		this.jobTracker.assignTasks();
+		//this.jobTracker.assignTasks();
 
 		return false;
 	}
@@ -119,8 +121,9 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 			//Update the TaskMetaData on the JObTRackers
 			//Based on the status of the task take the appropriate action. 
 			List<TaskProgress> progressList = heartBeat.getStatusofAllTasks();
-			Map<Integer, TaskMetaData> mapTaskList = this.jobTracker.getAllMapTasks();
-			Map<Integer, TaskMetaData> reduceTaskList = this.jobTracker.getAllReduceTasks();
+			
+			Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapTaskList = this.jobTracker.getMapperTasks();
+			Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reduceTaskList = this.jobTracker.getReducerTasks();
 
 			for(TaskProgress taskProgress : progressList)
 			{
@@ -128,11 +131,11 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 
 				if(mapTaskList.containsKey(taskProgress.getTaskID()))
 				{
-					taskMetaData = mapTaskList.get(taskProgress.getTaskID());
+					taskMetaData = Collections.list(mapTaskList.get(taskProgress.getTaskID()).keys()).get(0);
 				}
 				else if (reduceTaskList.containsKey(taskProgress.getTaskID()))
 				{
-					taskMetaData = reduceTaskList.get(taskProgress.getTaskID());
+					taskMetaData = Collections.list(reduceTaskList.get(taskProgress.getTaskID()).keys()).get(0);
 				}
 
 				if(taskMetaData == null)
@@ -172,9 +175,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 						jobInfo.setJobStatus(SystemConstants.JobStatus.FAILED);
 					}
 				}
-
 			}
-
 		}
 	}
 

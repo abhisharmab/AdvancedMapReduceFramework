@@ -67,8 +67,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	//private Map<String, TaskMetaData> queueofReduceTasks;
 	
 	/*New Strategy*/
-	private Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks;
-	private Map<String, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reducerTasks;
+	private Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks;
+	private Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reducerTasks;
 	
 	//The Data Structures below that will be used for Scheduling Tasks
 	private ConcurrentHashMap<TaskMetaData, MapperPriorityQueue> mapTaskQueue;
@@ -106,8 +106,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 			
 			//New Strategy 
-			this.mapperTasks =  Collections.synchronizedMap(new HashMap<String,ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>());
-			this.reducerTasks =  Collections.synchronizedMap(new HashMap<String,ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>());
+			this.mapperTasks =  Collections.synchronizedMap(new HashMap<Integer,ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>());
+			this.reducerTasks =  Collections.synchronizedMap(new HashMap<Integer,ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>());
 			
 			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
 			//this.queueofMapTasks = new HashMap<String, TaskMetaData>();
@@ -130,7 +130,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	{
 		return this.jobs.get(jobID);
 	}
-	
 	
 
 
@@ -437,28 +436,28 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	/**
 	 * @return the reducerTasks
 	 */
-	public Map<String, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> getReducerTasks() {
+	public Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> getReducerTasks() {
 		return reducerTasks;
 	}
 
 	/**
 	 * @param reducerTasks the reducerTasks to set
 	 */
-	public void setReducerTasks(Map<String, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reducerTasks) {
+	public void setReducerTasks(Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reducerTasks) {
 		this.reducerTasks = reducerTasks;
 	}
 
 	/**
 	 * @return the mapperTasks
 	 */
-	public Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> getMapperTasks() {
+	public Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> getMapperTasks() {
 		return mapperTasks;
 	}
 
 	/**
 	 * @param mapperTasks the mapperTasks to set
 	 */
-	public void setMapperTasks(Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks) {
+	public void setMapperTasks(Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks) {
 		this.mapperTasks = mapperTasks;
 	}
 
