@@ -106,6 +106,8 @@ public class MapperFieldAgent extends FieldAgent {
 		      ArrayList<KeyValueConstruct> list = new ArrayList<KeyValueConstruct>();
 		      String filename = outputCollector.outputDirectory + System.getProperty("file.separator")
 		              + "part_"+ i;
+		      
+		      
 		      File file = new File(filename);
 		      /* read file for each partition, wrap to records, store to list */
 		      BufferedReader br = null;
@@ -151,6 +153,7 @@ public class MapperFieldAgent extends FieldAgent {
 		        if (bw != null)
 		          try {
 		            bw.close();
+		            setCreatedFileName(filename);
 		          } catch (IOException e) {
 		            e.printStackTrace();
 		            System.exit(0);

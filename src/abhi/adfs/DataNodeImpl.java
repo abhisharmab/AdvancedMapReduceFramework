@@ -67,13 +67,13 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	}
 	
 	public String getPath(String filename){
-		String path = directory + "/" + filename;
+		String path = directory + System.getProperty("file.separator") + filename;
 		System.out.println("Path for file   " + path);
 		return path;
 	}
 	
 	public String getPathJar(String filename){
-		String path = jar_directory + "/" + filename;
+		String path = jar_directory + System.getProperty("file.separator") + filename;
 		System.out.println("Path for file   " + path);
 		return path;
 	}

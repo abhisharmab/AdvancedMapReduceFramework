@@ -9,7 +9,7 @@ import abhi.mapreduce.SystemConstants.TaskStatus;
 import abhi.mapreduce.SystemConstants.TaskType;
 
 /**
- * @author abhisheksharma
+ * @author abhisheksharma, dkrew
  *
  * This class represents the Progress of the each of the Tasks running on the Nodes. 
  * We represent progress in-terms of how much percentage of work is done.
@@ -36,6 +36,10 @@ public class TaskProgress implements Serializable {
 	
 	//Latest TimeStamp when this was updated
 	private long latestUpdateTimeStamp;
+	
+	private String taskTrackerName;
+	
+	private String mapFileName;
 	
 	public TaskProgress(int taskId, TaskType type)
 	{
@@ -112,6 +116,22 @@ public class TaskProgress implements Serializable {
 	 */
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
+	}
+
+	public String getTaskTrackerName() {
+		return taskTrackerName;
+	}
+
+	public void setTaskTrackerName(String taskTrackerName) {
+		this.taskTrackerName = taskTrackerName;
+	}
+
+	public String getMapFileName() {
+		return mapFileName;
+	}
+
+	public void setMapFileName(String mapFileName) {
+		this.mapFileName = mapFileName;
 	}
 
 }

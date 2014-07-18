@@ -34,8 +34,17 @@ public abstract class FieldAgent {
 	  
 	  protected TaskTrackerServices taskServiceProviderReference; //Task Service Provider Reference
 
+	  protected String createdFileName;
+	  
+	  public String getCreatedFileName() {
+		return createdFileName;
+	}
 
-	  public FieldAgent(int taskID, String infile, String outfile, String taskTrackerServiceName,
+	public void setCreatedFileName(String createdFileName) {
+		this.createdFileName = createdFileName;
+	}
+
+	public FieldAgent(int taskID, String infile, String outfile, String taskTrackerServiceName,
 	          SystemConstants.TaskType type) {
 
 	    this.taskID = taskID;
@@ -114,6 +123,7 @@ public abstract class FieldAgent {
 	        	taskProgress.setPercentageCompleted(this.getPercentage());
 
 	        	taskProgress.setStatus(SystemConstants.TaskStatus.SUCCEEDED);
+	        	taskProgress.setMapFileName(getCreatedFileName());
 
 	        /* set the current time stamp */
 	    	  taskProgress.setLatestUpdateTimeStamp(System.currentTimeMillis());
