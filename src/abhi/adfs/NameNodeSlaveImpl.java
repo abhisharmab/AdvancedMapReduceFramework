@@ -80,7 +80,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
     	try {
     		System.out.println(ManagementFactory.getRuntimeMXBean().getName());
 			System.out.println(InetAddress.getLocalHost().getHostAddress());
-			setIdentifier(InetAddress.getLocalHost().getCanonicalHostName());
+			setIdentifier(InetAddress.getLocalHost().getHostName());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -525,6 +525,19 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 			
 		return true;
 
+	}
+
+	@Override
+	public boolean registerToDataNode(String fileName) throws RemoteException {
+		// TODO Auto-generated method stub
+		if(myDataNode.registrFileName(fileName)){
+			System.out.println("FileName : " + fileName + " has been registered to the local DataNode.");
+			return true;
+		} else {
+			System.out.println("Error while registering fileName : " + fileName + " to the local DataNode");
+			return false;
+		}
+		
 	}
 
 	
