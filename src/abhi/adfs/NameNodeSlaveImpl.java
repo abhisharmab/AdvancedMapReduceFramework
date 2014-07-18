@@ -121,7 +121,8 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
         try {
         	NameNodeSlaveImpl slave = new NameNodeSlaveImpl();
         	String local_Ipaddress = InetAddress.getLocalHost().getHostAddress();
-           	String name= "NameNodeSlave_"+getIdentifier();
+        	String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
+           	String name= slaveName+"_"+getIdentifier();
     		String bindName = "rmi://" +local_Ipaddress + ":"+ portNumber+ "/" + name; 
     		System.out.println("Registering NameNodeSlave as : " + bindName);
     		
@@ -148,10 +149,9 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	public static void lookUpNameNodeMaster(){
 	       try
 	        {
+	    		String master_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
 	        	
-	        //	String lookup_name = "rmi://10.0.0.4:1099/NameNodeMaster"; 
-	        	String lookup_name = "rmi://" +ipAddress + ":"+ portNumber+ "/NameNodeMaster";
-	        
+	        	String lookup_name = "rmi://" +ipAddress + ":"+ portNumber+ "/" + master_Name;
 	        	System.out.println(lookup_name);
 	    		nameNodeMaster = (NameNodeMaster) Naming.lookup(lookup_name);
 	    		System.out.println("NameNodeMaster has been looked up.");
@@ -528,7 +528,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	}
 
 	@Override
-	public boolean registerToDataNode(String fileName) throws RemoteException {
+	public boolean registerToLocalDataNode(String fileName) throws RemoteException {
 		// TODO Auto-generated method stub
 		if(myDataNode.registrFileName(fileName)){
 			System.out.println("FileName : " + fileName + " has been registered to the local DataNode.");
@@ -538,6 +538,12 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 			return false;
 		}
 		
+	}
+
+	@Override
+	public String retrieveFromLocalDataNode(String fileName)
+			throws RemoteException {
+		return myDataNode.retrieve(fileName);
 	}
 
 	

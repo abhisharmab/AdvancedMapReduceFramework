@@ -21,91 +21,111 @@ public class Testing_Spliter {
 
 	public static void main(String[] args) {
 		
-		
-		File file = new File("acts.jar");
-		byte buffer[] = new byte[(int)file.length()];
-		try {
-		     BufferedInputStream input = new
-		       BufferedInputStream(new FileInputStream("acts.jar"));
-		     input.read(buffer,0,buffer.length);
-		     input.close();
-		     
-		   //  System.out.println(new String(buffer));
-		} catch (Exception e){
-			System.out.println("wfwf");
-		}
-		
-		
-		File file2 = new File("acts2.jar");
-		BufferedOutputStream output;
-		try {
-			output = new
-				 BufferedOutputStream(new FileOutputStream(file2.getName()));
-	        output.write(buffer,0,buffer.length);
-	        output.flush();
-	        output.close();
-		} catch (FileNotFoundException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		 Scanner s = new Scanner("hello\t world \n hello\t world");
+		 s.useDelimiter("\\t|\\n");
+		 while(s.hasNext()){
+		          System.out.println(s.next().trim());
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
-		try {
-			System.out.println(InetAddress.getLocalHost().getHostAddress());
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		// TODO Auto-generated method stub
-		Scanner scan = new Scanner(System.in);
-		String filename = scan.nextLine();
-		
+		 }
 		 
-		FileSpliter spliter;
-		try {
-			spliter = new FileSpliter(filename, (double) (1024*1024*0.01));
-			String data = spliter.getNextBlock();
-			Integer numbering = 0;
-			while (data != null){
-				
-				numbering++;
-				String num = numbering.toString(); 
-				submit("testing_"+num, data);
-				data = new String();
-				data = spliter.getNextBlock();
-				
-				
-				System.out.println("------------------------------------------------------");
-			}
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		 
+//		String temp;
+//		try {
+//			temp = InetAddress.getLocalHost().getHostName();
+//			System.out.println(temp);
+//		} catch (UnknownHostException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	
 		
 		
+		
+//		
+//		File file = new File("acts.jar");
+//		byte buffer[] = new byte[(int)file.length()];
+//		try {
+//		     BufferedInputStream input = new
+//		       BufferedInputStream(new FileInputStream("acts.jar"));
+//		     input.read(buffer,0,buffer.length);
+//		     input.close();
+//		     
+//		   //  System.out.println(new String(buffer));
+//		} catch (Exception e){
+//			System.out.println("wfwf");
+//		}
+//		
+//		
+//		File file2 = new File("acts2.jar");
+//		BufferedOutputStream output;
+//		try {
+//			output = new
+//				 BufferedOutputStream(new FileOutputStream(file2.getName()));
+//	        output.write(buffer,0,buffer.length);
+//	        output.flush();
+//	        output.close();
+//		} catch (FileNotFoundException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//		
+//
+//		try {
+//			System.out.println(InetAddress.getLocalHost().getHostAddress());
+//		} catch (UnknownHostException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		
+//		// TODO Auto-generated method stub
+//		Scanner scan = new Scanner(System.in);
+//		String filename = scan.nextLine();
+//		
+//		 
+//		FileSpliter spliter;
+//		try {
+//			spliter = new FileSpliter(filename, (double) (1024*1024*0.01));
+//			String data = spliter.getNextBlock();
+//			Integer numbering = 0;
+//			while (data != null){
+//				
+//				numbering++;
+//				String num = numbering.toString(); 
+//				submit("testing_"+num, data);
+//				data = new String();
+//				data = spliter.getNextBlock();
+//				
+//				
+//				System.out.println("------------------------------------------------------");
+//			}
+//			
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		
 		
 		
 		

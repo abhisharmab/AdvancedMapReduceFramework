@@ -359,6 +359,23 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		// if all map tasks finished, then return FINISHED
 		return SystemConstants.MapJobsStatus.SUCCEEDED;
 	}
+	
+	
+	
+	// This will return the list of TaskProcess that is related to the reducer.
+	public List<TaskProgress> getCompletedMapTasks(int reducerTaskID){
+		TaskMetaData task = this.reduceTasks.get(reducerTaskID);
+		JobInfo job = this.jobs.get(task.getJobID());
+		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
+		for (TaskProgress mtaskProgress : mapTasksProgress) {
+			if (!this.mapTasks.get(mtaskProgress.getTaskID()).isTaskDone()){
+				System.out.println("There are map tasks are not complete.");
+				return null;
+			}
+				
+		}
+		return mapTasksProgress;
+	}
 
 
 }

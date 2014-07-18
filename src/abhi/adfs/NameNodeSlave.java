@@ -19,7 +19,8 @@ public interface NameNodeSlave extends Remote{
 	public boolean ping() throws RemoteException;
 	public boolean remove(String fileName) throws RemoteException;
 	public List<String> getDataNodeFiles() throws RemoteException;
-	public boolean registerToDataNode(String fileName) throws RemoteException;
+	public boolean registerToLocalDataNode(String fileName) throws RemoteException;
+	public String retrieveFromLocalDataNode(String fileName) throws RemoteException;
 	// For debugging
 	public void print() throws RemoteException;
 
