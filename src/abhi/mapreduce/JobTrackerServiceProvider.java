@@ -158,14 +158,14 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 						jobInfo.setJobStatus(SystemConstants.JobStatus.SUCCEEDED);
 
 					//Something finished we might have space for more.
-					this.jobTracker.assignTasks();
+					//this.jobTracker.assignTasks();
 				}
 				else if(taskProgress.getStatus() == SystemConstants.TaskStatus.FAILED)
 				{
 					taskMetaData.increaseAttempts();
 					if(taskMetaData.getAttempts() <= TaskMetaData.MAXIMUM_TRIES)
 					{
-						this.jobTracker.queueUpTask(taskTrackerInfo.getTaskTrackerName(), taskMetaData);
+						this.jobTracker.queueUpTask(taskMetaData);
 					}
 					else
 					{

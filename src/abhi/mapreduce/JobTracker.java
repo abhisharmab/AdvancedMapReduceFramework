@@ -9,6 +9,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,26 +55,23 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	private Map<Integer, JobInfo> jobs;
 
 	//List of all the MapTasks in the System
-	private Map<Integer, TaskMetaData> mapTasks;
+	//private Map<Integer, TaskMetaData> mapTasks;
 
 	//List of all the ReduceTasks in the System
-	private Map<Integer, TaskMetaData> reduceTasks;
+	//private Map<Integer, TaskMetaData> reduceTasks;
 
 	// the map task queue lined up for execution
-	private Map<String,TaskMetaData> queueofMapTasks;
+	//private Map<String,TaskMetaData> queueofMapTasks;
 
 	// the reduce task queue lined up for execution
-	private Map<String, TaskMetaData> queueofReduceTasks;
+	//private Map<String, TaskMetaData> queueofReduceTasks;
 	
 	/*New Strategy*/
 	private Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mapperTasks;
+	private Map<String, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reducerTasks;
 	
-	private Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> reducerTasks;
-	
-	//The Data Structure that will be used for Scheduling Tasks
+	//The Data Structures below that will be used for Scheduling Tasks
 	private ConcurrentHashMap<TaskMetaData, MapperPriorityQueue> mapTaskQueue;
-	
-	//The Data Structure that will be used for Scheduling Tasks
 	private ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue> reduceTaskQueue;
 	
 	/*New Strategy*/
@@ -103,13 +101,22 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
 
 			//List of all the Tasks in the Systems.
-			this.mapTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
-			this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
+			//this.mapTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
+			//this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
 			
-
+			
+			//New Strategy 
+			this.mapperTasks =  Collections.synchronizedMap(new HashMap<String,ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>());
+			this.reducerTasks =  Collections.synchronizedMap(new HashMap<String,ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>());
+			
 			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
-			this.queueofMapTasks = new HashMap<String, TaskMetaData>();
-			this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
+			//this.queueofMapTasks = new HashMap<String, TaskMetaData>();
+			//this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
+			
+			//New Strategy
+			this.mapTaskQueue = new ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>();
+			this.reduceTaskQueue = new ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>();
+			
 
 		} catch (RemoteException | MalformedURLException e) {
 			System.err.println("Could not Register to the RMI Registry");
@@ -141,6 +148,9 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	
 	//TODO: Abhi this strategy is not going to work. This code is wrong.
 	//Get the next MapperTask in Line to be Processed
+	
+	//Fuck Abhi
+	/*
 	public TaskMetaData getNextMapperTaskinLineforNode(String taskTrackerName)
 	{
 		while(!this.mapTasks.isEmpty())
@@ -158,7 +168,10 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 		return null;
 	}
+	*/
 
+	//Fuck Abhi
+	/*
 	//Get the next ReducerTask in-line to be Processed
 	public TaskMetaData getNextReducerTaskinLineforNode(String taskTrackerName)
 	{
@@ -177,7 +190,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 		return null;
 	}
-
+	*/
 
 	//We need to make sure we check-in all the TaskTrackers that send us heart-beat
 	//If we already have added them just ignore otherwise add it to the TaskTrackerInfo List
@@ -215,6 +228,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
+	/*
 	//This method actual picks up the Map and Reduce tasks choosen as per Strategy and asked the TaskTracker to Run it
 	public void assignTasks()
 	{
@@ -269,29 +283,23 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				}
 			}
 		}
-	}
+	}*/
 
-	//Return the Map Tasks
-	public Map<Integer, TaskMetaData> getAllMapTasks()
+	//Called to Queue-Up A Task
+	public void queueUpTask(TaskMetaData taskMetaData)
 	{
-		//We do not want the other people in the world to be able to modified this.
-		return Collections.unmodifiableMap(this.mapTasks);
-	}
-	
-	//Return the Reduce Tasks
-	public Map<Integer, TaskMetaData> getAllReduceTasks()
-	{
-		//We do not want the other people in the world to be able to modified this.
-		return Collections.unmodifiableMap(this.reduceTasks);
-	}
-	
-	//Called to QueueUp A Task
-	public void queueUpTask(String taskTrackerName, TaskMetaData task)
-	{
-		if(task.isMapperTask())
-			this.queueofMapTasks.put(taskTrackerName, task);
+		if(taskMetaData.isMapperTask())
+		{
+			ArrayList<MapperPriorityQueue> temp = Collections.list(this.mapperTasks.get(taskMetaData.getTaskID()).elements());
+			if(temp.get(0)!= null)
+				this.mapTaskQueue.put(taskMetaData, temp.get(0));
+		} 
 		else
-			this.queueofReduceTasks.put(taskTrackerName, task);
+		{
+			ArrayList<ReducerPriorityQueue> temp = Collections.list(this.reducerTasks.get(taskMetaData.getTaskID()).elements());
+			if(temp.get(0)!= null)
+				this.reduceTaskQueue.put(taskMetaData, temp.get(0));
+		}
 	}
 	
 	public static void main(String[] args) 
@@ -306,9 +314,10 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 
 	@Override
-	public Map<Integer, String> makeStrategy() 
+	public void makeStrategy() 
 	{
-		Map<Integer, String> taskStrategy= new HashMap<Integer, String>();
+		/*
+		 * Map<Integer, String> taskStrategy= new HashMap<Integer, String>();
 
 		for (Entry<String, TaskTrackerInfo> entry : taskTrackers.entrySet()) {
 			TaskTrackerInfo tasktracker = entry.getValue();
@@ -335,7 +344,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				}
 			}
 		}
-		return taskStrategy;
+		return taskStrategy;*/
 	}
 
 
@@ -354,7 +363,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	
 	//This function is to the check the status of the Map Phase for a particular Job
 	public SystemConstants.MapJobsStatus checkMapPhaseStatus(int taskID) {
-		TaskMetaData task = this.reduceTasks.get(taskID);
+		TaskMetaData task = Collections.list(this.reducerTasks.get(taskID).keys()).get(0);
 
 		if (task == null) {
 			return SystemConstants.MapJobsStatus.INPROGRESS;
@@ -368,7 +377,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
 		for (TaskProgress mtaskProgress : mapTasksProgress) {
-			if (this.mapTasks.containsKey(mtaskProgress.getTaskID()) && !this.mapTasks.get(mtaskProgress.getTaskID()).isTaskDone())
+			if (this.mapperTasks.containsKey(mtaskProgress.getTaskID()) && 
+					!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone())
 				return SystemConstants.MapJobsStatus.INPROGRESS;
 		}
 
@@ -407,14 +417,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	/**
 	 * @return the reducerTasks
 	 */
-	public Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> getReducerTasks() {
+	public Map<String, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> getReducerTasks() {
 		return reducerTasks;
 	}
 
 	/**
 	 * @param reducerTasks the reducerTasks to set
 	 */
-	public void setReducerTasks(Map<String, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> reducerTasks) {
+	public void setReducerTasks(Map<String, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> reducerTasks) {
 		this.reducerTasks = reducerTasks;
 	}
 

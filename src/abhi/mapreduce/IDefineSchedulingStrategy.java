@@ -14,5 +14,5 @@ import java.util.Map;
  */
 public interface IDefineSchedulingStrategy extends Remote {
 
-	public Map<Integer, String> makeStrategy();
+	public void makeStrategy();
 }
