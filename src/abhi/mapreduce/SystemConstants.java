@@ -59,6 +59,10 @@ public class SystemConstants {
 	public static final String MAX_MAPPER_SLOTS = "MAX.MAPPER.SLOTS";	
 	public static final String MAX_REDUCER_SLOTS = "MAX.REDUCER.SLOTS";
 	
+	
+    public static final String USER_CLASS_PATH="user.class_path";
+
+    public static final String RMI_CODE_BASE="rmi.code.base";
 
 	
 	public static String getConfig(String configName) 
