@@ -238,5 +238,20 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	}
 
 
+	@Override
+	public boolean registrFileName(String filename) throws RemoteException {
+		if(fileList.contains(filename)){
+			System.out.println("Cannot Register FileName : " + filename);
+			System.out.println("Alreay exist.");
+			return false;
+		} else {
+			fileList.add(filename);
+			return true;
+			
+		}
+		
+	}
+
+
 
 }

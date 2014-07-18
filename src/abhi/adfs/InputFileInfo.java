@@ -18,6 +18,39 @@ public class InputFileInfo  implements Serializable{
 	private Integer paritionNumber;
 	private boolean valid;
 	
+	public boolean validateFiles(){
+		
+		// Building all file list for checking.
+		List<String> allFileList = new ArrayList<String>();
+		for(Entry<String,List<String>> entry : getPartitions().entrySet()){
+			allFileList.addAll(entry.getValue());
+		}
+		
+		boolean checking = true;
+		for(int i = 1; i <+ paritionNumber; i ++){
+			String name = fileName+"_" +i;
+			if( !allFileList.contains(name)){
+				checking = false;
+				break;
+			}
+		}
+		
+		if( checking){
+			System.out.println("Validation Passed!");
+			deadNodes.clear();
+			valid = true;
+		} else {
+			System.out.println("Error while validatation.");
+			System.out.println("Filename " + fileName + " cannot be used.");
+			valid = false;
+		}
+		
+		return valid;
+		
+		
+		
+		
+	}
 	
 	public String fileExistInDataNode(String fileName){
 		for(Entry<String,List<String>> entry : getPartitions().entrySet()){

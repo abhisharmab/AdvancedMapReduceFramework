@@ -20,6 +20,7 @@ public interface DataNode extends Remote {
 	public String retrieve(String filename) throws RemoteException;
 	public boolean isExist(String filename) throws RemoteException;
 	public List<String> getFileList() throws RemoteException;
+	public boolean registrFileName(String filename) throws RemoteException;
 	public boolean ping() throws RemoteException;
 	
 	// This is for testing

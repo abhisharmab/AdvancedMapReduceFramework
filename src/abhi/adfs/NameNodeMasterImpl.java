@@ -40,7 +40,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	
 	// This will keep track of the file information.
 	private static List<InputFileInfo> list_fileInfo;
-	private ConcurrentHashMap <String, DataNode> list_dataNode;
+	private static ConcurrentHashMap <String, DataNode> list_dataNode;
 	
 	private static Integer rotationIndex;
 	
@@ -96,6 +96,23 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
             //Registry registry = LocateRegistry.getRegistry(ipAddress, Integer.parseInt(portNumber));
             Naming.rebind(master_Name, master);
             System.out.println("NameNodeMaster: Ready...");
+            
+            
+            // This is for periodical ping on to the dataNodes that are registered.
+            Thread t = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                        	checkDataNodes();
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
         }
         catch (Exception e)
         {
@@ -173,36 +190,14 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 
 	@Override
 	public List<String> getDataNodes() throws RemoteException {
-		// TODO Auto-generated method stub
-		 
-		List<String> live_DataNode = new ArrayList<String>();
-		Iterator iter = list_dataNode.entrySet().iterator();
-		while(iter.hasNext()){
-			@SuppressWarnings("unchecked")
-			Entry<String, DataNode> dn = (Entry<String, DataNode>) iter.next();
 		
-			try{
-				if(dn.getValue().ping()){
-					live_DataNode.add(dn.getKey());
-				} 
-			} catch(RemoteException e){
-				System.out.println("There are dead dataNode this should be addressed");
-				String deadNode = dn.getKey();
-				iter.remove();
-				replicateFiles(dn.getKey());
-				
-				
-			}
-			
-			
-		}
-		
-		
-		System.out.println(live_DataNode.toString());
-		return live_DataNode;
+		System.out.println("getDataNodes()");
+		System.out.println(list_dataNode.toString());
+		List<String> dataNodes = new ArrayList<String>(list_dataNode.keySet());
+		return dataNodes;
 	}
 	
-	public void replicateFiles(String dataNodeName){
+	public static void replicateFiles(String dataNodeName){
 		System.out.println("This Data node is dead  " + dataNodeName);
 		System.out.println("Starting the replication process.");
 		
@@ -261,7 +256,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 		
 		
 	}
-	public List<InputFileInfo> needValidations(String dataNode){
+	public static List<InputFileInfo> needValidations(String dataNode){
 		List<InputFileInfo> list = new ArrayList<InputFileInfo>();
 		for(InputFileInfo info : list_fileInfo){
 			if(info.isPartitionedInDataNode(dataNode)){
@@ -275,19 +270,18 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 
 	@Override
 	public boolean checkFileExistance(String fileName) throws RemoteException {
-		// TODO Auto-generated method stub
 		
-		System.out.println("checkFileExistance   " + fileName);
-		
-		for(InputFileInfo info : list_fileInfo){
-			System.out.println("Info name  " + info.getFileName());
-		}
+//		System.out.println("checkFileExistance   " + fileName);
+//		
+//		for(InputFileInfo info : list_fileInfo){
+//			System.out.println("Info name  " + info.getFileName());
+//		}
 		
 		
 		for(InputFileInfo info : list_fileInfo){
 			System.out.println("Info name  " + info.getFileName());
 			if(info.getFileName().equals(fileName)){
-				return true;
+				return info.isValid();
 			}
 				
 		}
@@ -358,7 +352,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 		return true;
 	}
 	
-	public Entry<String,DataNode> getNextDataNodeEntry(){
+	public static Entry<String,DataNode> getNextDataNodeEntry(){
 		rotationIndex++;
 		Integer index = rotationIndex % list_dataNode.size(); 
 		System.out.println("rotationIndex  " + rotationIndex);
@@ -369,5 +363,30 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 				new AbstractMap.SimpleEntry<String,DataNode>(keys.get(index), list_dataNode.get(keys.get(index)));
 		return entry;
 		
+	}
+	
+	public static void checkDataNodes(){
+		
+		Iterator<Entry<String, DataNode>> iter = list_dataNode.entrySet().iterator();
+		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
+			Entry<String, DataNode> dn = (Entry<String, DataNode>) iter.next();
+		
+			try{
+				if(dn.getValue().ping()){
+					// Debug 
+					System.out.println(dn.getKey() + " is alive");
+					continue;
+				} 
+			} catch(RemoteException e){
+				System.out.println("There are dead dataNode this should be addressed");
+				String deadNode = dn.getKey();
+				iter.remove();
+				replicateFiles(deadNode);
+			}
+			
+			
+		}
+				
 	}
 }
