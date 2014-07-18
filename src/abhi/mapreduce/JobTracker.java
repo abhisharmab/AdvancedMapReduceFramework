@@ -90,11 +90,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			this.jtServiceProvider = new JobTrackerServiceProvider();
 			Naming.rebind(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME), this.jtServiceProvider);
 
-			//TODO: Abhi. Get the RemoteReference of the Name Node Registry 
-			/*int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
+			 
+			int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
 			Registry nameNodermiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),nameNodeRegistryPort);
 			this.nameNodeReference = (NameNodeManager) nameNodermiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
-			*/
+			
 
 			//Initialize the Data Structures
 			this.jobIDCounter = 1;
@@ -107,15 +107,15 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			//this.mapTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
 			//this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
 			
+			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
+			//this.queueofMapTasks = new HashMap<String, TaskMetaData>();
+			//this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
 			
 			//New Strategy 
 			this.mapperTasks =  Collections.synchronizedMap(new HashMap<Integer,ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>());
 			this.reducerTasks =  Collections.synchronizedMap(new HashMap<Integer,ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>());
 			
-			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
-			//this.queueofMapTasks = new HashMap<String, TaskMetaData>();
-			//this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
-			
+
 			//New Strategy
 			this.mapTaskQueue = new ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>();
 			this.reduceTaskQueue = new ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>();
@@ -127,15 +127,16 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		        makeStrategy();
 		      }
 		    });
+		    
 		    thread.setDaemon(true);
 		    schExecutor.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
 		    //Scheduler Strategy 
 
-		} catch (RemoteException | MalformedURLException e) {
+		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			System.err.println("Could not Register to the RMI Registry");
 			e.printStackTrace();
-		}
-
+		} 
+		
 	}
 	
 	//Get a particular Job Info
@@ -144,7 +145,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		return this.jobs.get(jobID);
 	}
 	
-
 
 	//Methods for JobTracker to assign new TaskIDs and JobIDs
 	public int nextJobId()
