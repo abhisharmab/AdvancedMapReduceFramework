@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import abhi.adfs.NameNodeMaster;
+import abhi.adfs.NameNodeSlave;
 
 /**
  * @author abhisheksharma
@@ -35,16 +36,15 @@ public class JobClient implements IClientServices {
 	//Remote Reference of the JobTracker Services to that we can Call Services upon it
 	private IJobTrackerServices jobTrackerServiceProvider;
 	private NameNodeMaster nameNodeMasterReference; 
-	Registry rmiRegistry = null;
+	private NameNodeSlave nameNodeSlaveReference;
 	
 	public JobClient()
 	{
 		try
 		{
-			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REGISTRY_PORT));
-			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
-			this.jobTrackerServiceProvider = (IJobTrackerServices) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME));
-		
+			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_PORT));
+			Registry jobTrackerRmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_HOST),registryPort);
+			this.jobTrackerServiceProvider = (IJobTrackerServices) jobTrackerRmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME));
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
@@ -54,9 +54,9 @@ public class JobClient implements IClientServices {
 		
 		try
 		{
-			//Check with Douglas
-			this.nameNodeMasterReference = (NameNodeMaster)rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
-			
+			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
+			Registry nameNodeRmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),registryPort);
+			this.nameNodeMasterReference = (NameNodeMaster) nameNodeRmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
@@ -67,6 +67,7 @@ public class JobClient implements IClientServices {
 	
 	public static void main(String[] args)
 	{
+		JobClient jobClient = new JobClient();
 	}
 
 	@Override

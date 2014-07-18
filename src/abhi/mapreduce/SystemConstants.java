@@ -53,8 +53,14 @@ public class SystemConstants {
 	public static final String NAMENODE_SERVICE_NAME = "NAMENODE.SERVICE";
 	public static final String ADFS_DIRECTORY="ADFS.DIRECTORY"; 
 	public static final String JAR_DIRECTORY="JAR.DIRECTORY";
+	
+	
 	public static final String NAMENODE_REGISTRY_HOST = "NAMENODE.REGISTRY.HOST";
 	public static final String NAMENODE_REGISTRY_PORT = "NAMENODE.REGISTRY.PORT";
+	
+	
+	public static final String JOBTRACKER_REGISTRY_HOST = "JOBTRACKER.REGISTRY.HOST";
+	public static final String JOBTRACKER_REGISTRY_PORT = "JOBTRACKER.REGISTRY.PORT";
 	
 	public static final String MAX_MAPPER_SLOTS = "MAX.MAPPER.SLOTS";	
 	public static final String MAX_REDUCER_SLOTS = "MAX.REDUCER.SLOTS";

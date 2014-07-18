@@ -32,6 +32,7 @@ public class Test1 {
 			e.printStackTrace();
 		}
 
+		JobClient j = new JobClient();
 		
 		System.out.println(firstName + lastName);
 	}
