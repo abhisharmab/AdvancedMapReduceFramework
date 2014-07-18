@@ -22,7 +22,8 @@ public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VO
 	
 	private OutputFormat<KOUT, VOUT> outFormat;
 	
-	public ReducerOutputCollector(String outdirectory, String separator, OutputFormat<KOUT, VOUT> outFormat) {
+	public ReducerOutputCollector(String outdirectory, String separator,
+			OutputFormat<KOUT, VOUT> outFormat) {
 		super(outdirectory, separator);
 		this.outFormat = outFormat;
 		try 

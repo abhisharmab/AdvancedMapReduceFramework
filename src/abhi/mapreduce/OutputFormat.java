@@ -23,13 +23,6 @@ public abstract class OutputFormat<KOUT, VOUT>  implements Serializable{
 
 	public abstract String format(KOUT key, VOUT value);
 	
-	//TODO: Abhi
-	//Implement code to check if the OUTPUT directory already exists. If yes then we cannot run the JOB 
-	//This is as feature of Hadoop
-	public boolean checkifOutputDirectoryExists()
-	{
-		return false;
-		//Need to implement this functionality just as MapReduce
-	}
+
 	
 }

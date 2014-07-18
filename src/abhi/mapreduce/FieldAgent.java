@@ -36,7 +36,7 @@ public abstract class FieldAgent {
 	  
 	  protected TaskTrackerServices taskServiceProviderReference; //Task Service Provider Reference
 
-	  protected List<String> createdFiles;
+	  protected List<String> createdFiles; // List of created Files 
 	  
 
 	public List<String> getCreatedFiles() {
@@ -129,7 +129,7 @@ public abstract class FieldAgent {
 	        	taskProgress.setPercentageCompleted(this.getPercentage());
 
 	        	taskProgress.setStatus(SystemConstants.TaskStatus.SUCCEEDED);
-	        	taskProgress.setCreatedFileName(getCreatedFiles());
+	        	taskProgress.setCreatedFileNames(getCreatedFiles());
 
 	        /* set the current time stamp */
 	    	  taskProgress.setLatestUpdateTimeStamp(System.currentTimeMillis());

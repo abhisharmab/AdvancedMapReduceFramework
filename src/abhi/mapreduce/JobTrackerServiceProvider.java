@@ -183,4 +183,12 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		return this.jobTracker.checkMapPhaseStatus(taskID);
 	}
 
+	
+	
+	@Override
+	public List<TaskProgress> getCompletedMapTasks(int reducerTaskID)
+			throws RemoteException {
+		return this.jobTracker.getCompletedMapTasks(reducerTaskID);
+	}
+
 }

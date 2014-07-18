@@ -354,6 +354,9 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		 	//1.1 As the appropriate Slave to move the JAR to all the NODES
 		
 		//2. Construct fresh objects of MapTask and ReduceTasks (TaskMetaData basically)
+			// DKREW : When making the ReduceTask(TaskMetaData) add in the partition Number
+			// if the user wants 3 partition
+			// TeskMetaData.setPartitionNumber(1)..........
 		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
 		//4. Add this JOb into the Jobs Data Structure 
 		//5. Set the status of the Job In-Progress
@@ -384,6 +387,23 @@ public class JobTracker implements IDefineSchedulingStrategy{
 
 		// if all map tasks finished, then return FINISHED
 		return SystemConstants.MapJobsStatus.SUCCEEDED;
+	}
+	
+	
+	
+	// This will return the list of TaskProcess that is related to the reducer.
+	public List<TaskProgress> getCompletedMapTasks(int reducerTaskID){
+		TaskMetaData task = this.reduceTasks.get(reducerTaskID);
+		JobInfo job = this.jobs.get(task.getJobID());
+		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
+		for (TaskProgress mtaskProgress : mapTasksProgress) {
+			if (!this.mapTasks.get(mtaskProgress.getTaskID()).isTaskDone()){
+				System.out.println("There are map tasks are not complete.");
+				return null;
+			}
+				
+		}
+		return mapTasksProgress;
 	}
 
 	/**

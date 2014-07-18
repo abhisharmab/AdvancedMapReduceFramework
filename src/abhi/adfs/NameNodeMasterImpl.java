@@ -90,8 +90,8 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
     		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
             ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
             
-        	master_Name = "NameNodeMaster";
-            System.out.println("Registering NameNodeMaster as : NameNodeMaster");
+        	master_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
+            System.out.println("Registering NameNodeMaster as : " + master_Name);
             NameNodeMasterImpl master = new NameNodeMasterImpl();
             //Registry registry = LocateRegistry.getRegistry(ipAddress, Integer.parseInt(portNumber));
             Naming.rebind(master_Name, master);

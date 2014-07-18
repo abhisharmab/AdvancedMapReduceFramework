@@ -38,9 +38,11 @@ public class TaskProgress implements Serializable {
 	//Latest TimeStamp when this was updated
 	private long latestUpdateTimeStamp;
 	
+	// Name of the TaskTracker where the task lives
 	private String taskTrackerName;
 	
-	private List<String> createdFileName;
+	// Name of the files that has been created.
+	private List<String> createdFileNames;
 	
 	public TaskProgress(int taskId, TaskType type)
 	{
@@ -127,12 +129,12 @@ public class TaskProgress implements Serializable {
 		this.taskTrackerName = taskTrackerName;
 	}
 
-	public List<String> getCreatedFileName() {
-		return createdFileName;
+	public List<String> getCreatedFileNames() {
+		return createdFileNames;
 	}
 
-	public void setCreatedFileName(List<String> createdFileName) {
-		this.createdFileName = createdFileName;
+	public void setCreatedFileNames(List<String> createdFileNames) {
+		this.createdFileNames = createdFileNames;
 	}
 
 	
