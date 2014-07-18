@@ -2,7 +2,9 @@ package abhi.mapreduce;
 
 import java.io.File;
 
-public class Utility {
+//Reference: http://docs.oracle.com/javase/7/docs/api/java/lang/ProcessBuilder.html#ProcessBuilder(java.lang.String...)
+
+public class JVMUtility {
 
   public static void startProcessinJVM(String[] args) throws Exception {
 	

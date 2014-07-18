@@ -5,6 +5,7 @@ package abhi.mapreduce;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.Remote;
 
 /**
  * @author abhisheksharma
@@ -17,7 +18,7 @@ import java.io.IOException;
  * These are the set of necessary services that must be provided by the JobClient
  *
  */
-public interface IClientServices {
+public interface IClientServices extends Remote {
 		
 	//Used to submit job to the JobClient which will further submit it to the Job Tracker
 	boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException;

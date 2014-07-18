@@ -75,10 +75,10 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			Naming.rebind(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME), this.jtServiceProvider);
 
 			//TODO: Abhi. Get the RemoteReference of the Name Node Registry 
-			int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
+			/*int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
 			Registry nameNodermiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),nameNodeRegistryPort);
 			this.nameNodeReference = (NameNodeManager) nameNodermiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
-
+			*/
 
 			//Initialize the Data Structures
 			this.jobIDCounter = 1;
@@ -92,7 +92,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			this.queueofMapTasks = new HashMap<String, TaskMetaData>();
 			this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
 
-		} catch (RemoteException | MalformedURLException | NotBoundException e) {
+		} catch (RemoteException | MalformedURLException e) {
 			System.err.println("Could not Register to the RMI Registry");
 			e.printStackTrace();
 		}
@@ -119,7 +119,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		return ++this.taskIDCounter;
 	}
 
-
+	
+	//TODO: Abhi this strategy is not going to work. This code is wrong.
 	//Get the next MapperTask in Line to be Processed
 	public TaskMetaData getNextMapperTaskinLineforNode(String taskTrackerName)
 	{
