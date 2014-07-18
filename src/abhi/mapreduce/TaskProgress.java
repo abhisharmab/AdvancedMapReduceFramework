@@ -4,6 +4,7 @@
 package abhi.mapreduce;
 
 import java.io.Serializable;
+import java.util.List;
 
 import abhi.mapreduce.SystemConstants.TaskStatus;
 import abhi.mapreduce.SystemConstants.TaskType;
@@ -39,7 +40,7 @@ public class TaskProgress implements Serializable {
 	
 	private String taskTrackerName;
 	
-	private String mapFileName;
+	private List<String> createdFileName;
 	
 	public TaskProgress(int taskId, TaskType type)
 	{
@@ -126,12 +127,14 @@ public class TaskProgress implements Serializable {
 		this.taskTrackerName = taskTrackerName;
 	}
 
-	public String getMapFileName() {
-		return mapFileName;
+	public List<String> getCreatedFileName() {
+		return createdFileName;
 	}
 
-	public void setMapFileName(String mapFileName) {
-		this.mapFileName = mapFileName;
+	public void setCreatedFileName(List<String> createdFileName) {
+		this.createdFileName = createdFileName;
 	}
+
+	
 
 }

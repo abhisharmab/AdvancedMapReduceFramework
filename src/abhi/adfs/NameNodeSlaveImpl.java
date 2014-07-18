@@ -90,8 +90,8 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
     	rotationIndex = 1;
     	
     	// Grab rmiregistry information
-		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
-        ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
+		portNumber = SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT);
+        ipAddress = SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST);
 		
         //Initialize lists
 		list_DataNode = new LinkedHashMap<String, DataNode>();

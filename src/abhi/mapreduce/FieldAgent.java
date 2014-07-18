@@ -9,6 +9,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,14 +36,18 @@ public abstract class FieldAgent {
 	  
 	  protected TaskTrackerServices taskServiceProviderReference; //Task Service Provider Reference
 
-	  protected String createdFileName;
+	  protected List<String> createdFiles;
 	  
-	  public String getCreatedFileName() {
-		return createdFileName;
+
+	public List<String> getCreatedFiles() {
+		if(createdFiles == null){
+			createdFiles = new ArrayList<String>();
+		}
+		return createdFiles;
 	}
 
-	public void setCreatedFileName(String createdFileName) {
-		this.createdFileName = createdFileName;
+	public void setCreatedFiles(List<String> createdFiles) {
+		this.createdFiles = createdFiles;
 	}
 
 	public FieldAgent(int taskID, String infile, String outfile, String taskTrackerServiceName,
@@ -123,7 +129,7 @@ public abstract class FieldAgent {
 	        	taskProgress.setPercentageCompleted(this.getPercentage());
 
 	        	taskProgress.setStatus(SystemConstants.TaskStatus.SUCCEEDED);
-	        	taskProgress.setMapFileName(getCreatedFileName());
+	        	taskProgress.setCreatedFileName(getCreatedFiles());
 
 	        /* set the current time stamp */
 	    	  taskProgress.setLatestUpdateTimeStamp(System.currentTimeMillis());

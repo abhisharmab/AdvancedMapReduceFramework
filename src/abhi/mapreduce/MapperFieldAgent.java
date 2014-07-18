@@ -153,7 +153,7 @@ public class MapperFieldAgent extends FieldAgent {
 		        if (bw != null)
 		          try {
 		            bw.close();
-		            setCreatedFileName(filename);
+		            getCreatedFiles().add(filename);
 		          } catch (IOException e) {
 		            e.printStackTrace();
 		            System.exit(0);
