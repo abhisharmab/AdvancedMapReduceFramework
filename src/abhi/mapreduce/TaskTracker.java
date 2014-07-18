@@ -53,10 +53,10 @@ public class TaskTracker {
 	private HashMap<Integer, TaskProgress> statusofAllTasks;
 
 	//The synchronized function needs a Wrapper. Since it works only on Objects
-	private Integer countofRunningMapperFieldAgents; 
+	public Integer countofRunningMapperFieldAgents; 
 
 	//The synchronized function needs a Wrapper. Since it works only on Objects
-	private  Integer countofRunningReducerFieldAgents;
+	public  Integer countofRunningReducerFieldAgents;
 
 	public int mapperSlotCapacity;
 	public int reducerSlotCapacity;

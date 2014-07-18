@@ -35,12 +35,11 @@ public class MapperFieldAgent extends FieldAgent {
 	//How to parse the Key-Value Pair
 	private InputFormat inputFormat;
 
-	public MapperFieldAgent(int taskID, String infile, String outfile,
-			String taskTrackerServiceName, String mapper, 
+	public MapperFieldAgent(int taskID, String infile, String outfile, String mapper, 
 			String partitioner, String inputFormat, int numReducer)
 	{
 
-		super(taskID, infile, outfile, taskTrackerServiceName, SystemConstants.TaskType.MAPPER);
+		super(taskID, infile, outfile, SystemConstants.TaskType.MAPPER);
 
 		this.offset = 0;
 		this.reducerNum = numReducer;
@@ -174,7 +173,7 @@ public class MapperFieldAgent extends FieldAgent {
 	}
 
 	public static void main(String[] args) {
-		if (args.length !=8) {
+		if (args.length !=7) {
 			System.out.println("Illegal arguments");
 		}
 		int taskID = Integer.parseInt(args[0]);
@@ -188,14 +187,12 @@ public class MapperFieldAgent extends FieldAgent {
 		}
 		String inputFile = args[1];
 		String outputFile = args[2];
-		String taskTrackerServiceName = args[3];
-		String mapper = args[4];
-		String partitioner = args[5];
-		String inputFormat = args[6];
-		int reducerNum = Integer.parseInt(args[7]);
+		String mapper = args[3];
+		String partitioner = args[4];
+		String inputFormat = args[5];
+		int reducerNum = Integer.parseInt(args[6]);
 
-		MapperFieldAgent mFA = new MapperFieldAgent(taskID, inputFile, outputFile,
-				taskTrackerServiceName, mapper, partitioner, inputFormat, reducerNum);
+		MapperFieldAgent mFA = new MapperFieldAgent(taskID, inputFile, outputFile, mapper, partitioner, inputFormat, reducerNum);
 		mFA.run();
 	}
 

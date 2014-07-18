@@ -54,13 +54,12 @@ public class ReducerFieldAgent extends FieldAgent{
 	private double totalEntryNumber;
 	private double processedEntryNumber;
 	
-	public ReducerFieldAgent(int taskID, String outfile,
-			String taskTrackerServiceName, String reducer, 
+	public ReducerFieldAgent(int taskID, String outfile, String reducer, 
 			String outputFormat, int partitionedNumber)
 	{
 
 
-		super(taskID, null, outfile, taskTrackerServiceName, SystemConstants.TaskType.REDUCER);
+		super(taskID, null, outfile, SystemConstants.TaskType.REDUCER);
 		this.partitionedNumber = partitionedNumber;
 		try {
 
@@ -300,7 +299,7 @@ public class ReducerFieldAgent extends FieldAgent{
 	}
 	public static void main(String[] args) {
 		
-		if (args.length !=6) {
+		if (args.length !=5) {
 			System.out.println("Illegal arguments");
 		}
 		int taskID = Integer.parseInt(args[0]);
@@ -313,17 +312,14 @@ public class ReducerFieldAgent extends FieldAgent{
 			System.exit(0);
 		}
 		String outputFile = args[1];
-		String taskTrackerServiceName = args[2];
-		String reducer = args[3];
-		String outputFormat = args[4];
-		int partitionedNumber = Integer.parseInt(args[5]);
+		String reducer = args[2];
+		String outputFormat = args[3];
+		int partitionedNumber = Integer.parseInt(args[4]);
 		
 		
+	
 		
-		
-		
-		ReducerFieldAgent fieldAgent= new ReducerFieldAgent(taskID, outputFile,
-				taskTrackerServiceName, reducer, outputFormat, partitionedNumber);
+		ReducerFieldAgent fieldAgent= new ReducerFieldAgent(taskID, outputFile,reducer, outputFormat, partitionedNumber);
 		fieldAgent.run();
 	}
 

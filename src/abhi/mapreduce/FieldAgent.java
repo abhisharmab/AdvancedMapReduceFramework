@@ -50,7 +50,7 @@ public abstract class FieldAgent {
 		this.createdFiles = createdFiles;
 	}
 
-	public FieldAgent(int taskID, String infile, String outfile, String taskTrackerServiceName,
+	public FieldAgent(int taskID, String infile, String outfile,
 	          SystemConstants.TaskType type) {
 
 	    this.taskID = taskID;
@@ -66,8 +66,8 @@ public abstract class FieldAgent {
 	    }
 
 	    try {
-	      Registry reg = LocateRegistry.getRegistry("TaskTracker_"+ registryHostName, 1099);
-	      taskServiceProviderReference = (TaskTrackerServices) reg.lookup(taskTrackerServiceName);
+	      Registry reg = LocateRegistry.getRegistry(registryHostName, 1099);
+	      taskServiceProviderReference = (TaskTrackerServices) reg.lookup("TaskTracker_"+ registryHostName);
 	    } catch (RemoteException e) {
 	      e.printStackTrace();
 	    } catch (NotBoundException e) {

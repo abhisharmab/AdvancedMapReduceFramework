@@ -338,6 +338,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				{
 					//Get the relevant TaskTracker from the Queue who can Execute this Job
 					TaskTrackerInfo taskTrackerInfo = entry.getValue().poll();
+					
+					//Send the Task to the Appropriate TaskTracker
 					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
 				}
 				catch(Exception e)

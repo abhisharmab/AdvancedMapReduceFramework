@@ -78,7 +78,7 @@ public class TaskMetaData implements Serializable{
 	    this.reducer = reducer; 
 	    this.partitioner = partitioner;
 	    this.reducerNum = reducerNum;
-	    this.paritionNumber = paritionNumber;
+	    this.setParitionNumber(paritionNumber);
 	  }
 
 	  public TaskMetaData(int jobID,int taskID, TaskType type) {
@@ -252,5 +252,19 @@ public class TaskMetaData implements Serializable{
 	 */
 	public void setReducerNum(int reducerNum) {
 		this.reducerNum = reducerNum;
+	}
+
+	/**
+	 * @return the paritionNumber
+	 */
+	public int getParitionNumber() {
+		return paritionNumber;
+	}
+
+	/**
+	 * @param paritionNumber the paritionNumber to set
+	 */
+	public void setParitionNumber(int paritionNumber) {
+		this.paritionNumber = paritionNumber;
 	}
 	}
