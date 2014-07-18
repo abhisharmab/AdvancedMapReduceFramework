@@ -38,8 +38,10 @@ public class TaskProgress implements Serializable {
 	//Latest TimeStamp when this was updated
 	private long latestUpdateTimeStamp;
 	
+	// Name of the TaskTracker where the task lives
 	private String taskTrackerName;
 	
+	// Name of the files that has been created.
 	private List<String> createdFileName;
 	
 	public TaskProgress(int taskId, TaskType type)

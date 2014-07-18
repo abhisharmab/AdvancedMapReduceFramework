@@ -60,9 +60,11 @@ public class TaskMetaData implements Serializable{
 	  
 	  private int reducerNum;
 	  
+	  private int paritionNumber;
+	  
 	  public TaskMetaData(int jobID, int taskID, TaskType type, TaskProgress taskProgress,
 			  String inputPath,String outputPath, String inputFormat, String outputFormat,
-			  String mapper, String reducer, String partitioner,  int reducerNum) {
+			  String mapper, String reducer, String partitioner,  int reducerNum, int paritionNumber) {
 	    this.jobID = jobID;
 	    this.taskID = taskID;
 	    this.taskType = type;
@@ -76,6 +78,7 @@ public class TaskMetaData implements Serializable{
 	    this.reducer = reducer; 
 	    this.partitioner = partitioner;
 	    this.reducerNum = reducerNum;
+	    this.paritionNumber = paritionNumber;
 	  }
 
 	  public TaskMetaData(int jobID,int taskID, TaskType type) {
