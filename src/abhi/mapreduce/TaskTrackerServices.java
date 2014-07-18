@@ -25,7 +25,7 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public boolean executeTask() {
+	public boolean executeTask(TaskMetaData taskMetaData) {
 		// TODO Auto-generated method stub
 		return false;
 	}

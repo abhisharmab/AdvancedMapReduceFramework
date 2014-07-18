@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 public interface ITaskTrackerServices extends Remote{
 
 	//This is an execution Signal send to the TaskTracker by the JobTracker
-	public boolean executeTask() throws RemoteException; 
+	public boolean executeTask(TaskMetaData taskMetaData) throws RemoteException; 
 	
 	//This is for each of the worker on the TaskManager side to update status of the TaskTracker
 	public void updateFieldAgentStatus(Object status) throws RemoteException; 

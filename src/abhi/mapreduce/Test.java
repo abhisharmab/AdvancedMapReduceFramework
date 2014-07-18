@@ -4,6 +4,7 @@
 package abhi.mapreduce;
 
 import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,14 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Test {
 	
 	
-	private ConcurrentHashMap<String, PriorityQueue<TestClass>> tQ;
-	private ConcurrentHashMap<String, Integer>  x;
+	private ConcurrentHashMap<TestClass, PriorityQueue<TestClass>> tQ;
 
 	
 	public Test()
 	
 	{			
-		tQ = new ConcurrentHashMap<String, PriorityQueue<TestClass>>();
+		tQ = new ConcurrentHashMap<TestClass, PriorityQueue<TestClass>>();
 	}
 	/**
 	 * @param args
@@ -53,7 +53,7 @@ public class Test {
 		
 		instance1.add(t1);
 		
-		t.tQ.put("A", instance1);
+		t.tQ.put(t1, instance1);
 		
 		PriorityQueue<TestClass> instance2 = new PriorityQueue<TestClass>(10, new Comparator<TestClass>(){
             
@@ -65,11 +65,18 @@ public class Test {
 		
 		instance2.add(t1);
 		
-		t.tQ.put("B", instance2);
+		t.tQ.put(t1, instance2);
 		
 		
 		t1.setupTest(100);
 		
+		
+		for(Entry<TestClass, PriorityQueue<TestClass>> entry : t.tQ.entrySet())
+		{
+			TestClass te = entry.getKey();
+			int y = te.getTest();
+			int x1 =0;
+		}
 		 @SuppressWarnings("static-access")
 		int x = t.tQ.get("A").peek().getTest();
 		int y = t.tQ.get("B").peek().getTest();

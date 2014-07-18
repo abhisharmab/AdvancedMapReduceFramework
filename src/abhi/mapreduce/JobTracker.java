@@ -18,6 +18,9 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import abhi.adfs.NameNodeManager;
 
@@ -117,6 +120,16 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			this.mapTaskQueue = new ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>();
 			this.reduceTaskQueue = new ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>();
 			
+			//Scheduler Strategy 
+		    ScheduledExecutorService schExecutor = Executors.newScheduledThreadPool(3);
+		    Thread thread = new Thread(new Runnable() {
+		      public void run() {
+		        makeStrategy();
+		      }
+		    });
+		    thread.setDaemon(true);
+		    schExecutor.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
+		    //Scheduler Strategy 
 
 		} catch (RemoteException | MalformedURLException e) {
 			System.err.println("Could not Register to the RMI Registry");
@@ -315,35 +328,56 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	@Override
 	public void makeStrategy() 
 	{
-		/*
-		 * Map<Integer, String> taskStrategy= new HashMap<Integer, String>();
-
-		for (Entry<String, TaskTrackerInfo> entry : taskTrackers.entrySet()) {
-			TaskTrackerInfo tasktracker = entry.getValue();
-
-			synchronized (tasktracker) {
-				// fill up all the available map computer power
-				if (tasktracker.getNumOfMaps() > 0) {
-					int slotnum = tasktracker.getNumOfMaps();
-
-					TaskMetaData task = null;
-					for (int i = 0; i < slotnum && (task = this.getNextMapperTaskinLineforNode(tasktracker.getTaskTrackerName())) != null; i++) {
-						taskStrategy.put(task.getTaskID(), tasktracker.getTaskTrackerName());
-					}
+		//Try to schedule Mapper Tasks
+		for(Entry<TaskMetaData, MapperPriorityQueue> entry: this.mapTaskQueue.entrySet())
+		{
+			if(entry.getValue().peek().getNumOfMaps() > 0)
+			{
+				boolean result = false;
+				try
+				{
+					//Get the relevant TaskTracker from the Queue who can Execute this Job
+					TaskTrackerInfo taskTrackerInfo = entry.getValue().poll();
+					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
 				}
-
-				// try to use all the reduce compute power
-				if (tasktracker.getNumOfReduces() > 0) {
-					int slotnum = tasktracker.getNumOfReduces();
-
-					TaskMetaData task = null;
-					for (int i = 0; i < slotnum && (task = this.getNextReducerTaskinLineforNode(tasktracker.getTaskTrackerName())) != null; i++) {
-						taskStrategy.put(task.getTaskID(), tasktracker.getTaskTrackerName());
-					}
+				catch(Exception e)
+				{
+					System.out.println("Could not execute Mapper Task");
+				}
+				if(result)
+					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
+				else
+				{
+					this.mapTaskQueue.put(entry.getKey(), entry.getValue());
 				}
 			}
 		}
-		return taskStrategy;*/
+		
+		//Try to schedule the Reducer Tasks
+		for(Entry<TaskMetaData, ReducerPriorityQueue> entry: this.reduceTaskQueue.entrySet())
+		{
+			if(entry.getValue().peek().getNumOfReduces() > 0)
+			{
+				boolean result = false;
+				try
+				{
+					//Get the relevant TaskTracker from the Queue who can Execute this Job
+					TaskTrackerInfo taskTrackerInfo = entry.getValue().poll();
+					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
+				}
+				catch(Exception e)
+				{
+					System.out.println("Could not execute Reduce Task");
+				}
+				if(result)
+					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
+				else
+				{
+					this.reduceTaskQueue.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+
 	}
 
 
