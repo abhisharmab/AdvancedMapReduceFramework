@@ -35,7 +35,6 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 		if(status instanceof TaskProgress)
 		{
 			TaskProgress progress = (TaskProgress) status;
-			
 			this.taskTrackerReference.updateFieldAgentStatus(progress);
 		}
 		
