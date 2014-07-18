@@ -17,7 +17,7 @@ public class Test {
 		// TODO Auto-generated method stub
 		String[] args1 = new String[] {Test1.class.getName(), "Abhishek", "Sharma"};
 		try {
-			Utility.startProcessinJVM(args1, 10);
+			Utility.startProcessinJVM(args1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
