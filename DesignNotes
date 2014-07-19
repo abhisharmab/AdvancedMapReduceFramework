@@ -1,3 +1,9 @@
+-- JobClient has to Block until job is done 
+-- Has to get the Results and then Push it to the Directory the User Requested 
+-- JObClient will trigger the moving of JAR FILE
+-- Extract Jar File into the Class File (The TaskTracker Shall do it when it gets and EXECUTEJOB request)
+
+
 //TODO: Abhi
 (Search for this that needs to be implemented)
 
