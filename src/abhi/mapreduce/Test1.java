@@ -25,16 +25,18 @@ public class Test1 {
 		
 		PrintStream out;
 		try {
-			out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "tasklog")));
+			out = new PrintStream(new FileOutputStream(new File("tasklog")));
 			System.setOut(out);
+			System.out.println(firstName + lastName);
+			out.flush();
+			out.close();
+		
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		JobClient j = new JobClient();
-		
-		System.out.println(firstName + lastName);
+
 	}
 
 }

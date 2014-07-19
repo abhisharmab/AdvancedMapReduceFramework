@@ -70,7 +70,7 @@ public class ReducerFieldAgent extends FieldAgent{
 					.newInstance(this.outputFile);
 			
 			this.outputCollector = 
-					new ReducerOutputCollector(this.outputFile, "\t", this.outputFormat);
+					new ReducerOutputCollector(this.outputFile, "\t", this.outputFormat, partitionedNumber);
 		} catch (Exception e) {
 			e.printStackTrace();
 			/* exception happens, shut down jvm */
@@ -150,6 +150,9 @@ public class ReducerFieldAgent extends FieldAgent{
 				}
 				/* close the files */
 				this.outputCollector.close();
+				
+				this.nameNodeSlaveReference.registerToLocalDataNode(this.outputCollector.getOutputFileName());
+				getCreatedFiles().add(this.outputCollector.getOutputFileName());
 			}/* if runtime exception happens in user's code, exit jvm */
 			catch (RuntimeException e) {
 				e.printStackTrace();

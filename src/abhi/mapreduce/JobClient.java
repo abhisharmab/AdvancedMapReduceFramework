@@ -87,7 +87,7 @@ public class JobClient implements IClientServices {
 		
 		//TODO: Abhi check-if this is what Douglas wants. InputPath
 		
-		if(!nameNodeMasterReference.checkFileExistance(jobConf.getInputPath()))
+		if(!nameNodeMasterReference.checkFileExistence(jobConf.getInputPath()))
 		{
 			 
 			//TODO: Abhi I need methods from Douglas to call upon this stuff.

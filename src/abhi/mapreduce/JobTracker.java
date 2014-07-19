@@ -22,7 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import abhi.adfs.NameNodeManager;
+import abhi.adfs.InputFileInfo;
+import abhi.adfs.NameNodeMaster;
 
 
 /**
@@ -80,7 +81,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	/*New Strategy*/
 	
 	// the nameNodeReference for finding out the file-splits
-	private NameNodeManager nameNodeReference;
+	private NameNodeMaster nameNodeReference;
 
 	public JobTracker() throws RemoteException
 	{
@@ -93,7 +94,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			 
 			int nameNodeRegistryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
 			Registry nameNodermiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),nameNodeRegistryPort);
-			this.nameNodeReference = (NameNodeManager) nameNodermiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
+			this.nameNodeReference = (NameNodeMaster) nameNodermiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
 			
 
 			//Initialize the Data Structures
@@ -331,13 +332,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		//Try to schedule Mapper Tasks
 		for(Entry<TaskMetaData, MapperPriorityQueue> entry: this.mapTaskQueue.entrySet())
 		{
+			TaskTrackerInfo taskTrackerInfo = null;
 			if(entry.getValue().peek().getNumOfMaps() > 0)
 			{
 				boolean result = false;
 				try
 				{
 					//Get the relevant TaskTracker from the Queue who can Execute this Job
-					TaskTrackerInfo taskTrackerInfo = entry.getValue().poll();
+					 taskTrackerInfo = entry.getValue().poll();
 					
 					//Send the Task to the Appropriate TaskTracker
 					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
@@ -346,11 +348,26 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				{
 					System.out.println("Could not execute Mapper Task");
 				}
+				
 				if(result)
+				{
 					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
+					synchronized(this.mapTaskQueue)
+					{
+						this.mapTaskQueue.remove(entry);
+					}
+				}
 				else
 				{
-					this.mapTaskQueue.put(entry.getKey(), entry.getValue());
+					if(taskTrackerInfo != null)
+					{
+						entry.getValue().add(taskTrackerInfo);
+						synchronized(this.mapTaskQueue)
+						{
+							this.mapTaskQueue.remove(entry);
+							this.mapTaskQueue.put(entry.getKey(), entry.getValue());
+						}
+					}
 				}
 			}
 		}
@@ -358,13 +375,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		//Try to schedule the Reducer Tasks
 		for(Entry<TaskMetaData, ReducerPriorityQueue> entry: this.reduceTaskQueue.entrySet())
 		{
+			TaskTrackerInfo taskTrackerInfo = null;
 			if(entry.getValue().peek().getNumOfReduces() > 0)
 			{
 				boolean result = false;
 				try
 				{
 					//Get the relevant TaskTracker from the Queue who can Execute this Job
-					TaskTrackerInfo taskTrackerInfo = entry.getValue().poll();
+					taskTrackerInfo = entry.getValue().poll();
 					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
 				}
 				catch(Exception e)
@@ -372,10 +390,25 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					System.out.println("Could not execute Reduce Task");
 				}
 				if(result)
+				{
 					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
+					synchronized(this.reduceTaskQueue)
+					{
+						this.reduceTaskQueue.remove(entry);
+					}
+				}
 				else
 				{
-					this.reduceTaskQueue.put(entry.getKey(), entry.getValue());
+					if(taskTrackerInfo != null)
+					{
+						entry.getValue().add(taskTrackerInfo);
+						
+						synchronized(this.reduceTaskQueue)
+						{
+							this.reduceTaskQueue.remove(entry);
+							this.reduceTaskQueue.put(entry.getKey(), entry.getValue());
+						}
+					}
 				}
 			}
 		}
@@ -387,15 +420,97 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	public void submitJob(JobInfo jobInfo) {
 		//1. Talk to the NameNode and get the Chunk Information 
 		 	//1.1 As the appropriate Slave to move the JAR to all the NODES
+		try 
+		{
+			if(this.nameNodeReference.checkFileExistence(jobInfo.getJobConf().getInputPath()))
+			{
+				InputFileInfo inputFileInfo = this.nameNodeReference.getInputFileInfo(jobInfo.getJobConf().getInputPath());
+				HashMap<String, List<String>> partitionInfo = inputFileInfo.getTranspose();
+				
+				//Instantiate the Priority Queue for the MapperTask and ReducerTasks(This List keeps a Heap of Where POssibly we might run it)
+				MapperPriorityQueue mQ = new MapperPriorityQueue(10);
+				ReducerPriorityQueue rQ = new ReducerPriorityQueue(10);
+				
+				Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mTasks = new HashMap<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>();				
+				Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> rTasks = new HashMap<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>();
+				
+				for(Map.Entry<String, List<String>> partitionEntry: partitionInfo.entrySet())
+				{
+					int taskID = this.nextTaskId();
+					String chunkInputName = partitionEntry.getKey();
+					
+				
+					//Get the List of the Possible Deployments
+					List<String> possibleDeploymentNodes = partitionEntry.getValue();
+					
+					for(String dataNode : possibleDeploymentNodes)
+					{
+						String taskTrackerName = "TaskTracker_" + dataNode.split("_")[1].toString();
+						
+						if(this.taskTrackers.containsKey(taskTrackerName))
+						{
+							//Possible list of Slaves the TaskCould Run on Based on the File Chunks
+							mQ.add(this.taskTrackers.get(taskTrackerName));
+							rQ.add(this.taskTrackers.get(taskTrackerName)); 
+						}
+					}
+					
+					//Build a Map Task Meta Data need to execute a Task
+					TaskProgress taskProgress = new TaskProgress(taskID,SystemConstants.TaskType.MAPPER);
+					TaskMetaData mapTask = new TaskMetaData(jobInfo.getJobID(),taskID, SystemConstants.TaskType.MAPPER,
+											taskProgress, chunkInputName, String.valueOf(jobInfo.getJobID()),
+											jobInfo.getJobConf().getInputFormatClassName(), jobInfo.getJobConf().getOutputFormatClassName(),
+											jobInfo.getJobConf().getMapperClassName(),null,jobInfo.getJobConf().getPartitionerClassName(),jobInfo.getJobConf().getReducerNum(),0);
+					
+					//Add this Task to the Map Queue 
+					this.mapTaskQueue.put(mapTask, mQ);
+					
+					//Add this Task to the MTasks
+					ConcurrentHashMap<TaskMetaData, MapperPriorityQueue> temp = new ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>();
+					temp.put(mapTask, mQ);
+					mTasks.put(taskID, temp);
+					
+					//Also the jobInfo that this Task in Under you
+					jobInfo.progressofallTasks.put(taskID, taskProgress);
+
+				}
+				
+				for(int i=0; i < jobInfo.getJobConf().getReducerNum() ; i++)
+				{
+					int taskID = this.nextTaskId();
+					TaskProgress taskProgress = new TaskProgress(taskID,SystemConstants.TaskType.REDUCER);
+					
+					TaskMetaData reduceTask = new TaskMetaData(jobInfo.getJobID(),taskID, SystemConstants.TaskType.REDUCER,
+							taskProgress, null, String.valueOf(jobInfo.getJobID()),
+							jobInfo.getJobConf().getInputFormatClassName(), jobInfo.getJobConf().getOutputFormatClassName(),
+							null,jobInfo.getJobConf().getReducerClassName(),null,0,i);
+					
+					//Add this Task to the Map Queue 
+					this.reduceTaskQueue.put(reduceTask, rQ);
+					
+					//Add this Task to the RTasks	
+					ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue> temp = new ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>();
+					temp.put(reduceTask, rQ);
+					rTasks.put(taskID,temp);
+					
+					//Also the jobInfo that this Task in Under you
+					jobInfo.progressofallTasks.put(taskID, taskProgress);
+				}
+				
+				//Add it to all the other DataStructures in the JobTracker
+				this.mapperTasks.putAll(mTasks);
+				this.reducerTasks.putAll(rTasks);
+				
+				this.jobs.put(jobInfo.getJobID(), jobInfo);
+				jobInfo.setJobStatus(SystemConstants.JobStatus.INPROGRESS);
+			}
+		} 
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			System.err.println("Could not contact NameNodeReference");
+			e.printStackTrace();
+		}
 		
-		//2. Construct fresh objects of MapTask and ReduceTasks (TaskMetaData basically)
-			// DKREW : When making the ReduceTask(TaskMetaData) add in the partition Number
-			// if the user wants 3 partition
-			// TeskMetaData.setPartitionNumber(1)..........
-		//3. Add it to the Maps appropriate for them to be taken up for scheduling 
-		//4. Add this JOb into the Jobs Data Structure 
-		//5. Set the status of the Job In-Progress
-		//6. Assign the and distributed the Tasks
 	}
 
 	

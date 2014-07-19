@@ -29,9 +29,9 @@ public class MapperOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOU
 	private int numReducers;
 	
 	//Constructor
-	public MapperOutputCollector(String outdirectory, Partitioner<KOUT> partitioner, int numReducers, String separator) 
+	public MapperOutputCollector(String outdirectory, String outputFilePrefix, Partitioner<KOUT> partitioner, int numReducers, String separator) 
 	{
-		super(outdirectory, separator);
+		super(outdirectory, separator, outputFilePrefix);
 		
 		this.setParitioner(partitioner);
 		this.intermediateWriters = new ArrayList<BufferedWriter>(); //Instance the ArrayList containing writers
@@ -44,7 +44,7 @@ public class MapperOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOU
 		      	{
 		           //Add writer of each of the partition.
 		           this.intermediateWriters.add(new BufferedWriter(new FileWriter(this.outputDirectory
-		                  + System.getProperty("file.separator") + "part-" + i, true)));
+		                  + System.getProperty("file.separator") + this.outputFileNamePrefix + "_part_" + i, true)));
 		        } 
 		      	catch (IOException e)
 		        {
