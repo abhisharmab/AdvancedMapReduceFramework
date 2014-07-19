@@ -22,14 +22,30 @@ public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VO
 	
 	private OutputFormat<KOUT, VOUT> outFormat;
 	
+	private String outputFileName;
+	
+	public String getOutputFileName() {
+		return outputFileName;
+	}
+
+
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
+
 	public ReducerOutputCollector(String outdirectory, String separator,
-			OutputFormat<KOUT, VOUT> outFormat) {
-		super(outdirectory, separator);
+			OutputFormat<KOUT, VOUT> outFormat, int partitionedNum) {
+		super(outdirectory, separator, "result");
 		this.outFormat = outFormat;
+		
+		
+		outputFileName = this.outputDirectory
+                + System.getProperty("file.separator") + this.outputFileNamePrefix + "_part_" + partitionedNum ;
 		try 
       	{
            //Add writer of each of the partition.
-            setBw(new BufferedWriter(new FileWriter(this.outputDirectory)));
+            setBw(new BufferedWriter(new FileWriter(outputFileName, true)));
         } 
       	catch (IOException e)
         {

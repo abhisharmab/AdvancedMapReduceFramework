@@ -39,7 +39,7 @@ public class JobInfo implements Serializable {
 	
 	private JobStatus jobStatus;
 	
-	private ConcurrentHashMap<Integer,TaskProgress> progressofallTasks;
+	public ConcurrentHashMap<Integer,TaskProgress> progressofallTasks;
 	
 	private JobConf jobConf;
 	

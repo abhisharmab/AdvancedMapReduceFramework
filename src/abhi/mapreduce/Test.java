@@ -30,14 +30,14 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*String[] args1 = new String[] {Test1.class.getName(), "Abhishek", "Sharma"};
+		
 		try {
-			JVMUtility.startProcessinJVM(args1);
+			JVMUtility.startProcessinJVM(null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		
+		}
+		/*
 		Test t = new Test();
 		
 		TestClass t1 = new TestClass(5);
@@ -82,7 +82,7 @@ public class Test {
 		int y = t.tQ.get("B").peek().getTest();
 		
 		int z = 0;
-		
+		*/
 	}
 
 }

@@ -19,11 +19,13 @@ public abstract class OutputCollector<KOUT, VOUT> {
 	
 	protected String separator;
 	
+	protected String outputFileNamePrefix;
 	
-	public OutputCollector(String outdirectory, String separator)
+	public OutputCollector(String outdirectory, String separator,String outputFileNamePrefix)
 	{
 		this.outputDirectory = outdirectory;
 		this.separator = separator;
+		this.outputFileNamePrefix = outputFileNamePrefix;
 	}
 	
 	protected abstract void collect(KOUT key, VOUT value) throws IOException;

@@ -38,8 +38,8 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 							{
 								MapperFieldAgent.class.getName(),
 								String.valueOf(taskMetaData.getTaskID()),
-								taskMetaData.getInputPath(),
-								taskMetaData.getOutputPath(),
+								SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY) + System.getProperty("file.separator") + taskMetaData.getInputPath(),
+								SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY) + System.getProperty("file.separator") + taskMetaData.getOutputPath(),
 								taskMetaData.getMapper(),
 								taskMetaData.getPartitioner(),
 								taskMetaData.getInputFormat(),
@@ -73,7 +73,7 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 							{
 								ReducerFieldAgent.class.getName(),
 								String.valueOf(taskMetaData.getTaskID()),
-								taskMetaData.getOutputPath(),
+								SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY) + System.getProperty("file.separator") + taskMetaData.getOutputPath(),
 								taskMetaData.getReducer(),
 								taskMetaData.getOutputFormat(),
 								String.valueOf(taskMetaData.getParitionNumber())

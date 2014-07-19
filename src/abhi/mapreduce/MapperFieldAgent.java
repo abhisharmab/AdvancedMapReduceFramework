@@ -41,6 +41,14 @@ public class MapperFieldAgent extends FieldAgent {
 
 		super(taskID, infile, outfile, SystemConstants.TaskType.MAPPER);
 
+		//Create the directory for the Job if it doesn't exist
+		File dir = new File(outfile);
+		
+		if(!dir.exists())
+		{
+			dir.mkdir();
+		} 
+		
 		this.offset = 0;
 		this.reducerNum = numReducer;
 		try {
@@ -49,7 +57,9 @@ public class MapperFieldAgent extends FieldAgent {
 
 			Partitioner part = (Partitioner) Class.forName(partitioner).newInstance();
 
-			this.outputCollector = new MapperOutputCollector(this.outputFile,part, reducerNum, "\t");
+			String[] strip = this.inputFile.split(System.getProperty("file.separator"));
+			
+			this.outputCollector = new MapperOutputCollector(this.outputFile, strip[1].toString(), part, reducerNum, "\t");
 
 			this.inputFormat = (InputFormat) Class.forName(inputFormat)
 					.getConstructor(String.class)
@@ -104,7 +114,7 @@ public class MapperFieldAgent extends FieldAgent {
 		    for (int i = 0; i < this.reducerNum; i++) {
 		      ArrayList<KeyValueConstruct> list = new ArrayList<KeyValueConstruct>();
 		      String filename = outputCollector.outputDirectory + System.getProperty("file.separator")
-		              + "part_"+ i;
+		              + outputCollector.outputFileNamePrefix + "_part_"+ i;
 		      
 		      
 		      File file = new File(filename);
@@ -153,6 +163,7 @@ public class MapperFieldAgent extends FieldAgent {
 		          try {
 		            bw.close();
 		            getCreatedFiles().add(filename);
+		            this.nameNodeSlaveReference.registerToLocalDataNode(filename);
 		          } catch (IOException e) {
 		            e.printStackTrace();
 		            System.exit(0);

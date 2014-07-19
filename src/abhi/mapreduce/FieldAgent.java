@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import abhi.adfs.NameNodeSlave;
+
 /**
  * @author abhisheksharma
  *
@@ -35,6 +37,8 @@ public abstract class FieldAgent {
 	  protected TaskProgress taskProgress;
 	  
 	  protected TaskTrackerServices taskServiceProviderReference; //Task Service Provider Reference
+	  
+	  protected NameNodeSlave nameNodeSlaveReference;
 
 	  protected List<String> createdFiles; // List of created Files 
 	  
@@ -68,6 +72,7 @@ public abstract class FieldAgent {
 	    try {
 	      Registry reg = LocateRegistry.getRegistry(registryHostName, 1099);
 	      taskServiceProviderReference = (TaskTrackerServices) reg.lookup("TaskTracker_"+ registryHostName);
+	      nameNodeSlaveReference = (NameNodeSlave) reg.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE) + registryHostName);
 	    } catch (RemoteException e) {
 	      e.printStackTrace();
 	    } catch (NotBoundException e) {
