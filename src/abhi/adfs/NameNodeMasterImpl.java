@@ -4,6 +4,7 @@
 package abhi.adfs;
 
 import java.net.MalformedURLException;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -61,7 +62,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	}
 	
 	
-	public static void main(String args[])
+	public static void main(String args[]) throws RemoteException
     {
 
 
@@ -91,10 +92,10 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
                 }
             });
             t.start();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Server: Failed to register NameNodeMaster: " + e);
+        } catch (Exception e){
+            System.out.println("Server: Failed to register NameNodeMaster.");
+            System.out.println("Please check the RMI and check again.");
+            System.exit(0);
         }
     }
 	
@@ -113,7 +114,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
         	// Looking up the DataNode and saving it.
         	// The dataNodeName will be constructed with the remote rmi location
 			DataNode dataNode = (DataNode) Naming.lookup(dataNodeName);
-			System.out.println("Looked up datanNode : " + dataNodeName);
+			System.out.println("Looked up Data Node : " + dataNodeName);
 			list_dataNode.put(dataNodeName, dataNode);
 			
 		} catch (MalformedURLException e) {
@@ -233,7 +234,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 			
 		}
 		
-		
+		System.out.println("Replication process has completed.");
 		
 		
 	}

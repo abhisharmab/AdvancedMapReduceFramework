@@ -76,6 +76,7 @@ public class NameNodeManager {
 	    	} catch (Exception e){
 	    		System.out.println("Manager: Exception thrown looking up " + "NameNodeSlave");
 	    		System.out.println("Please check all systems and try again.");
+	    		return;
 	    		
 	    		
 	    	}
