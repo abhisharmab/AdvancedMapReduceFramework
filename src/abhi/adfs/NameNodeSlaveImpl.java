@@ -44,7 +44,8 @@ import abhi.mapreduce.SystemConstants;
 
 /**
  * @author abhisheksharma, dkrew
- * This is the implementation of the NameNodeSlave
+ * This is the implementation of the NameNodeSlave.
+ * This will be in the middle the communication of the Master / DataNode / Manager
  */
 public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSlave {
 	
@@ -56,33 +57,43 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	
 	
 	// This will be the information about the main RMI
-	// Where the NameNode
+	// Where the NameNodeMaster lives
 	private static String ipAddress = null;
 	private static String portNumber = null;
 	
+	
+	//Reference of the NameNodeMaster
 	private static NameNodeMaster nameNodeMaster;
+	
+	// This will be the list of all DataNode that Live in the DFS
 	private static LinkedHashMap<String, DataNode> list_DataNode;
+	
+	// This will be the local dataNode
 	private static DataNode myDataNode = null;
+	// This will be the local DataNodeName
 	private static String myDataNodeName = null;
+	
+	// This will be the List of InputFileInfo which the this slave have created.
+	// At the end all information will go to the Master
 	private static List<InputFileInfo> list_inputFileInfo;
+	
+	// This will be the identifier for any Nodes that is being registered on the local RMI
+	// By doing so other nodes could identify the origin of the binding
 	private static String identifier = null;
 	
+	// This will be used in rotating through the DataNodes while submiting files.
 	private static Integer rotationIndex = null;
 
 
 	
 	protected NameNodeSlaveImpl() throws RemoteException {
 		super();
-
 	}
 	
 	public static void main(String args[])
     {
 
-		// These are debugging prints.
     	try {
-    		System.out.println(ManagementFactory.getRuntimeMXBean().getName());
-			System.out.println(InetAddress.getLocalHost().getHostAddress());
 			setIdentifier(InetAddress.getLocalHost().getHostName());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -92,7 +103,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		
     	rotationIndex = 1;
     	
-    	// Grab rmiregistry information
+    	// Grab rmiregistry information for the Master look Up
 		portNumber = SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT);
         ipAddress = SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST);
 		
@@ -100,27 +111,26 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		list_DataNode = new LinkedHashMap<String, DataNode>();
 		list_inputFileInfo = new ArrayList<InputFileInfo>();
 		
-
+		
+		// Setting up the security manager
  	   if(System.getSecurityManager() == null){
  		   System.setSecurityManager(new RMISecurityManager());   
  	   }
  	   
+ 	   // Register the Slave to the Local RMI
 		registerToRmi();
+		// Look up the Master
 		lookUpNameNodeMaster();
+		// Register the DataNode to the local RMI
+		// And register this on the Master
 		bindDataNode();
-		
-		
-		// Debug
-
-//		command_debug();
 
 
  
     }
 	
+	// This is used to register the Slave to the local RMI
 	public static void registerToRmi(){
- 		
-        
         try {
         	NameNodeSlaveImpl slave = new NameNodeSlaveImpl();
         	String local_Ipaddress = InetAddress.getLocalHost().getHostAddress();
@@ -128,19 +138,15 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
            	String name= slaveName+"_"+getIdentifier();
     		String bindName = "rmi://" +local_Ipaddress + ":"+ portNumber+ "/" + name; 
     		System.out.println("Registering NameNodeSlave as : " + bindName);
-    		
     		Naming.rebind(bindName, slave);
     		
     		System.out.println("NameNodeSlaveImpl: Ready...");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error while accessing the remote object");
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error while accessing the RMI please retry");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error while binding the slave, please retry.");
 		} 
 
         
@@ -149,13 +155,13 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	}
 
 
+	
+	// This method will look up the NameNodeMaster from the Main RMI
 	public static void lookUpNameNodeMaster(){
 	       try
 	        {
 	    		String master_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
-	        	
 	        	String lookup_name = "rmi://" +ipAddress + ":"+ portNumber+ "/" + master_Name;
-	        	System.out.println(lookup_name);
 	    		nameNodeMaster = (NameNodeMaster) Naming.lookup(lookup_name);
 	    		System.out.println("NameNodeMaster has been looked up.");
 	        		
@@ -164,16 +170,16 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	    		
 	    	}
 	}
+	
+	
+	// The method will instantiate the DataNode on and bind it on to the local RMI
+	// and register is on to the NameNode Master
 	public static void bindDataNode(){
 		
-		// Generated an unique name.
-		
-	
     	try {
     		String name= "DataNode_"+getIdentifier();
         	String local_Ipaddress = InetAddress.getLocalHost().getHostAddress();
 			String bindName = "rmi://" +local_Ipaddress + ":"+ portNumber+ "/" + name; 
-    		System.out.println("Bind Name : " + bindName);
             System.out.println("Registering DataNode as : " + bindName);
            
             
@@ -187,45 +193,39 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
             // Register to the master
             if(nameNodeMaster.registerToMaster(bindName)){
             	System.out.println("DataNode has been registered to the NameNodeMaster.");
-            	
             	// Adding the DataNode into the List
             	list_DataNode.put(bindName, dataNode);
-            	
-            	
             } else {
             	System.out.println("Error in registering.");
             }
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error while looking up the host name, please try again.");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error while binding the DataNode, please try again.");
 		} catch (RemoteException e){
-        	e.printStackTrace();
+        	System.out.println("Error while accessing the remote object, please try agian.");
 		} 
 	}
 	
-//	public static String getPID(){
-//		String name = ManagementFactory.getRuntimeMXBean().getName();
-//		int index = name.indexOf('@');
-//		String pid = (String) name.subSequence(0,  index);
-//		return pid;
-//	}
-	
+	// This method is to update the list of all dataNodes on the Slave.
+	// By having the list of all dataNode, the slave could access different file locates
+	// and perform file actions.
 	public static void updateDataNodes(){
 		
 		try {
+			// The master will have all the information of the nodes so we ask the master
 			List<String> live_DataNodes = nameNodeMaster.getDataNodes();
 			
-			
 			// Debug
-			System.out.println("Print out data nodes from the master");
-			for(String name : live_DataNodes){
-				System.out.println("+++++++" + name);
-			}
+//			System.out.println("Print out data nodes from the master");
+//			for(String name : live_DataNodes){
+//				System.out.println("+++++++" + name);
+//			}
 			
 			
+			// After getting the list of updated DataNodes
+			// We check with our current list.
+			// If there are any difference we update our list.
 			if(!checkDataNodes(live_DataNodes)){
 				list_DataNode.clear();
 				for(String live_nodes : live_DataNodes){
@@ -237,31 +237,29 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 						list_DataNode.put(live_nodes,new_dataNode);
 						
 					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Error while looking up the DataNodes, please try again.");
 					} catch (NotBoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Error while looking up the DataNodes, please try again.");
 					}
 				}
 			}
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Error when accessing the NameNodeMaster.");
 			System.out.println("Try to reconnect to the Master.");
-//			e.printStackTrace();
 		}
 		
 		
 		// Debug method
-		System.out.println("updateDataNodes");
-		for(String names : list_DataNode.keySet()){
-			System.out.println(names);
-		}
+//		System.out.println("updateDataNodes");
+//		for(String names : list_DataNode.keySet()){
+//			System.out.println(names);
+//		}
 		
 		
 	}
 
+	// This method will compare the live_DataNode with the current list of dataNode the Slave has
+	// if the list are the same it will return true. If it is not the same it will return false.
 	public static boolean checkDataNodes(List<String> live_DataNodes){
 		if(live_DataNodes.size() != list_DataNode.size()){
 			return false;
@@ -276,95 +274,23 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	}
 
 
-	
-	public void command_debug(){
-		Scanner scanner = new Scanner(new InputStreamReader(System.in));
-
-		System.out.println("1: update data Nodes.");
-		System.out.println("2: Partition Files");
-		System.out.println("3: Print my info");
-		System.out.println("4: remove file");
-		System.out.println("5: reconnect to master");
-		
-		while(true){
-				String input = scanner.nextLine();
-				if(input.equals("1")){
-					updateDataNodes();
-
-
-				} else if( input.equals("2")){
-					String input1 = scanner.nextLine();
-					//dump(input1);
-				}else if( input.equals("3")){
-					System.out.println("MyInfo");
-					
-					System.out.println(myDataNodeName);
-					System.out.println(myDataNode);
-			
-				} else if ( input.equals("4")){
-					
-					System.out.println("removing file");
-					String input1 = scanner.nextLine();
-				//	removeFile(input1);
-				}	else if ( input.equals("5")){
-						
-						System.out.println("Reconnect to master");
-						reconnectToMaster();
-				} else {
-
-					System.out.println("1: update data Nodes.");
-					System.out.println("2: Partition Files");
-					System.out.println("3: Print my info");
-					System.out.println("4: remove file");
-				}
-		}
-					
-					
-	}
-	
-
-	
-
-	
+	// This method will be used when we are generating the partitioned input files.
 	public static boolean isExist(String filename) {
 		
 		File file = new File(filename);
 		if( file.exists() && file.isFile()){
-			
 			return true;
-	
 		} else {
 			return false;	
 		}
 	}
-	
-
-	public static void reconnectToMaster(){
-		try{
-			if(nameNodeMaster.ping()){
-				System.out.println("Already connected to the master.");
-			}
-		} catch (RemoteException e){
-			// If there was a problem reconnect to the master and register itself
-			System.out.println("Master is not reachable. Trying to reconnect.");
-			lookUpNameNodeMaster();
-			try {
-				nameNodeMaster.registerToMaster(myDataNodeName);
-				for(InputFileInfo info : list_inputFileInfo){
-					nameNodeMaster.registerFileInformation(info);
-				}
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-				System.out.println("Master is not up yet, please try again later.");
-			}
-		}
-	}
+	// This is used to check the liveness of the Slave
 	@Override
 	public boolean ping() throws RemoteException {
-		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	
 	// Debug
 //	@Override
 //	public void print() throws RemoteException {
@@ -380,6 +306,10 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		NameNodeSlaveImpl.identifier = identifier;
 	}
 
+	// This method will take care of partitioning the files and distributing it.
+	// This will also register the InputFileInfo to the Master so that
+	// the job tracker could look up information about where are the partitioned file are
+	// distributed. 
 	@Override
 	public boolean dump(String fileName) throws RemoteException{
 		if(isExist(fileName)){
@@ -389,7 +319,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 					System.out.println("File already exist and is distributed.");
 					System.out.println("Please remove the file : " + fileName);
 					System.out.println("And try again.");
-				} else { // We need to partition the file now
+				} else { // We need to partition the file now.
 					
 					// Get file partition Size
 					Double partition_size = Double.parseDouble(SystemConstants.getConfig(SystemConstants.FILE_PARITION_SIZE));
@@ -402,41 +332,48 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 					// Get replication number for the file
 					Integer replication = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REPLICATION));
 					
-					// but for now lets just save it in multiple locations.
 					InputFileInfo fileInfo = new InputFileInfo(fileName);
 					
+					
+					// The FileSpliter will handling the partitioning of the input.
 					FileSpliter spliter;
-						try {
-							spliter = new FileSpliter(fileName, file_size);
-							String data = spliter.getNextBlock();
-							while (data != null){
-								String paritioned_fileName = fileName+"_"+spliter.getParitionSize().toString();
-								sendOutFile(data,paritioned_fileName,replication,fileInfo);
-								
-								data = new String();
-								data = spliter.getNextBlock();
-							}
+					try {
+						spliter = new FileSpliter(fileName, file_size);
+						
+						// This is get the first block of the partitioned file.
+						String data = spliter.getNextBlock();
 
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						while (data != null){
+							
+							String paritioned_fileName = fileName+"_"+spliter.getParitionSize().toString();
+							
+							// After getting the first block of the file, we send it out to 
+							// other DataNodes and make replication according to the configuration.
+							sendOutFile(data,paritioned_fileName,replication,fileInfo);
+							
+							data = new String();
+							// Then get the new block.
+							data = spliter.getNextBlock();
 						}
+
+					} catch (FileNotFoundException e) {
+						System.out.println("Error while accessing file : " + fileName);
+						System.out.println("Check on the file and retry.");
+					} catch (IOException e) {
+						System.out.println("Error while opening the file please try again.");
+					}
 											
 					
-					
+					// Add the fileInfo on my local				
 					list_inputFileInfo.add(fileInfo);
+					// Register the FileInfo onto the Master.
 					nameNodeMaster.registerFileInformation(fileInfo);
-					
-					
 					return true;
 					
 				}
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Error while accessing the remote object, please try again.");
 				return false;
 			} 
 		} else {
@@ -448,6 +385,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	
 	}
 
+	// This method will return all registered files on the local Data Node
 	@Override
 	public List<String> getDataNodeFiles() throws RemoteException {
 		// TODO Auto-generated method stub
@@ -457,7 +395,8 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		return null;
 	}
 
-	// This
+	// This method will trigger the file removal to the Master
+	// And the Master will ask all DataNode which has the partition of the file to be removed.
 	@Override
 	public boolean remove(String fileName) throws RemoteException {
 		
@@ -470,66 +409,69 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 				return false;
 			}
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error Accessing the remote Object.");
 			return false;
 		}
 	}
 
+	// This method is used to send out file to data nodes with replication.
 	public void sendOutFile(String data, String fileName, Integer replication, InputFileInfo info){
 		
 		List<DataNode> values = new ArrayList<DataNode>(list_DataNode.values());
 		List<String> keys = new ArrayList<String>(list_DataNode.keySet());
 		for(int i = 0; i < replication; i++){
+			// The rotation index will determine that we send a replication of the file in different locations.
 			Integer index = getRotationIndex();
-			System.out.println("this is the index   " + index);
 			try {
 				System.out.println("Sending file too   " + keys.get(index) + "   : " + fileName);
 				info.addFileParitionInfo(keys.get(index), fileName);
 				values.get(index).submit(fileName, data);
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Error while accessing the remote object.");
 			}
 		}
 		
 	}
 
+	// This is used to rotatate through the List of DataNodes
 	public static Integer getRotationIndex() {
 		Integer index = rotationIndex++;
-		
 		return index % list_DataNode.size();
 	}
 
+	// This method will take care of the distribution of the JAR file.
 	@Override
 	public boolean dumpJar(String fileName) throws RemoteException {
 		
-			updateDataNodes();
-			
-			File file = new File(fileName);
-			byte buffer[] = new byte[(int)file.length()];
-			try {
-			     BufferedInputStream input = new
-			     BufferedInputStream(new FileInputStream(fileName));
-			     input.read(buffer,0,buffer.length);
-			     input.close();
-			     
-			} catch(Exception e) {
-			     System.out.println("FileServant Error: "+e.getMessage());
-			     e.printStackTrace();
-			     return false;
-			}
-			List<DataNode> nodes = new ArrayList<DataNode>(list_DataNode.values());
-			for(DataNode node : nodes){
-				System.out.println("byte length   " + buffer.length);
-				node.submitJar(fileName, buffer, (int) buffer.length);
-				
-			}
+		// We update our Data Node List first.
+		updateDataNodes();
+		
+		// Open the file and read it into a byte array.
+		File file = new File(fileName);
+		byte buffer[] = new byte[(int)file.length()];
+		try {
+		     BufferedInputStream input = new
+		     BufferedInputStream(new FileInputStream(fileName));
+		     input.read(buffer,0,buffer.length);
+		     input.close();
+		     
+		} catch(Exception e) {
+		     System.out.println("Error while accesin the Jar file.");
+		     return false;
+		}
+		
+		// Send the JAR file to all data nodes.
+		List<DataNode> nodes = new ArrayList<DataNode>(list_DataNode.values());
+		for(DataNode node : nodes){
+			node.submitJar(fileName, buffer, (int) buffer.length);
+		}
 			
 		return true;
 
 	}
 
+	// This method will register the filename into the DataNode
+	// This will be called from the Mapper to register the intermediate files.
 	@Override
 	public boolean registerToLocalDataNode(String fileName) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -543,6 +485,8 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		
 	}
 
+	// This method will retrieve data from the DataNode
+	// This will be called from the Reduver to retrive the intermediate files.
 	@Override
 	public String retrieveFromLocalDataNode(String fileName)
 			throws RemoteException {
