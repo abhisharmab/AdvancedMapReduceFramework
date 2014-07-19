@@ -163,6 +163,24 @@ public class InputFileInfo  implements Serializable{
 //		}
 	}
 
+	// This method is used in the Job tracker while submission of a job.
+	// This is just a simple transpose of the Partition.
+	public HashMap<String, List<String>> getTranspose(){
+		HashMap<String, List<String>> transpose = new HashMap<String, List<String>>();
+		for(Entry<String, List<String>> entry : getPartitions().entrySet()){
+			for(String fileName : entry.getValue()){
+				if(!transpose.containsKey(fileName)){
+					List<String> dataNodeNameList = new ArrayList<String>();
+					dataNodeNameList.add(entry.getKey());
+					transpose.put(fileName, dataNodeNameList);
+				} else {
+					transpose.get(fileName).add(entry.getKey());
+				}
+			}
+		}
+		
+		return transpose;
+	}
 	public boolean isValid() {
 		return valid;
 	}
