@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+/**
+ * @author Douglas Rew
+ * This is manage the file partition of the input file.
+ * Addition this will be used to do the replication if a DataNode dies.
+ */
+
 public class InputFileInfo  implements Serializable{
 	
 	/**
@@ -13,11 +19,20 @@ public class InputFileInfo  implements Serializable{
 	 */
 	private static final long serialVersionUID = 2521084379974491121L;
 	private String fileName;
+	
+	// Key will be the DataNodeName and the Values will be the fileNames
 	private HashMap<String, List<String>> partitions;
 	private HashMap<String, List<String>> deadNodes;
+	
+	// This will be the total partition number of the file
 	private Integer paritionNumber;
+	
+	// This will be the boolean value to check easy whether the inputfile is valid
 	private boolean valid;
 	
+	
+	// This method is used to validate the distribution of the files.
+	// It will use the partition number to check the files
 	public boolean validateFiles(){
 		
 		// Building all file list for checking.
@@ -28,6 +43,7 @@ public class InputFileInfo  implements Serializable{
 		
 		boolean checking = true;
 		for(int i = 1; i <+ paritionNumber; i ++){
+			// This is how to file is being names in parts.
 			String name = fileName+"_" +i;
 			if( !allFileList.contains(name)){
 				checking = false;
@@ -35,6 +51,7 @@ public class InputFileInfo  implements Serializable{
 			}
 		}
 		
+		// When validation pass we clean up the deadNodes
 		if( checking){
 			System.out.println("Validation Passed!");
 			deadNodes.clear();
@@ -52,6 +69,7 @@ public class InputFileInfo  implements Serializable{
 		
 	}
 	
+	// This method is to retrieve the DataNode which the file exist.
 	public String fileExistInDataNode(String fileName){
 		for(Entry<String,List<String>> entry : getPartitions().entrySet()){
 			if(entry.getValue().contains(fileName)){
@@ -61,11 +79,16 @@ public class InputFileInfo  implements Serializable{
 		return null;
 	}
 	
+	// This is used to determine whether this InputFileInfo has been 
+	// partitioned in the provided dataNode
 	public boolean isPartitionedInDataNode(String dataNode){
 		return getPartitions().containsKey(dataNode);
 	}
 	
-	public List<String> dataNodeDead(String dataNodeName){
+	// This is used to return the file list from the detected dataNodes.
+	public List<String> filesFromDeadDataNode(String dataNodeName){
+		// We set the valid to false
+		// Because if we call this method it means that there is a dead DataNode
 		setValid(false);
 		for(Entry<String,List<String>> entry : getPartitions().entrySet()){
 			if(entry.getKey().equals(dataNodeName)){
@@ -73,6 +96,7 @@ public class InputFileInfo  implements Serializable{
 			}
 		}
 		
+		// Clean up the partitions list  
 		for(String key : getDeadNodes().keySet()){
 			getPartitions().remove(key);
 		}
@@ -112,6 +136,8 @@ public class InputFileInfo  implements Serializable{
 	public void setParitionNumber(Integer paritionNumber) {
 		this.paritionNumber = paritionNumber;
 	}
+	
+	// This method is used to add in partition file info with the DataNodeName 
 	public void addFileParitionInfo(String dataNodeName, String partitionFileName){
 	 
 		if(getPartitions().containsKey(dataNodeName)){
@@ -121,7 +147,6 @@ public class InputFileInfo  implements Serializable{
 			}
 		} else { 
 			
-			
 			List<String> fileNames = new ArrayList<String>();
 			fileNames.add(partitionFileName);
 			getPartitions().put(dataNodeName, fileNames);
@@ -129,13 +154,13 @@ public class InputFileInfo  implements Serializable{
 		
 		
 		// Debug
-		for(Entry<String, List<String>> entry : getPartitions().entrySet()){
-			System.out.println(entry.getKey());
-			for(String name : entry.getValue()){
-				System.out.println("----"+name);
-			}
-			
-		}
+//		for(Entry<String, List<String>> entry : getPartitions().entrySet()){
+//			System.out.println(entry.getKey());
+//			for(String name : entry.getValue()){
+//				System.out.println("----"+name);
+//			}
+//			
+//		}
 	}
 
 	public boolean isValid() {

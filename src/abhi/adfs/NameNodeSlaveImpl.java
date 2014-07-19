@@ -44,7 +44,7 @@ import abhi.mapreduce.SystemConstants;
 
 /**
  * @author abhisheksharma, dkrew
- *
+ * This is the implementation of the NameNodeSlave
  */
 public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSlave {
 	
@@ -55,8 +55,11 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	private static final long serialVersionUID = 5556881182151765004L;
 	
 	
+	// This will be the information about the main RMI
+	// Where the NameNode
 	private static String ipAddress = null;
 	private static String portNumber = null;
+	
 	private static NameNodeMaster nameNodeMaster;
 	private static LinkedHashMap<String, DataNode> list_DataNode;
 	private static DataNode myDataNode = null;
@@ -155,7 +158,6 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	        	System.out.println(lookup_name);
 	    		nameNodeMaster = (NameNodeMaster) Naming.lookup(lookup_name);
 	    		System.out.println("NameNodeMaster has been looked up.");
-	    		nameNodeMaster.print();
 	        		
 	    	} catch (Exception e){
 	    		System.out.println("Manager: Exception thrown looking up " + "NameNodeSlaveManager");
@@ -363,11 +365,12 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		// TODO Auto-generated method stub
 		return true;
 	}
-	@Override
-	public void print() throws RemoteException {
-		System.out.println("This is from the NameNodeSlaveImpl");
-		
-	}
+	// Debug
+//	@Override
+//	public void print() throws RemoteException {
+//		System.out.println("This is from the NameNodeSlaveImpl");
+//		
+//	}
 
 	public static String getIdentifier() {
 		return identifier;
@@ -382,7 +385,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		if(isExist(fileName)){
 			updateDataNodes();
 			try {
-				if(nameNodeMaster.checkFileExistance(fileName)){
+				if(nameNodeMaster.checkFileExistence(fileName)){
 					System.out.println("File already exist and is distributed.");
 					System.out.println("Please remove the file : " + fileName);
 					System.out.println("And try again.");
@@ -459,7 +462,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	public boolean remove(String fileName) throws RemoteException {
 		
 		try {
-			if(nameNodeMaster.checkFileExistance(fileName)){
+			if(nameNodeMaster.checkFileExistence(fileName)){
 					nameNodeMaster.removeInputFileInfo(fileName);
 					return true;
 			} else {
@@ -530,7 +533,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	@Override
 	public boolean registerToLocalDataNode(String fileName) throws RemoteException {
 		// TODO Auto-generated method stub
-		if(myDataNode.registrFileName(fileName)){
+		if(myDataNode.registerFileName(fileName)){
 			System.out.println("FileName : " + fileName + " has been registered to the local DataNode.");
 			return true;
 		} else {

@@ -33,7 +33,12 @@ import abhi.mapreduce.SystemConstants;
 
 /**
  * @author dkrew
- *
+ * This will be used to interact with the NameNodeSlave by the user.
+ * 			Usage: NameNodeManager --dump <Input File Name>
+			Usage: NameNodeManager --jar <Jar File Name>
+			Usage: NameNodeManager --remove <File Name>
+			Usage: NameNodeManager --cat 
+ * 
  */
 public class NameNodeManager {
 	
@@ -43,7 +48,6 @@ public class NameNodeManager {
 	
 	public static void main(String args[])
     {
-		System.out.println(args.length);
 		if ( !(1 <= args.length && args.length <= 2)) {
 			System.err.println("Usage: NameNodeManager --dump <Input File Name>");
 			System.err.println("Usage: NameNodeManager --jar <Jar File Name>");
@@ -61,27 +65,23 @@ public class NameNodeManager {
 	    	   if(System.getSecurityManager() == null){
 	    		   System.setSecurityManager(new RMISecurityManager());   
 	    	   }
-	        	
-	    	   
-//		   		portNumber = SystemConstants.getConfig(SystemConstants.REGISTRY_PORT);
-//		        ipAddress = SystemConstants.getConfig(SystemConstants.REGISTRY_HOST);
 	        
 	        
-		        String identifer = InetAddress.getLocalHost().getCanonicalHostName();
-		        String nameNodeSlave = "NameNodeSlave_" + identifer;
-	        //	String lookup_name = "rmi://" +ipAddress + ":"+ portNumber+ "/" + nameNodeSlave;
+		        String identifer = InetAddress.getLocalHost().getHostName();
+		        String slave_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
+		        String lookupName = slave_Name +"_" + identifer;
 	        
-//	        	System.out.println(lookup_name);
-	        	slave =  (NameNodeSlave) Naming.lookup(nameNodeSlave);
+	        	slave =  (NameNodeSlave) Naming.lookup(lookupName);
 	    		System.out.println("NameNodeSlave has been looked up.");
 	    	} catch (Exception e){
-	    		e.printStackTrace();
 	    		System.out.println("Manager: Exception thrown looking up " + "NameNodeSlave");
 	    		System.out.println("Please check all systems and try again.");
 	    		
 	    		
 	    	}
 			
+			// This option will take the input file and try to partition it and save it
+			// to different nodes in the DFS
 			if( option.equals("--dump")){
 				String input_filename = (String)args[1];
 				try { 
@@ -91,9 +91,11 @@ public class NameNodeManager {
 						System.out.println("Error has been occured while distributing the file.");
 					}
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Error in uploading the file " + input_filename);
+					System.out.println("Please try again");
 				}
+				
+			// This option will send the Jar file to all the nodes.
 			} else if( option.equals("--jar")){
 					String input_filename = (String)args[1];
 					try { 
@@ -103,9 +105,12 @@ public class NameNodeManager {
 							System.out.println("Error has been occured while distributing the file.");
 						}
 					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Error in uploading the file " + input_filename);
+						System.out.println("Please try again");
 					}
+					
+			// This option is used to remove files from the DFS
+			// The filename will be the original filename
 			} else if (option.equals("--remove")){
 				String remove_filename = (String) args[1];
 				try {
@@ -115,9 +120,10 @@ public class NameNodeManager {
 						System.out.println("Error has been occured while removing the file.");
 					}
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Error in removing the file " + remove_filename);
+					System.out.println("Please try again");
 				}
+			// This option is used to print out all the file in the local DataNode
 			} else if ( option.equals("--cat")){
 				List<String> files = null;
 				try {
@@ -127,8 +133,8 @@ public class NameNodeManager {
 						System.out.println("---" + name);
 					}
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Error in geting local FileNames");
+					System.out.println("Please try again");
 				}
 			}
 				
