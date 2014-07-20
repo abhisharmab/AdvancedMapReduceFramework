@@ -447,7 +447,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		return SystemConstants.MapJobsStatus.SUCCEEDED;
 	}
 	
-	
+	public String getJobOriginHostNamebyTaskID(int taskID)
+	{
+		TaskMetaData task = Collections.list(this.reducerTasks.get(taskID).keys()).get(0);
+		return this.jobs.get(task.getJobID()).getJobConf().getJobRequestOriginHostName();
+	}
 	
 	// This will return the list of TaskProcess that is related to the reducer.
 	public List<TaskProgress> getCompletedMapTasks(int reducerTaskID){
