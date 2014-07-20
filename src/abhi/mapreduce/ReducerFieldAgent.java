@@ -159,6 +159,9 @@ public class ReducerFieldAgent extends FieldAgent{
 				System.exit(0);
 			}
 
+			// Send the file to the Job Client location
+			
+			
 			//clean-up at end
 			reducer.cleanUp();
 			
