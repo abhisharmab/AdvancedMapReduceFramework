@@ -18,7 +18,7 @@ import abhi.mapreduce.SystemConstants;
  * The class will handle the extraction of the JAR file.
  */
 public class JarExtraction {
-	private String jarFileName;
+	private String jarFileName;    
 	private String dictory;
 	
 	public JarExtraction(String jarFileName){
