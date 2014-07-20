@@ -186,6 +186,11 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		return this.jobTracker.checkMapPhaseStatus(taskID);
 	}
 
+	@Override
+	public String getJobOriginHostNamebyTaskID(int taskID)
+	{
+		return this.jobTracker.getJobOriginHostNamebyTaskID(taskID);
+	}
 	
 	
 	@Override

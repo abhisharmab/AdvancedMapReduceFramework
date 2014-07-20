@@ -40,4 +40,7 @@ public interface IJobTrackerServices extends Remote{
 	  //For the client to get Live Updates about the job that was just submitted
 	  public JobInfo getLiveStatusofJob(int jobID);
 
+	  //For the reducer to the get the HOST from where the Job Intitiated
+	  public String getJobOriginHostNamebyTaskID(int taskID);
+
 }
