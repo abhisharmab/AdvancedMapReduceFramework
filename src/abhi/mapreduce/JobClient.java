@@ -84,20 +84,6 @@ public class JobClient implements IClientServices {
 			return false;
 		}
 
-		//2. Make sure OUTPUT directory doesn't already exist
-		File theDir = new File(jobConf.getOutputPath());
-
-		// if The Directory Exists locally on the User's Machine then Print Error
-		if (theDir.exists())
-		{
-			System.out.println("Output Directory "+ jobConf.getOutputPath()+ "Already Exists. Cannot Run Job");
-		}
-
-		//3. Talk to the NameNode to make check the FILE is already broken
-		// If the file is NOT broken-up and ready then Talk to NameNodeSlaveManager and ask him to split it
-
-		//TODO: Abhi check-if this is what Douglas wants. InputPath
-
 		boolean IsFilePartitioned = false;
 
 		if(!nameNodeMasterReference.checkFileExistence(jobConf.getInputPath()))
