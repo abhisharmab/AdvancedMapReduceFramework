@@ -142,11 +142,14 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
     		
     		System.out.println("NameNodeSlaveImpl: Ready...");
 		} catch (RemoteException e) {
-			System.out.println("Error while accessing the remote object");
+			System.out.println("Error while accessing the remote object check on the RMI.");
+			System.exit(0);
 		} catch (UnknownHostException e) {
-			System.out.println("Error while accessing the RMI please retry");
+			System.out.println("Error while accessing the RMI, please retry");
+			System.exit(0);
 		} catch (MalformedURLException e) {
 			System.out.println("Error while binding the slave, please retry.");
+			System.exit(0);
 		} 
 
         
@@ -167,7 +170,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 	        		
 	    	} catch (Exception e){
 	    		System.out.println("Manager: Exception thrown looking up " + "NameNodeSlaveManager");
-	    		
+	    		System.exit(0);
 	    	}
 	}
 	
@@ -200,10 +203,13 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
             }
 		} catch (UnknownHostException e) {
 			System.out.println("Error while looking up the host name, please try again.");
+			System.exit(0);
 		} catch (MalformedURLException e) {
 			System.out.println("Error while binding the DataNode, please try again.");
+			System.exit(0);
 		} catch (RemoteException e){
         	System.out.println("Error while accessing the remote object, please try agian.");
+        	System.exit(0);
 		} 
 	}
 	
