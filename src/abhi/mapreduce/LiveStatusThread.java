@@ -101,7 +101,7 @@ public class LiveStatusThread implements Runnable {
 								if(pList.size() > 1)
 									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result");
 								else
-									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result" + counter);
+									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result_" + counter);
 
 								file.createNewFile();
 							
