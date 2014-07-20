@@ -170,7 +170,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 					taskMetaData.increaseAttempts();
 					if(taskMetaData.getAttempts() <= TaskMetaData.MAXIMUM_TRIES)
 					{
-						this.jobTracker.queueUpTask(taskMetaData);
+						this.jobTracker.queueUpFailedTask(taskMetaData);
 					}
 					else
 					{

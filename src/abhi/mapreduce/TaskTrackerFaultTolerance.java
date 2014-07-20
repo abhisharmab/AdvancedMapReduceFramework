@@ -3,6 +3,9 @@
  */
 package abhi.mapreduce;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author abhisheksharma
  *
@@ -30,8 +33,29 @@ public class TaskTrackerFaultTolerance implements Runnable {
 	 */
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+	
+	   Map<String, TaskTrackerInfo> taskTrackers = this.jobTracker.getTaskTrackers();
 
+	   for (Map.Entry<String, TaskTrackerInfo> entry : taskTrackers.entrySet()) 
+	   {
+		   TaskTrackerInfo tInfo = entry.getValue();
+		   
+		   if(!tInfo.isMachineAlive())
+		   {
+			    if (this.jobTracker.getTaskTrackers().containsKey(tInfo)) 
+			    {
+			    	this.jobTracker.getTaskTrackers().remove(tInfo);
+			    }
+			    
+		        //Re-assign the Tasks
+		        Set<Integer> currentRunningTasks = tInfo.getTasksRunning();
+		        for (Integer taskID : currentRunningTasks) 
+		        {
+		          this.jobTracker.reQueueExisitingTask(taskID);
+		        }
+		   }
+
+	   }
 	}
 
 	/**

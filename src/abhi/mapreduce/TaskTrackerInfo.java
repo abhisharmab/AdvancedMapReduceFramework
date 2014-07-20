@@ -24,7 +24,7 @@ public class TaskTrackerInfo implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	//Threshold for a SLave Node to be considered as alive
-	  private final int THRESHOLD_ALIVE_CYCLE = 8; 
+	  private final int THRESHOLD_ALIVE_CYCLE = 20; 
 
 	  // the unique name of task tracker
 	  private String taskTrackerName;
@@ -94,7 +94,7 @@ public class TaskTrackerInfo implements Serializable{
 	 * @param numOfReduces the numOfReduces to set
 	 */
 	public void setNumOfReduces(int numOfReduces) {
-		this.numOfReduces = numOfReduces;
+		TaskTrackerInfo.numOfReduces = numOfReduces;
 	}
 
 	/**
@@ -109,5 +109,19 @@ public class TaskTrackerInfo implements Serializable{
 	 */
 	public void setTaskTrackerReference(TaskTrackerServices taskTrackerReference) {
 		this.taskTrackerReference = taskTrackerReference;
+	}
+
+	/**
+	 * @return the taskRunning
+	 */
+	public Set<Integer> getTasksRunning() {
+		return tasksRunning;
+	}
+
+	/**
+	 * @param taskRunning the taskRunning to set
+	 */
+	public void setTasksRunning(Set<Integer> taskRunning) {
+		this.tasksRunning = taskRunning;
 	}
 }
