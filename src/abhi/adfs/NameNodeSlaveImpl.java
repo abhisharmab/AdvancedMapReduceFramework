@@ -365,6 +365,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 							// Then get the new block.
 							data = spliter.getNextBlock();
 						}
+						fileInfo.setParitionNumber(spliter.getParitionSize());
 
 					} catch (FileNotFoundException e) {
 						System.out.println("Error while accessing file : " + fileName);
@@ -373,6 +374,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 						System.out.println("Error while opening the file please try again.");
 					}
 											
+					
 					if(fileInfo.validateFiles()){
 						// Add the fileInfo on my local				
 						list_inputFileInfo.add(fileInfo);
