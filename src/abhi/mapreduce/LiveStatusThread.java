@@ -64,108 +64,115 @@ public class LiveStatusThread implements Runnable {
 
 		while(notTimeToExit)
 		{
-			liveJobInfo = this.jobTrackerServiceReference.getLiveStatusofJob(this.jobId);
-			Collection<TaskProgress> pList = liveJobInfo.getProgressofallTasks().values();
+			try {
+				liveJobInfo = this.jobTrackerServiceReference.getLiveStatusofJob(this.jobId);
+				Collection<TaskProgress> pList = liveJobInfo.getProgressofallTasks().values();
 
-			if(liveJobInfo.getJobStatus() == SystemConstants.JobStatus.SUCCEEDED)
-			{
-				notTimeToExit = false; 
-				System.out.println("Job_" + liveJobInfo.getJobName() + "Successfully Completed. mapPhase = 100%, reducePhase = 100%");
-
-				System.out.println("Moving Final Results File/s to User Requested Location.....");
-
-				//Create the directory for the Final Output
-				File dir = new File(this.finalOutputPath);
-
-				boolean good = dir.mkdir();
-
-				if(good)
+				if(liveJobInfo.getJobStatus() == SystemConstants.JobStatus.SUCCEEDED)
 				{
-					int counter = 0;
-					for(TaskProgress tprogress : pList)
+					notTimeToExit = false; 
+					System.out.println("Job_" + liveJobInfo.getJobName() + "Successfully Completed. mapPhase = 100%, reducePhase = 100%");
+
+					System.out.println("Moving Final Results File/s to User Requested Location.....");
+
+					//Create the directory for the Final Output
+					File dir = new File(this.finalOutputPath);
+
+					boolean good = dir.mkdir();
+
+					if(good)
 					{
-						counter ++;
-						if(tprogress.getTaskType() == SystemConstants.TaskType.REDUCER)
+						int counter = 0;
+						for(TaskProgress tprogress : pList)
 						{
-							//Actually create the requested directory
-							//tprogress.getCreatedFileNames().get(0)
-							String fileName = tprogress.getCreatedFileNames().get(0);
-							String fileContent;
-							
-							try 
+							counter ++;
+							if(tprogress.getTaskType() == SystemConstants.TaskType.REDUCER)
 							{
-								fileContent = this.nameNodeSlaveReference.retrieveFromLocalDataNode(fileName);
-
-								File file;
+								//Actually create the requested directory
+								//tprogress.getCreatedFileNames().get(0)
+								String fileName = tprogress.getCreatedFileNames().get(0);
+								String fileContent;
 								
-								if(pList.size() > 1)
-									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result");
-								else
-									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result_" + counter);
+								try 
+								{
+									fileContent = this.nameNodeSlaveReference.retrieveFromLocalDataNode(fileName);
 
-								file.createNewFile();
-							
-								FileWriter fw = new FileWriter(file.getAbsoluteFile());
-								BufferedWriter bw = new BufferedWriter(fw);
-								bw.write(fileContent);
-								bw.close();
-					 
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+									File file;
+									
+									if(pList.size() > 1)
+										file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result");
+									else
+										file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result_" + counter);
 
-						} 
+									file.createNewFile();
+								
+									FileWriter fw = new FileWriter(file.getAbsoluteFile());
+									BufferedWriter bw = new BufferedWriter(fw);
+									bw.write(fileContent);
+									bw.close();
+						 
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+
+							} 
+						}
 					}
+					
+					System.out.println("DONE. Final Results Moved to the Requested Location");
 				}
 				
-				System.out.println("DONE. Final Results Moved to the Requested Location");
-			}
-			
-			else if(liveJobInfo.getJobStatus() == SystemConstants.JobStatus.FAILED)
-			{
-				notTimeToExit = false; 
-				System.out.println("Job" + liveJobInfo.getJobName() + " Failed :(. System Error. Please try again");
-			}
-
-			else
-			{
-				int noMappers = 0;
-				float cumulativeMapPercent = 0;
-
-				int noReducers = 0;
-				float cumulativeReducePercent = 0;
-
-				for(TaskProgress tprogress : pList)
+				else if(liveJobInfo.getJobStatus() == SystemConstants.JobStatus.FAILED)
 				{
-					if(tprogress.getTaskType() == SystemConstants.TaskType.MAPPER)
-					{
-						noMappers++;
-						cumulativeMapPercent = tprogress.getPercentageCompleted();
-					}
-					else
-					{
-						noReducers++;
-						cumulativeReducePercent = tprogress.getPercentageCompleted();
-					}
+					notTimeToExit = false; 
+					System.out.println("Job" + liveJobInfo.getJobName() + " Failed :(. System Error. Please try again");
 				}
 
-				if(noMappers == 0)
-					noMappers = 1; 
-				if(noReducers == 0)
-					noReducers = 1;
+				else
+				{
+					int noMappers = 0;
+					float cumulativeMapPercent = 0;
 
-				System.out.println("Job_" + liveJobInfo.getJobName() + ". mapPhase = " + cumulativeMapPercent/noMappers + ", reducePhase = " + cumulativeReducePercent/noReducers);
-			}
+					int noReducers = 0;
+					float cumulativeReducePercent = 0;
 
-			try 
-			{
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
+					for(TaskProgress tprogress : pList)
+					{
+						if(tprogress.getTaskType() == SystemConstants.TaskType.MAPPER)
+						{
+							noMappers++;
+							cumulativeMapPercent = tprogress.getPercentageCompleted();
+						}
+						else
+						{
+							noReducers++;
+							cumulativeReducePercent = tprogress.getPercentageCompleted();
+						}
+					}
+
+					if(noMappers == 0)
+						noMappers = 1; 
+					if(noReducers == 0)
+						noReducers = 1;
+
+					System.out.println("Job_" + liveJobInfo.getJobName() + ". mapPhase = " + cumulativeMapPercent/noMappers + ", reducePhase = " + cumulativeReducePercent/noReducers);
+				}
+
+				try 
+				{
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+
+			} catch (RemoteException e1) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e1.printStackTrace();
 			}
 		}
-
+			
 	}
 
 	/**
