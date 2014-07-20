@@ -41,7 +41,7 @@ public class TrackerHeartBeat implements Serializable{
 		this.setTaskTrackerServiceName("TaskTracker_" + this.taskTrackerName);
 		this.statusofAllTasks = statusofTasks;
 		try {
-			this.rmiHostName = InetAddress.getLocalHost().getHostName();
+			this.rmiHostName = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
