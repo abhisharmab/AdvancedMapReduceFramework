@@ -142,6 +142,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 			}
 		} catch (IOException e) {
 			System.out.println("There error writing the file : " + filename);
+			e.printStackTrace();
 			return false;
 		} finally {
 			try {
@@ -209,6 +210,14 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 	        output.write(data,0,length);
 	        output.flush();
 	        output.close();
+	        
+	        
+	    	//Extracting the Jar file for future 
+	        JarExtraction ex = new JarExtraction(filename);
+	        ex.extraction();
+	        
+	        
+	        
 	        return true;
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
@@ -223,6 +232,9 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 			e.printStackTrace();
 			return false;
 		}
+		
+	
+		
 		
 	}
 
