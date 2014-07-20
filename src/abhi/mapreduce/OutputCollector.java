@@ -28,6 +28,6 @@ public abstract class OutputCollector<KOUT, VOUT> {
 		this.outputFileNamePrefix = outputFileNamePrefix;
 	}
 	
-	protected abstract void collect(KOUT key, VOUT value) throws IOException;
+	public abstract void collect(KOUT key, VOUT value) throws IOException;
 
 }

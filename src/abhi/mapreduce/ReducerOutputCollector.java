@@ -56,7 +56,7 @@ public class ReducerOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VO
 
 
 	@Override
-protected void collect(KOUT key, VOUT value) throws IOException 
+public void collect(KOUT key, VOUT value) throws IOException 
 	{
 		
 		try

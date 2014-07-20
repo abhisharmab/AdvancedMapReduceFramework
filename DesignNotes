@@ -1,3 +1,23 @@
+     JobConf conf = new JobConf(WordCount.class);
+40.	     conf.setJobName("wordcount");
+41.	
+42.	     conf.setOutputKeyClass(Text.class);
+43.	     conf.setOutputValueClass(IntWritable.class);
+44.	
+45.	     conf.setMapperClass(Map.class);
+46.	     conf.setCombinerClass(Reduce.class);
+47.	     conf.setReducerClass(Reduce.class);
+48.	
+49.	     conf.setInputFormat(TextInputFormat.class);
+50.	     conf.setOutputFormat(TextOutputFormat.class);
+51.	
+52.	     FileInputFormat.setInputPaths(conf, new Path(args[0]));
+53.	     FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+54.	
+55.	     JobClient.runJob(conf);
+
+
+
 //TODO: Abhi
 (Search for this that needs to be implemented)
 

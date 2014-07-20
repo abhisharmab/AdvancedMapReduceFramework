@@ -54,7 +54,7 @@ public class MapperOutputCollector<KOUT, VOUT> extends OutputCollector<KOUT, VOU
 	}
 
 	@Override
-	protected void collect(KOUT key, VOUT value) throws IOException {
+	public void collect(KOUT key, VOUT value) throws IOException {
 		// TODO Auto-generated method stub
 		if(this.paritioner != null)
 		{
