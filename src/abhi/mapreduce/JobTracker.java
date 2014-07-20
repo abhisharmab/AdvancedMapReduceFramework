@@ -223,6 +223,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		try {
 			JobTracker jt = new JobTracker();
 			
+			
 		    //TaskTracker Fault Tolerance Thread
 		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
 		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
