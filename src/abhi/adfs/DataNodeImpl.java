@@ -141,7 +141,7 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 				System.out.println("File is already existing.");
 			}
 		} catch (IOException e) {
-			System.out.println("There error writing the file : " + filename);
+			System.out.println("There are error writing the file : " + filename);
 			e.printStackTrace();
 			return false;
 		} finally {

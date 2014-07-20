@@ -54,7 +54,7 @@ public class InputFileInfo  implements Serializable{
 		// When validation pass we clean up the deadNodes
 		if( checking){
 			System.out.println("Validation Passed!");
-			deadNodes.clear();
+			getDeadNodes().clear();
 			valid = true;
 		} else {
 			System.out.println("Error while validatation.");
