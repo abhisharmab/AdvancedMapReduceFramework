@@ -38,6 +38,6 @@ public interface IJobTrackerServices extends Remote{
 	  public List<TaskProgress> getCompletedMapTasks(int reducerTaskID) throws RemoteException;
 	  
 	  //For the client to get Live Updates about the job that was just submitted
-	  public JobInfo getLivStatusofJob(int jobID);
+	  public JobInfo getLiveStatusofJob(int jobID);
 
 }

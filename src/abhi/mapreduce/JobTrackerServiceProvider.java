@@ -195,11 +195,9 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	}
 
 
-
 	@Override
-	public JobInfo getLivStatusofJob(int jobID) {
-		// TODO Auto-generated method stub
-		return null;
+	public JobInfo getLiveStatusofJob(int jobID) {
+		return this.jobTracker.getJobInfobyId(jobID);		
 	}
 
 }
