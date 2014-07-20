@@ -38,9 +38,9 @@ public interface IJobTrackerServices extends Remote{
 	  public List<TaskProgress> getCompletedMapTasks(int reducerTaskID) throws RemoteException;
 	  
 	  //For the client to get Live Updates about the job that was just submitted
-	  public JobInfo getLiveStatusofJob(int jobID);
+	  public JobInfo getLiveStatusofJob(int jobID) throws RemoteException;
 
 	  //For the reducer to the get the HOST from where the Job Intitiated
-	  public String getJobOriginHostNamebyTaskID(int taskID);
+	  public String getJobOriginHostNamebyTaskID(int taskID) throws RemoteException;
 
 }

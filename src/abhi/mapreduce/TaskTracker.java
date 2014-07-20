@@ -67,10 +67,10 @@ public class TaskTracker {
 	public TaskTracker()
 	{
 		//Get the JobTrackerServiceProvider Reference
-		int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REGISTRY_PORT));
+		int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_PORT));
 		Registry rmiRegistry;
 		try {
-			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
+			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_HOST),registryPort);
 			this.setJobTrackerServiceProvider((JobTrackerServiceProvider) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Could bind to the JobTracker Registry Error Occured");
@@ -104,12 +104,12 @@ public class TaskTracker {
 
 	}
 
-	//Called to actually start a Mapper or Reducer Task
-	public void executeTask() throws RemoteException
-	{
-	
-	}
-	
+//	//Called to actually start a Mapper or Reducer Task
+//	public void executeTask() throws RemoteException
+//	{
+//	
+//	}
+//	
 	
 	//Each of the Spawned Off Mapper or Reducer Field Agent Will Call Upon this Function to Update their Status
 	//Each field agent will have a reference of the main co-ordinating Boss that is the TaskTracker

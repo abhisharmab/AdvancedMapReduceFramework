@@ -182,7 +182,7 @@ public class Manager {
 										
 									// Distributing and Partitioning the input file
 									if(slave.dump(inputFileName)){
-										executeFile(executionName);
+										executeFile(executionName, inputFileName, outputLocation);
 									} else {
 										System.out.println("Error in distributing the input file.");
 										System.out.println("Check the distribute file system and try again.");
@@ -215,7 +215,7 @@ public class Manager {
     }
 	
 	
-	private static void executeFile(String executeName){
+	private static void executeFile(String executeName, String inputFile, String outputPath){
 
 		String separator = System.getProperty("file.separator");
 		String[] args = new String[4];
@@ -224,6 +224,8 @@ public class Manager {
 		args[1] = "-cp";
 		args[2] = "."+separator+"*";
 		args[3] = executeName;
+		args[4] = inputFile;
+		args[5] = outputPath;
 		
 		 
 		ProcessBuilder p = new ProcessBuilder().command(args);
