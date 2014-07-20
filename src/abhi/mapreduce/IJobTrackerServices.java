@@ -23,7 +23,7 @@ public interface IJobTrackerServices extends Remote{
 	  public int requestJobID() throws RemoteException;
 
 	  //JobClient calls this Method to SubmitaJob
-	  public boolean submitJob(JobConf jconf, Object targetCode) throws RemoteException;
+	  public boolean submitJob(JobConf jconf) throws RemoteException;
 	  
 	  //TaskManager calls this to Update JobTracker about its status. 
 	  //This is pretty much the status of each node
@@ -38,6 +38,6 @@ public interface IJobTrackerServices extends Remote{
 	  public List<TaskProgress> getCompletedMapTasks(int reducerTaskID) throws RemoteException;
 	  
 	  //For the client to get Live Updates about the job that was just submitted
-	  public JobInfo getLivStatusofJob(int jobID);
+	  public JobInfo getLiveStatusofJob(int jobID);
 
 }

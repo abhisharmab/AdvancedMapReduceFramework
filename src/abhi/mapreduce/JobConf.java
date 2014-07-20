@@ -46,6 +46,8 @@ public class JobConf implements Serializable{
 	  
 	  // the path of the jar file which contains all the codes of a job
 	  private String jarFilePath;
+	  
+	  private String jobRequestOriginHostName;
 
 	  //Constructor for JobConf
 	  public JobConf() {
@@ -213,6 +215,22 @@ public class JobConf implements Serializable{
 	 */
 	public void setJarFilePath(String jarFilePath) {
 		this.jarFilePath = jarFilePath;
+	}
+
+
+	/**
+	 * @return the jobRequestOriginHostName
+	 */
+	public String getJobRequestOriginHostName() {
+		return jobRequestOriginHostName;
+	}
+
+
+	/**
+	 * @param jobRequestOriginHostName the jobRequestOriginHostName to set
+	 */
+	public void setJobRequestOriginHostName(String jobRequestOriginHostName) {
+		this.jobRequestOriginHostName = jobRequestOriginHostName;
 	}
 	
 	

@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import abhi.adfs.InputFileInfo;
 import abhi.adfs.NameNodeMaster;
 
@@ -104,13 +103,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			//Job collections
 			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
 
-			//List of all the Tasks in the Systems.
-			//this.mapTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
-			//this.reduceTasks = Collections.synchronizedMap(new HashMap<Integer, TaskMetaData>());
-			
-			//Basically these are queued Map and Reduce Tasks which are Yet to be Picked up
-			//this.queueofMapTasks = new HashMap<String, TaskMetaData>();
-			//this.queueofReduceTasks = new HashMap<String, TaskMetaData>();
 			
 			//New Strategy 
 			this.mapperTasks =  Collections.synchronizedMap(new HashMap<Integer,ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>());
@@ -131,7 +123,12 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		    
 		    thread.setDaemon(true);
 		    schExecutor.scheduleAtFixedRate(thread, 0, 5, TimeUnit.SECONDS);
-		    //Scheduler Strategy 
+		    
+		    //TaskTracker Fault Tolerance Thread
+		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(4);
+		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(this);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 10, 10,TimeUnit.SECONDS);
+ 
 
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			System.err.println("Could not Register to the RMI Registry");
@@ -158,52 +155,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		return ++this.taskIDCounter;
 	}
 
-	
-	//TODO: Abhi this strategy is not going to work. This code is wrong.
-	//Get the next MapperTask in Line to be Processed
-	
-	//Fuck Abhi
-	/*
-	public TaskMetaData getNextMapperTaskinLineforNode(String taskTrackerName)
-	{
-		while(!this.mapTasks.isEmpty())
-		{
-			TaskMetaData task = this.queueofMapTasks.get(taskTrackerName);
-			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
-			{
-				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
-			}
-			else
-			{
-				//TODO: Abhi Make sure you synchronizedly delete the Entry from the Map(Queue) before returning
-				return task;
-			}
-		}
-		return null;
-	}
-	*/
-
-	//Fuck Abhi
-	/*
-	//Get the next ReducerTask in-line to be Processed
-	public TaskMetaData getNextReducerTaskinLineforNode(String taskTrackerName)
-	{
-		while(!this.reduceTasks.isEmpty())
-		{
-			TaskMetaData task = this.queueofReduceTasks.get(taskTrackerName);
-			if(this.jobs.get(task.getJobID()).getJobStatus() == SystemConstants.JobStatus.FAILED)
-			{
-				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.FAILED);
-			}
-			else
-			{
-				//TODO: Abhi Make sure you synchronizedly delete the Entry from the Map(Queue) before returning
-				return task;
-			}
-		}
-		return null;
-	}
-	*/
 
 	//We need to make sure we check-in all the TaskTrackers that send us heart-beat
 	//If we already have added them just ignore otherwise add it to the TaskTrackerInfo List
@@ -215,7 +166,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
-	//Check_Out a Task Tracker coz maybe its Dead
+	//Check_Out a Task Tracker because maybe its Dead
 	public void checkOutTaskTracker(String name) {
 		if (name == null)
 			return;
@@ -241,65 +192,9 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		}
 	}
 
-	/*
-	//This method actual picks up the Map and Reduce tasks choosen as per Strategy and asked the TaskTracker to Run it
-	public void assignTasks()
-	{
-		Map<Integer, String> strategy = null;
-
-		// use the system's scheduler to generate the scheduling schemes
-		synchronized (this.taskTrackers) {strategy = makeStrategy();}
-
-		if (strategy == null)
-			return;
-
-		for (Entry<Integer, String> entry : strategy.entrySet()) {
-			Integer taskid = entry.getKey();
-
-			TaskMetaData task = null;
-
-			if (this.mapTasks.containsKey(taskid)) {
-				task = this.mapTasks.get(taskid);
-			}
-
-			if (this.reduceTasks.containsKey(taskid)) {
-				task = this.reduceTasks.get(taskid);
-			}
-
-			if (task == null)
-				continue;
-
-			// find the specific task tracker
-			TaskTrackerInfo targetTasktracker = this.taskTrackers.get(entry.getValue());
-
-			// assign the task to the task-tracker
-			boolean result = false;
-			try 
-			{
-				//TODO:Abhi -- Check this code. Written late at Night
-				result = targetTasktracker.getTaskTrackerReference().executeTask();
-				//The Execute Method Needs to be changed
-			} catch (Exception e) {
-				result = false;
-			}
-			if (result) {
-				// if this task has been submitted to a task-tracker successfully
-				task.getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
-			} else {
-				// if this task is failed to be submitted, place it back on the Map
-				if (task.isMapperTask()) 
-				{
-					this.queueofMapTasks.put(entry.getValue(), task);
-				} else 
-				{
-					this.queueofMapTasks.put(entry.getValue(), task);
-				}
-			}
-		}
-	}*/
 
 	//Called to Queue-Up A Task
-	public void queueUpTask(TaskMetaData taskMetaData)
+	public void queueUpFailedTask(TaskMetaData taskMetaData)
 	{
 		if(taskMetaData.isMapperTask())
 		{
@@ -312,6 +207,19 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			ArrayList<ReducerPriorityQueue> temp = Collections.list(this.reducerTasks.get(taskMetaData.getTaskID()).elements());
 			if(temp.get(0)!= null)
 				this.reduceTaskQueue.put(taskMetaData, temp.get(0));
+		}
+	}
+	
+	//Re-Queue and Existing Task if the TaskTracker Fails. We will have some Alternative Task-Trackers to Re-Do the Task.
+	public void reQueueExisitingTask(int taskID)
+	{
+		if(this.mapperTasks.containsKey(taskID))
+		{
+			this.mapTaskQueue.put(Collections.list(this.mapperTasks.get(taskID).keys()).get(0), Collections.list(this.mapperTasks.get(taskID).elements()).get(0));
+		}
+		else
+		{
+			this.reduceTaskQueue.put(Collections.list(this.reducerTasks.get(taskID).keys()).get(0), Collections.list(this.reducerTasks.get(taskID).elements()).get(0));
 		}
 	}
 	

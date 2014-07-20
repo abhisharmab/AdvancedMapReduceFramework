@@ -64,7 +64,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	 * @see abhi.mapreduce.IJobTrackerServices#submitJob(abhi.mapreduce.JobConf)
 	 */
 	@Override
-	public boolean submitJob(JobConf jconf, Object targetCode) throws RemoteException {
+	public boolean submitJob(JobConf jconf) throws RemoteException {
 		if(jconf == null)
 			return false;
 		JobInfo jobInfo = new JobInfo(jconf);
@@ -170,7 +170,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 					taskMetaData.increaseAttempts();
 					if(taskMetaData.getAttempts() <= TaskMetaData.MAXIMUM_TRIES)
 					{
-						this.jobTracker.queueUpTask(taskMetaData);
+						this.jobTracker.queueUpFailedTask(taskMetaData);
 					}
 					else
 					{
@@ -195,11 +195,9 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	}
 
 
-
 	@Override
-	public JobInfo getLivStatusofJob(int jobID) {
-		// TODO Auto-generated method stub
-		return null;
+	public JobInfo getLiveStatusofJob(int jobID) {
+		return this.jobTracker.getJobInfobyId(jobID);		
 	}
 
 }

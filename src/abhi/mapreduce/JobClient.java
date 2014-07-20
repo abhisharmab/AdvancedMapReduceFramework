@@ -6,9 +6,13 @@ package abhi.mapreduce;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import abhi.adfs.NameNodeMaster;
 import abhi.adfs.NameNodeSlave;
@@ -49,8 +53,8 @@ public class JobClient implements IClientServices {
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
-			System.err.println("Error occurred in communcating with JobTracker");
-			System.err.println("Ensure Jobtracker is running and check configuration");
+			System.out.println("Error occurred in communcating with JobTracker");
+			System.out.println("Ensure Jobtracker is running and check configuration");
 		}
 
 		try
@@ -61,7 +65,7 @@ public class JobClient implements IClientServices {
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
-			System.err.println("Error occurred in communcating with NameNode via the Registry");
+			System.out.println("Error occurred in communcating with NameNode via the Registry");
 		}
 
 	}
@@ -72,11 +76,11 @@ public class JobClient implements IClientServices {
 	}
 
 	@Override
-	public boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException {
+	public boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException {
 		//1. Check if the Job Configuration is Valid
 		if(jobConf == null || !IsJobConfValid(jobConf))
 		{
-			System.err.println("Invalid Job Configuration Submitted. Please check your Job Source Code and Config");
+			System.out.println("Invalid Job Configuration Submitted. Please check your Job Source Code and Config");
 			return false;
 		}
 
@@ -107,27 +111,29 @@ public class JobClient implements IClientServices {
 		}
 
 		if(IsFilePartitioned)
-		  {
+		{
 			// If the file is broken-up and ready. No-worries then. Proceed with sending command to JobTracker 
 			//Piggyback on this JobId to Report Progress for the Client about the Job that he request to Run
 			int uniqueJobID = requestJobIDfromJobTracker();
-			if(uniqueJobID <= 0){
-				System.err.println("The system is not available for submitting new job.");
+			if(uniqueJobID <= 0)
+			{
+				System.out.println("The system is not available for submitting new job.");
 				return false;
 			} else {
 				jobConf.setJobID(uniqueJobID);
+				jobConf.setJobRequestOriginHostName(InetAddress.getLocalHost().getHostName());
 			}
 
 			if(jobConf.getJobName() == null || jobConf.getJobName().length() == 0)
 				jobConf.setJobName(String.valueOf(uniqueJobID));
 
 			try {
-				if (this.jobTrackerServiceProvider.submitJob(jobConf, targetCode)) 	    
+				if (this.jobTrackerServiceProvider.submitJob(jobConf)) 	    
 				{
-					System.out.println("JobClient submmited Job successfully.");
-					
-					//1.Monitor and Print Job Information on the Screen
-					//2. Once the Job is done then we go and grab the 
+					System.out.println("JobClient submmited Job successfully. Monitoring status...");
+
+					this.monitorandPrintJobInfoandMoveFile(uniqueJobID,jobConf.getOutputPath());
+
 					return true;
 				}
 				else
@@ -135,24 +141,26 @@ public class JobClient implements IClientServices {
 					System.out.println("Failed to submit this job to the Job Tracker");
 				}
 			} 
-			catch (RemoteException e) 
+			catch (RemoteException | InterruptedException e) 
 			{
-				System.err.println("Error occured while submitting the job");
+				System.out.println("Error occured while submitting the job");
 				e.printStackTrace();
 			}
 			return false;
 		}
 		else
 		{
-			System.err.println("Unable to partition the file. Either the file is not present or file is corrupt");
+			System.out.println("Unable to partition the file. Either the file is not present or file is corrupt");
 			return false;
 		}
 	}
 
 	@Override
-	public void monitorandPrintJobInfo(JobConf jobConf) throws IOException,
+	public void monitorandPrintJobInfoandMoveFile(int uniqueJobID, String outputPath) throws IOException,
 	InterruptedException {
-		// TODO Auto-generated method stub
+
+		Thread progressMonitorThread = new Thread(new LiveStatusThread(uniqueJobID,this.jobTrackerServiceProvider, outputPath, this.nameNodeSlaveReference));
+		progressMonitorThread.start();
 	}
 
 	/**
@@ -215,6 +223,12 @@ public class JobClient implements IClientServices {
 
 		return true;
 
+	}
+
+	@Override
+	public boolean putFinalPayload() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 
