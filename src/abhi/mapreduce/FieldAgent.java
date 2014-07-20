@@ -64,7 +64,7 @@ public abstract class FieldAgent {
 
 	    String registryHostName = null;
 	    try {
-	      registryHostName = InetAddress.getLocalHost().getHostName();
+	      registryHostName = InetAddress.getLocalHost().getHostAddress();
 	    } catch (UnknownHostException e1) {
 	      e1.printStackTrace();
 	    }

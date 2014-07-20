@@ -42,6 +42,8 @@ public class TaskTrackerFaultTolerance implements Runnable {
 		   
 		   if(!tInfo.isMachineAlive())
 		   {
+			   System.out.println("Task Tracker: " + tInfo.getTaskTrackerName() + "Diead. Trying to re-organize the tasks");
+			   
 			    if (this.jobTracker.getTaskTrackers().containsKey(tInfo)) 
 			    {
 			    	this.jobTracker.getTaskTrackers().remove(tInfo);

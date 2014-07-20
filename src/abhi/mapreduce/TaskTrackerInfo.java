@@ -24,7 +24,7 @@ public class TaskTrackerInfo implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	//Threshold for a SLave Node to be considered as alive
-	  private final int THRESHOLD_ALIVE_CYCLE = 20; 
+	  private final int THRESHOLD_ALIVE_CYCLE = 10; 
 
 	  // the unique name of task tracker
 	  private String taskTrackerName;

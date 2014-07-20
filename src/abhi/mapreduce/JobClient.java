@@ -67,7 +67,7 @@ public class JobClient implements IClientServices {
 			this.nameNodeMasterReference = (NameNodeMaster) nameNodeRmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
 	        
 			//Get the NameNodeSlave
-			String identifer = InetAddress.getLocalHost().getHostName();
+			String identifer = InetAddress.getLocalHost().getHostAddress();
 	        String slave_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
 	        String lookupName = slave_Name +"_" + identifer;
         
@@ -118,7 +118,7 @@ public class JobClient implements IClientServices {
 				return false;
 			} else {
 				jobConf.setJobID(uniqueJobID);
-				jobConf.setJobRequestOriginHostName(InetAddress.getLocalHost().getHostName());
+				jobConf.setJobRequestOriginHostName(InetAddress.getLocalHost().getHostAddress());
 			}
 
 			if(jobConf.getJobName() == null || jobConf.getJobName().length() == 0)

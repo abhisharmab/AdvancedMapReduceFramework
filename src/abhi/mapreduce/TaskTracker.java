@@ -79,7 +79,7 @@ public class TaskTracker {
 
 		//Set the taskTrackerName
 		try {
-			this.taskTrackerName = InetAddress.getLocalHost().getHostName();
+			this.taskTrackerName = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -127,8 +127,15 @@ public class TaskTracker {
 	}
 
 	public static void main(String[] args) {
-		TaskTracker taskTracker = new TaskTracker();
-		taskTracker.fireUp();
+		try
+		{
+			TaskTracker taskTracker = new TaskTracker();
+			taskTracker.fireUp();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private void fireUp() {
