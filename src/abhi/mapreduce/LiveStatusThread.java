@@ -3,8 +3,15 @@
  */
 package abhi.mapreduce;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
+
+import abhi.adfs.NameNodeSlave;
 
 /**
  * @author abhisheksharma
@@ -20,14 +27,20 @@ public class LiveStatusThread implements Runnable {
 	/**
 	 * 
 	 */
-	
+
 	private int jobId; 
-	
+
 	private IJobTrackerServices jobTrackerServiceReference;
-	
-	public LiveStatusThread(int jobId, IJobTrackerServices jtSReference) {
+
+	private String finalOutputPath; 
+
+	private NameNodeSlave nameNodeSlaveReference;
+
+	public LiveStatusThread(int jobId, IJobTrackerServices jtSReference, String finalOutputPath, NameNodeSlave nameNodeSlaveReference) {
 		this.setJobId(jobId);
 		this.setJobTrackerServiceReference(jtSReference);
+		this.finalOutputPath = finalOutputPath;
+		this.nameNodeSlaveReference = nameNodeSlaveReference;
 	}
 
 	/* (non-Javadoc)
@@ -36,9 +49,17 @@ public class LiveStatusThread implements Runnable {
 	@Override
 	public void run() 
 	{
+		try 
+		{
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		boolean notTimeToExit = true; 
 		JobInfo liveJobInfo;
-		
+
 		while(notTimeToExit)
 		{
 			liveJobInfo = this.jobTrackerServiceReference.getLiveStatusofJob(this.jobId);
@@ -48,11 +69,56 @@ public class LiveStatusThread implements Runnable {
 			{
 				notTimeToExit = false; 
 				System.out.println("Job_" + liveJobInfo.getJobName() + "Successfully Completed. mapPhase = 100%, reducePhase = 100%");
-				
+
 				System.out.println("Moving Final Results File/s to User Requested Location.....");
-				//Do some code to move file to that location 
-				System.out.println("DONE :)");
+
+				//Create the directory for the Final Output
+				File dir = new File(this.finalOutputPath);
+
+				boolean good = dir.mkdir();
+
+				if(good)
+				{
+					int counter = 0;
+					for(TaskProgress tprogress : pList)
+					{
+						counter ++;
+						if(tprogress.getTaskType() == SystemConstants.TaskType.REDUCER)
+						{
+							//Actually create the requested directory
+							//tprogress.getCreatedFileNames().get(0)
+							String fileName = tprogress.getCreatedFileNames().get(0);
+							String fileContent;
+							
+							try 
+							{
+								fileContent = this.nameNodeSlaveReference.retrieveFromLocalDataNode(fileName);
+
+								File file;
+								
+								if(pList.size() > 1)
+									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result");
+								else
+									file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result" + counter);
+
+								file.createNewFile();
+							
+								FileWriter fw = new FileWriter(file.getAbsoluteFile());
+								BufferedWriter bw = new BufferedWriter(fw);
+								bw.write(fileContent);
+								bw.close();
+					 
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+						} 
+					}
+				}
+				
+				System.out.println("DONE. Final Results Moved to the Requested Location");
 			}
+			
 			else if(liveJobInfo.getJobStatus() == SystemConstants.JobStatus.FAILED)
 			{
 				notTimeToExit = false; 
@@ -85,13 +151,13 @@ public class LiveStatusThread implements Runnable {
 					noMappers = 1; 
 				if(noReducers == 0)
 					noReducers = 1;
-				
+
 				System.out.println("Job_" + liveJobInfo.getJobName() + ". mapPhase = " + cumulativeMapPercent/noMappers + ", reducePhase = " + cumulativeReducePercent/noReducers);
 			}
-			
+
 			try 
 			{
-				Thread.sleep(6000);
+				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

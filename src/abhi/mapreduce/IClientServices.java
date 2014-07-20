@@ -27,7 +27,7 @@ public interface IClientServices extends Remote {
 	//Reporting status of the Job on the user's command terminal
 	// This method will periodically get information from JobTracker about the JOB and update on the terminal 
 	// This will happen until the JOB is completed, dies, terminated or maybe cancelled explicitly by the user
-	public void monitorandPrintJobInfoandMoveFile(int jobID) throws IOException, InterruptedException;
+	public void monitorandPrintJobInfoandMoveFile(int jobID, String outputPath) throws IOException, InterruptedException;
 	
 	
 	//This is to finally move the output fil ein the right location requested by user.

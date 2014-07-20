@@ -130,9 +130,8 @@ public class JobClient implements IClientServices {
 				{
 					System.out.println("JobClient submmited Job successfully.");
 
-					this.monitorandPrintJobInfoandMoveFile(uniqueJobID);
+					this.monitorandPrintJobInfoandMoveFile(uniqueJobID,jobConf.getOutputPath());
 
-					//2. Once the Job is done then we go and grab the 
 					return true;
 				}
 				else
@@ -155,10 +154,11 @@ public class JobClient implements IClientServices {
 	}
 
 	@Override
-	public void monitorandPrintJobInfoandMoveFile(int uniqueJobID) throws IOException,
+	public void monitorandPrintJobInfoandMoveFile(int uniqueJobID, String outputPath) throws IOException,
 	InterruptedException {
 
-		Thread progressMonitorThread = new Thread(new LiveStatusThread(uniqueJobID,this.jobTrackerServiceProvider));
+		Thread progressMonitorThread = new Thread(new LiveStatusThread(uniqueJobID,this.jobTrackerServiceProvider, outputPath, this.nameNodeSlaveReference));
+		progressMonitorThread.start();
 	}
 
 	/**
