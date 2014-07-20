@@ -48,7 +48,7 @@ public class TaskTracker {
 
 	private final int hb_period = 4;
 
-	private JobTrackerServiceProvider jobTrackerServiceProvider;
+	private IJobTrackerServices jobTrackerServices;
 
 	private HashMap<Integer, TaskProgress> statusofAllTasks;
 
@@ -71,7 +71,7 @@ public class TaskTracker {
 		Registry rmiRegistry;
 		try {
 			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_HOST),registryPort);
-			this.setJobTrackerServiceProvider((JobTrackerServiceProvider) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
+			this.setJobTrackerServices((IJobTrackerServices) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Could bind to the JobTracker Registry Error Occured");
 			e.printStackTrace();
@@ -194,7 +194,7 @@ public class TaskTracker {
 			          /* send update package */
 			          if (hb != null)
 			            try {
-			            	jobTrackerServiceProvider.updateTaskManagerStatus(hb);
+			            	jobTrackerServices.updateTaskManagerStatus(hb);
 			            } catch (RemoteException e) {
 			              e.printStackTrace();
 			            }
@@ -268,21 +268,6 @@ public class TaskTracker {
 	}
 
 
-	/**
-	 * @return the jobTrackerServiceProvider
-	 */
-	public JobTrackerServiceProvider getJobTrackerServiceProvider() {
-		return jobTrackerServiceProvider;
-	}
-
-
-	/**
-	 * @param jobTrackerServiceProvider the jobTrackerServiceProvider to set
-	 */
-	public void setJobTrackerServiceProvider(JobTrackerServiceProvider jobTrackerServiceProvider) {
-		this.jobTrackerServiceProvider = jobTrackerServiceProvider;
-	}
-
 
 
 	/**
@@ -290,6 +275,14 @@ public class TaskTracker {
 	 */
 	public long getAliveThreshold() {
 		return aliveThreshold;
+	}
+
+	public IJobTrackerServices getJobTrackerServices() {
+		return jobTrackerServices;
+	}
+
+	public void setJobTrackerServices(IJobTrackerServices jobTrackerServices) {
+		this.jobTrackerServices = jobTrackerServices;
 	}
 
 
