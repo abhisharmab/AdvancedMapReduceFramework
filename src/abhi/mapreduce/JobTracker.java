@@ -88,7 +88,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		try 
 		{
 			//Register itself to the RMI Registry
-			this.jtServiceProvider = new JobTrackerServiceProvider();
+			this.jtServiceProvider = new JobTrackerServiceProvider(this);
 			Naming.rebind(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME), this.jtServiceProvider);
 
 			 
@@ -122,7 +122,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			this.reduceTaskQueue = new ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>();
 			
 			//Scheduler Strategy 
-		    ScheduledExecutorService schExecutor = Executors.newScheduledThreadPool(3);
+		    ScheduledExecutorService schExecutor = Executors.newScheduledThreadPool(1);
 		    Thread thread = new Thread(new Runnable() {
 		      public void run() {
 		        makeStrategy();
@@ -130,7 +130,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		    });
 		    
 		    thread.setDaemon(true);
-		    schExecutor.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
+		    schExecutor.scheduleAtFixedRate(thread, 0, 5, TimeUnit.SECONDS);
 		    //Scheduler Strategy 
 
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {

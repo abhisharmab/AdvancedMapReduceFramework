@@ -36,5 +36,8 @@ public interface IJobTrackerServices extends Remote{
 	  //This if for the Reduce Tasks. After all the Mappers are done we want to pull in 
 	  // the information for the Mappers to perform the Reduce.
 	  public List<TaskProgress> getCompletedMapTasks(int reducerTaskID) throws RemoteException;
+	  
+	  //For the client to get Live Updates about the job that was just submitted
+	  public JobInfo getLivStatusofJob(int jobID);
 
 }

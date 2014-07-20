@@ -40,8 +40,8 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 
 	private JobTracker jobTracker;
 
-	protected JobTrackerServiceProvider() throws RemoteException {
-		super();
+	protected JobTrackerServiceProvider(JobTracker jobTracker) throws RemoteException {
+		this.jobTracker = jobTracker;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -58,6 +58,8 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		return this.jobTracker.nextJobId();
 	}
 
+	
+	
 	/* (non-Javadoc)
 	 * @see abhi.mapreduce.IJobTrackerServices#submitJob(abhi.mapreduce.JobConf)
 	 */
@@ -190,6 +192,14 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 	public List<TaskProgress> getCompletedMapTasks(int reducerTaskID)
 			throws RemoteException {
 		return this.jobTracker.getCompletedMapTasks(reducerTaskID);
+	}
+
+
+
+	@Override
+	public JobInfo getLivStatusofJob(int jobID) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

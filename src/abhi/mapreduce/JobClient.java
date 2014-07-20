@@ -3,6 +3,7 @@
  */
 package abhi.mapreduce;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.*;
@@ -37,7 +38,7 @@ public class JobClient implements IClientServices {
 	private IJobTrackerServices jobTrackerServiceProvider;
 	private NameNodeMaster nameNodeMasterReference; 
 	private NameNodeSlave nameNodeSlaveReference;
-	
+
 	public JobClient()
 	{
 		try
@@ -51,7 +52,7 @@ public class JobClient implements IClientServices {
 			System.err.println("Error occurred in communcating with JobTracker");
 			System.err.println("Ensure Jobtracker is running and check configuration");
 		}
-		
+
 		try
 		{
 			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
@@ -64,7 +65,7 @@ public class JobClient implements IClientServices {
 		}
 
 	}
-	
+
 	public static void main(String[] args)
 	{
 		JobClient jobClient = new JobClient();
@@ -78,57 +79,79 @@ public class JobClient implements IClientServices {
 			System.err.println("Invalid Job Configuration Submitted. Please check your Job Source Code and Config");
 			return false;
 		}
-		
-		//2. TODO: Abhi make sure the INPUT and OUTPUT directory exist and is valid
-		
-		
+
+		//2. Make sure OUTPUT directory doesn't already exist
+		File theDir = new File(jobConf.getOutputPath());
+
+		// if The Directory Exists locally on the User's Machine then Print Error
+		if (theDir.exists())
+		{
+			System.out.println("Output Directory "+ jobConf.getOutputPath()+ "Already Exists. Cannot Run Job");
+		}
+
 		//3. Talk to the NameNode to make check the FILE is already broken
 		// If the file is NOT broken-up and ready then Talk to NameNodeSlaveManager and ask him to split it
-		
+
 		//TODO: Abhi check-if this is what Douglas wants. InputPath
-		
+
+		boolean IsFilePartitioned = false;
+
 		if(!nameNodeMasterReference.checkFileExistence(jobConf.getInputPath()))
 		{
-			 
-			//TODO: Abhi I need methods from Douglas to call upon this stuff.
-			//Call Upon the NameNodeSLaveManager to spilt the file.
+			//Request to Partition the File
+			IsFilePartitioned = this.nameNodeSlaveReference.dump(jobConf.getInputPath());
 		}
-		
-		// If the file is broken-up and ready. No-worries then. Proceed with sending command to JobTracker 
-		//Piggyback on this JobId to Report Progress for the Client about the Job that he request to Run
-		int uniqueJobID = requestJobIDfromJobTracker();
-		if(uniqueJobID <= 0){
-		      System.err.println("The system is not available for submitting new job.");
-	      return false;
-	    } else {
-	      jobConf.setJobID(uniqueJobID);
-	    }
-		
-		if(jobConf.getJobName() == null || jobConf.getJobName().length() == 0)
-			jobConf.setJobName(String.valueOf(uniqueJobID));
-		
-	    try {
-	        if (this.jobTrackerServiceProvider.submitJob(jobConf, targetCode)) 	    
-	        {
-	          System.out.println("JobClient submmited Job successfully.");
-	          return true;
-	        }
-	        else
-	        {
-	          System.out.println("Failed to submit this job to the Job Tracker");
-	        }
-	      } 
-	      catch (RemoteException e) 
-	      {
-	    	  System.err.println("Error occured while submitting the job");
-	    	  e.printStackTrace();
-	      }
-	    return false;
+		else
+		{
+			IsFilePartitioned = true;
+		}
+
+		if(IsFilePartitioned)
+		  {
+			// If the file is broken-up and ready. No-worries then. Proceed with sending command to JobTracker 
+			//Piggyback on this JobId to Report Progress for the Client about the Job that he request to Run
+			int uniqueJobID = requestJobIDfromJobTracker();
+			if(uniqueJobID <= 0){
+				System.err.println("The system is not available for submitting new job.");
+				return false;
+			} else {
+				jobConf.setJobID(uniqueJobID);
+			}
+
+			if(jobConf.getJobName() == null || jobConf.getJobName().length() == 0)
+				jobConf.setJobName(String.valueOf(uniqueJobID));
+
+			try {
+				if (this.jobTrackerServiceProvider.submitJob(jobConf, targetCode)) 	    
+				{
+					System.out.println("JobClient submmited Job successfully.");
+					
+					//1.Monitor and Print Job Information on the Screen
+					//2. Once the Job is done then we go and grab the 
+					return true;
+				}
+				else
+				{
+					System.out.println("Failed to submit this job to the Job Tracker");
+				}
+			} 
+			catch (RemoteException e) 
+			{
+				System.err.println("Error occured while submitting the job");
+				e.printStackTrace();
+			}
+			return false;
+		}
+		else
+		{
+			System.err.println("Unable to partition the file. Either the file is not present or file is corrupt");
+			return false;
+		}
 	}
 
 	@Override
-	public void monitorandPrintJobInfo(JobConf jobConf, IRunningJobInfo job) throws IOException,
-			InterruptedException {
+	public void monitorandPrintJobInfo(JobConf jobConf) throws IOException,
+	InterruptedException {
 		// TODO Auto-generated method stub
 	}
 
@@ -145,7 +168,7 @@ public class JobClient implements IClientServices {
 	public void setTrackerRemoteRef(JobTrackerServiceProvider trackerRemoteRef) {
 		this.jobTrackerServiceProvider = trackerRemoteRef;
 	}
-	
+
 	//Acts as acknowledgment from Job-tracker that it has indeed got a request to submit a JOB
 	//And it can process it. 
 	private int requestJobIDfromJobTracker()
@@ -160,7 +183,7 @@ public class JobClient implements IClientServices {
 			return -9;
 		}
 	}
-	
+
 	private boolean IsJobConfValid(JobConf jobConf)
 	{
 		if (jobConf.getInputPath() == null)
@@ -191,8 +214,8 @@ public class JobClient implements IClientServices {
 			return false;
 
 		return true;
-			
+
 	}
 
-	
+
 }
