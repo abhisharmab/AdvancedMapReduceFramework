@@ -37,6 +37,9 @@ public interface NameNodeSlave extends Remote{
 	// This will be called by the Reducer
 	public String retrieveFromLocalDataNode(String fileName) throws RemoteException;
 	
+	// This is used to check the existences of a file in the DFS
+	public boolean checkFileExistences(String fileName) throws RemoteException;
+	
 	// For debugging
 //	public void print() throws RemoteException;
 
