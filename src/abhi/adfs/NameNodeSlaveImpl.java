@@ -499,6 +499,20 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		return myDataNode.retrieve(fileName);
 	}
 
+	// This method will check the existence of a file in the DFS
+	@Override
+	public boolean checkFileExistences(String fileName) throws RemoteException {
+		return nameNodeMaster.checkFileExistence(fileName);
+	}
+
+	// This is used to save a file to the Local Data Node
+	@Override
+	public boolean saveFileToLocalDataNode(String fileName, String data)
+			throws RemoteException {
+		
+		return myDataNode.submit(fileName, data);
+	}
+
 	
 }
  
