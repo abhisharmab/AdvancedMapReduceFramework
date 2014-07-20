@@ -26,7 +26,7 @@ public class WordCountMapper extends Mapper<String, String, String, String>
 		
 		String line = value.toString();
 		
-		String[] words = line.split("");
+		String[] words = line.split(" ");
 		
 		for(String word : words)
 		{
