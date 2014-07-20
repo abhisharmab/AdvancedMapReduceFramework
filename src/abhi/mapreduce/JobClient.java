@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -59,11 +61,20 @@ public class JobClient implements IClientServices {
 
 		try
 		{
+			//Get the NameNodeMaster
 			int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_PORT));
 			Registry nameNodeRmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.NAMENODE_REGISTRY_HOST),registryPort);
 			this.nameNodeMasterReference = (NameNodeMaster) nameNodeRmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME));
+	        
+			//Get the NameNodeSlave
+			String identifer = InetAddress.getLocalHost().getHostName();
+	        String slave_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
+	        String lookupName = slave_Name +"_" + identifer;
+        
+        	this.nameNodeSlaveReference =  (NameNodeSlave) LocateRegistry.getRegistry().lookup(lookupName);		
+			
 		}
-		catch(NumberFormatException | RemoteException | NotBoundException e)
+		catch(NumberFormatException | RemoteException | NotBoundException | UnknownHostException e)
 		{
 			System.out.println("Error occurred in communcating with NameNode via the Registry");
 		}
