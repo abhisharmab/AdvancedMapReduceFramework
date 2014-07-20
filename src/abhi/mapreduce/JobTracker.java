@@ -123,12 +123,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		    
 		    thread.setDaemon(true);
 		    schExecutor.scheduleAtFixedRate(thread, 0, 5, TimeUnit.SECONDS);
-		    
-		    //TaskTracker Fault Tolerance Thread
-		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
-		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(this);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 10, 10,TimeUnit.SECONDS);
- 
+		     
 
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			System.err.println("Could not Register to the RMI Registry");
@@ -227,7 +222,14 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	{
 		try {
 			JobTracker jt = new JobTracker();
-		} catch (RemoteException e) {
+			
+		    //TaskTracker Fault Tolerance Thread
+		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
+		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 10, 10,TimeUnit.SECONDS);
+		} 
+		catch (Exception e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

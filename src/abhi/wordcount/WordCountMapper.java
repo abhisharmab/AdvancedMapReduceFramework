@@ -15,9 +15,6 @@ import abhi.mapreduce.OutputCollector;
 public class WordCountMapper extends Mapper<String, String, String, String>
 {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
