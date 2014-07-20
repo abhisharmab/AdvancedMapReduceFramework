@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 
 import abhi.adfs.NameNodeSlave;
+import abhi.adfs.NameNodeSlaveImpl;
 
 /**
  * @author dkrew
@@ -96,13 +97,17 @@ public class Manager {
 	    		   System.setSecurityManager(new RMISecurityManager());   
 	    	   }
 	        
+	  
 	        
-		        String identifer = InetAddress.getLocalHost().getHostName();
+		        String identifer = InetAddress.getLocalHost().getHostAddress();
 		        String slave_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
 		        String lookupName = slave_Name +"_" + identifer;
+		        
+		        System.out.println("lookupName   " + lookupName);
 	        
 	        	slave =  (NameNodeSlave) Naming.lookup(lookupName);
 	    	} catch (Exception e){
+	    		
 	    		System.out.println("Error while accessing the Distributed File System.");
 	    		System.out.println("Check on the DFS and try again.");
 	    		return;
