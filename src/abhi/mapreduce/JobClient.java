@@ -130,7 +130,7 @@ public class JobClient implements IClientServices {
 			try {
 				if (this.jobTrackerServiceProvider.submitJob(jobConf)) 	    
 				{
-					System.out.println("JobClient submmited Job successfully.");
+					System.out.println("JobClient submmited Job successfully. Monitoring status...");
 
 					this.monitorandPrintJobInfoandMoveFile(uniqueJobID,jobConf.getOutputPath());
 

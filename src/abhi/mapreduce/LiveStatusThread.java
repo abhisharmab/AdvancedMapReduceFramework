@@ -35,12 +35,15 @@ public class LiveStatusThread implements Runnable {
 	private String finalOutputPath; 
 
 	private NameNodeSlave nameNodeSlaveReference;
+	
+	boolean notTimeToExit; 
 
 	public LiveStatusThread(int jobId, IJobTrackerServices jtSReference, String finalOutputPath, NameNodeSlave nameNodeSlaveReference) {
 		this.setJobId(jobId);
 		this.setJobTrackerServiceReference(jtSReference);
 		this.finalOutputPath = finalOutputPath;
 		this.nameNodeSlaveReference = nameNodeSlaveReference;
+		this.notTimeToExit = true;
 	}
 
 	/* (non-Javadoc)
@@ -57,7 +60,6 @@ public class LiveStatusThread implements Runnable {
 			e.printStackTrace();
 		}
 
-		boolean notTimeToExit = true; 
 		JobInfo liveJobInfo;
 
 		while(notTimeToExit)
