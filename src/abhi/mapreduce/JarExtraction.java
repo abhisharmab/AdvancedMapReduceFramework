@@ -22,6 +22,11 @@ public class JarExtraction {
 	public JarExtraction(String jarFileName){
 		this.jarFileName = jarFileName;
 		dictory = SystemConstants.getConfig(SystemConstants.JAR_DIRECTORY)+System.getProperty("file.separator");
+		
+		String jarName = jarFileName.substring(0, jarFileName.indexOf("."));
+		dictory = dictory + jarName + System.getProperty("file.separator");
+		System.out.println("JarName         " + jarName);
+		System.out.println("dictory         " + dictory);
 	}
 	
 	// This code has been referenced from 
@@ -58,14 +63,14 @@ public class JarExtraction {
 		        }
 		        output.close();
 		        input.close();
-		        return true;
+		    
 		    }
+		    return true;
 		} catch (IOException e) {
 			System.out.println("Error while accessing the Jarfile : " + jarFileName);
 			System.out.println("Please Check and try again.");
 			return false;
 		}
-		return false;
 		
 	}
 
