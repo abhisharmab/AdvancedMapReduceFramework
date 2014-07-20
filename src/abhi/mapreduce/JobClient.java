@@ -53,8 +53,8 @@ public class JobClient implements IClientServices {
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
-			System.err.println("Error occurred in communcating with JobTracker");
-			System.err.println("Ensure Jobtracker is running and check configuration");
+			System.out.println("Error occurred in communcating with JobTracker");
+			System.out.println("Ensure Jobtracker is running and check configuration");
 		}
 
 		try
@@ -65,7 +65,7 @@ public class JobClient implements IClientServices {
 		}
 		catch(NumberFormatException | RemoteException | NotBoundException e)
 		{
-			System.err.println("Error occurred in communcating with NameNode via the Registry");
+			System.out.println("Error occurred in communcating with NameNode via the Registry");
 		}
 
 	}
@@ -80,7 +80,7 @@ public class JobClient implements IClientServices {
 		//1. Check if the Job Configuration is Valid
 		if(jobConf == null || !IsJobConfValid(jobConf))
 		{
-			System.err.println("Invalid Job Configuration Submitted. Please check your Job Source Code and Config");
+			System.out.println("Invalid Job Configuration Submitted. Please check your Job Source Code and Config");
 			return false;
 		}
 
@@ -117,7 +117,7 @@ public class JobClient implements IClientServices {
 			int uniqueJobID = requestJobIDfromJobTracker();
 			if(uniqueJobID <= 0)
 			{
-				System.err.println("The system is not available for submitting new job.");
+				System.out.println("The system is not available for submitting new job.");
 				return false;
 			} else {
 				jobConf.setJobID(uniqueJobID);
@@ -143,14 +143,14 @@ public class JobClient implements IClientServices {
 			} 
 			catch (RemoteException | InterruptedException e) 
 			{
-				System.err.println("Error occured while submitting the job");
+				System.out.println("Error occured while submitting the job");
 				e.printStackTrace();
 			}
 			return false;
 		}
 		else
 		{
-			System.err.println("Unable to partition the file. Either the file is not present or file is corrupt");
+			System.out.println("Unable to partition the file. Either the file is not present or file is corrupt");
 			return false;
 		}
 	}
