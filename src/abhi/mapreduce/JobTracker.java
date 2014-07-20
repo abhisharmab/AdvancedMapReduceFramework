@@ -447,6 +447,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		return SystemConstants.MapJobsStatus.SUCCEEDED;
 	}
 	
+	//To return HOSTNAME which is the Origin of the Job
 	public String getJobOriginHostNamebyTaskID(int taskID)
 	{
 		TaskMetaData task = Collections.list(this.reducerTasks.get(taskID).keys()).get(0);
