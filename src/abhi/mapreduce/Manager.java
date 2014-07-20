@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
+import abhi.adfs.JarExtraction;
 import abhi.adfs.NameNodeSlave;
 import abhi.adfs.NameNodeSlaveImpl;
 
@@ -223,7 +224,7 @@ public class Manager {
 	private static void executeFile(String executeName, String inputFile, String outputPath){
 
 		String separator = System.getProperty("file.separator");
-		String[] args = new String[4];
+		String[] args = new String[6];
 		
 		args[0] = "java";
 		args[1] = "-cp";
