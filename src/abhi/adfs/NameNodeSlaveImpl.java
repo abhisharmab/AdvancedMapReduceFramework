@@ -505,6 +505,14 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		return nameNodeMaster.checkFileExistence(fileName);
 	}
 
+	// This is used to save a file to the Local Data Node
+	@Override
+	public boolean saveFileToLocalDataNode(String fileName, String data)
+			throws RemoteException {
+		
+		return myDataNode.submit(fileName, data);
+	}
+
 	
 }
  

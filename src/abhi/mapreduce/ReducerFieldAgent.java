@@ -54,6 +54,7 @@ public class ReducerFieldAgent extends FieldAgent{
 	private double totalEntryNumber;
 	private double processedEntryNumber;
 	
+	
 	public ReducerFieldAgent(int taskID, String outfile, String reducer, 
 			String outputFormat, int partitionedNumber)
 	{
@@ -80,6 +81,8 @@ public class ReducerFieldAgent extends FieldAgent{
 		
 		totalEntryNumber = 0;
 		processedEntryNumber = 0;
+		
+		//This will later be updated. If it is not updated. We cannot use it.
 		System.out.println("contructor done");
 	}
 
@@ -160,7 +163,7 @@ public class ReducerFieldAgent extends FieldAgent{
 			}
 
 			// Send the file to the Job Client location
-			
+			sendResultToJobClient();
 			
 			//clean-up at end
 			reducer.cleanUp();
@@ -173,6 +176,32 @@ public class ReducerFieldAgent extends FieldAgent{
 			
 		}
 
+	}
+	private void sendResultToJobClient(){
+		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
+		
+		String hostName = getJobTrackerServiceProvider().getJobOriginHostNamebyTaskID(taskID);
+		// Building the lookup Name
+		String lookup_name = "rmi://" +hostName + ":"+ 1099+ "/"+slaveName+"_"+hostName;
+		System.out.println("Building a look up make for the Slave  : " + lookup_name);
+		
+       try
+        {
+    	   // This is the origin nameNodeSlave
+    		NameNodeSlave originSlave = (NameNodeSlave) Naming.lookup(lookup_name);
+    		System.out.println("NameNodeSlave has been looked up.");
+    		
+    		for(String filename : getCreatedFiles()){
+    			// This is the local Reference
+    			String data = this.nameNodeSlaveReference.retrieveFromLocalDataNode(filename);
+    			
+    			// Sending the results to the origin
+    			originSlave.saveFileToLocalDataNode(filename, data);
+    		}
+    	} catch (Exception e){
+    		System.out.println("Manager: Exception thrown looking up " + "NameNodeSlave");
+    	}
+		
 	}
 
 	private HashMap<String, List<String>> packageData(List<String> data){
