@@ -27,6 +27,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -94,7 +95,7 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
     {
 
     	try {
-			setIdentifier(InetAddress.getLocalHost().getHostName());
+			setIdentifier(InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -150,7 +151,10 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 		} catch (MalformedURLException e) {
 			System.out.println("Error while binding the slave, please retry.");
 			System.exit(0);
-		} 
+		} catch (AccessControlException e){
+			System.out.println("Error with the Access control, check the policy.");
+			System.exit(0);
+		}
 
         
         
@@ -369,11 +373,15 @@ public class NameNodeSlaveImpl extends UnicastRemoteObject implements NameNodeSl
 						System.out.println("Error while opening the file please try again.");
 					}
 											
-					
-					// Add the fileInfo on my local				
-					list_inputFileInfo.add(fileInfo);
-					// Register the FileInfo onto the Master.
-					nameNodeMaster.registerFileInformation(fileInfo);
+					if(fileInfo.validateFiles()){
+						// Add the fileInfo on my local				
+						list_inputFileInfo.add(fileInfo);
+						// Register the FileInfo onto the Master.
+						nameNodeMaster.registerFileInformation(fileInfo);
+					} else {
+						System.out.println("FileInfo is not valid, please check.");
+					}
+				
 					return true;
 					
 				}

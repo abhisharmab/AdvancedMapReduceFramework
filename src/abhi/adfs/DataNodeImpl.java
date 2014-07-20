@@ -128,7 +128,6 @@ public class DataNodeImpl extends UnicastRemoteObject implements DataNode{
 		BufferedWriter writer = null;
 		File file = new File(getPath(filename));
 		
-		
 		try {
 			if( file.createNewFile()){
 				

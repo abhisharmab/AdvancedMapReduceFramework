@@ -67,7 +67,7 @@ public class NameNodeManager {
 	    	   }
 	        
 	        
-		        String identifer = InetAddress.getLocalHost().getHostName();
+		        String identifer = InetAddress.getLocalHost().getHostAddress();
 		        String slave_Name = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
 		        String lookupName = slave_Name +"_" + identifer;
 	        
