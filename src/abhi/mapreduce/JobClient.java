@@ -6,6 +6,7 @@ package abhi.mapreduce;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -75,7 +76,7 @@ public class JobClient implements IClientServices {
 	}
 
 	@Override
-	public boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException {
+	public boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException {
 		//1. Check if the Job Configuration is Valid
 		if(jobConf == null || !IsJobConfValid(jobConf))
 		{
@@ -120,13 +121,14 @@ public class JobClient implements IClientServices {
 				return false;
 			} else {
 				jobConf.setJobID(uniqueJobID);
+				jobConf.setJobRequestOriginHostName(InetAddress.getLocalHost().getHostName());
 			}
 
 			if(jobConf.getJobName() == null || jobConf.getJobName().length() == 0)
 				jobConf.setJobName(String.valueOf(uniqueJobID));
 
 			try {
-				if (this.jobTrackerServiceProvider.submitJob(jobConf, targetCode)) 	    
+				if (this.jobTrackerServiceProvider.submitJob(jobConf)) 	    
 				{
 					System.out.println("JobClient submmited Job successfully.");
 

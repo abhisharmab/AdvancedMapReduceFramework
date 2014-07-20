@@ -21,7 +21,7 @@ import java.rmi.Remote;
 public interface IClientServices extends Remote {
 		
 	//Used to submit job to the JobClient which will further submit it to the Job Tracker
-	boolean submitJob(JobConf jobConf, Object targetCode) throws FileNotFoundException, IOException;
+	boolean submitJob(JobConf jobConf) throws FileNotFoundException, IOException;
 	
 	
 	//Reporting status of the Job on the user's command terminal
