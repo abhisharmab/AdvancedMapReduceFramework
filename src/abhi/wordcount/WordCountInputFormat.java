@@ -14,13 +14,8 @@ import abhi.mapreduce.KeyValueConstruct;
  */
 public class WordCountInputFormat extends InputFormat
 {
-
-<<<<<<< HEAD
-	protected WordCountInputFormat(String filename) throws IOException {
-=======
-
 	public WordCountInputFormat(String filename) throws IOException {
->>>>>>> ebf1c897050254bf5119095ac6686b377e6e309b
+
 		super(filename);
 		// TODO Auto-generated constructor stub
 	}
