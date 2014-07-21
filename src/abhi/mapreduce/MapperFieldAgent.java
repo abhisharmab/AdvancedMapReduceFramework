@@ -212,7 +212,7 @@ public class MapperFieldAgent extends FieldAgent {
 		int taskID = Integer.parseInt(args[0]);
 		PrintStream out = null;
 		try {
-			 out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "tasklog"+ taskID)));
+			 out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "mapper_tasklog"+ taskID)));
 			System.setErr(out);
 			System.setOut(out);
 		} catch (FileNotFoundException e) {

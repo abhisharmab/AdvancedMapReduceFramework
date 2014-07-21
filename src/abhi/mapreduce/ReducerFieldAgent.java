@@ -263,7 +263,7 @@ public class ReducerFieldAgent extends FieldAgent{
 		}
 		int taskID = Integer.parseInt(args[0]);
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "tasklog"+ taskID)));
+			PrintStream out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "reducer_tasklog"+ taskID)));
 			System.setErr(out);
 			System.setOut(out);
 		} catch (FileNotFoundException e) {
