@@ -181,11 +181,6 @@ public class TaskTracker {
 						}
 					}
 
-			          //Delete the entry from the Task Status. 
-					 // We do not need to maintain status of these tasks anymore
-			          for (int id : toDelete) {
-			        	  statusofAllTasks.remove(id);
-			          }
 					
 			          //Send the update information to the JobTracker
 
@@ -205,6 +200,12 @@ public class TaskTracker {
 			            } catch (RemoteException e) {
 			              e.printStackTrace();
 			            }
+			          
+			          //Delete the entry from the Task Status. 
+					 // We do not need to maintain status of these tasks anymore
+			          for (int id : toDelete) {
+			        	  statusofAllTasks.remove(id);
+			          }
 				}
 			}
 		});
