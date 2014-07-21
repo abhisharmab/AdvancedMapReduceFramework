@@ -96,7 +96,7 @@ public class MapperFieldAgent extends FieldAgent {
 				}
 				/* close the files */
 				this.outputCollector.closeAll();
-			}/* if runtime exception happens in user's code, exit jvm */
+			}
 			catch (RuntimeException e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -112,7 +112,10 @@ public class MapperFieldAgent extends FieldAgent {
 		}
 		catch(IOException | InterruptedException e)
 		{
+			System.out.println("Error Occured");
+
 			e.printStackTrace();
+
 		}
 
 		
@@ -203,8 +206,9 @@ public class MapperFieldAgent extends FieldAgent {
 			System.out.println("Illegal arguments");
 		}
 		int taskID = Integer.parseInt(args[0]);
+		PrintStream out = null;
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "tasklog"+ taskID)));
+			 out = new PrintStream(new FileOutputStream(new File(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY)+ "tasklog"+ taskID)));
 			System.setErr(out);
 			System.setOut(out);
 		} catch (FileNotFoundException e) {
