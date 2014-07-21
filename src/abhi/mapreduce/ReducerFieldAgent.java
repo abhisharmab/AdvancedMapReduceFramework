@@ -105,7 +105,11 @@ public class ReducerFieldAgent extends FieldAgent{
     		NameNodeSlave originSlave = (NameNodeSlave) Naming.lookup(lookup_name);
     		System.out.println("NameNodeSlave has been looked up.");
     		
+    		if(getCreatedFiles().size()==0){
+    			System.out.println("There are no files.");
+    		}
     		for(String filename : getCreatedFiles()){
+    			System.out.println("Created files " + filename);
     			// This is the local Reference
     			String data = this.nameNodeSlaveReference.retrieveFromLocalDataNode(filename);
     			
@@ -124,6 +128,8 @@ public class ReducerFieldAgent extends FieldAgent{
 		
 		
 		for(String fileData : data){
+			
+			System.out.println();
 			Scanner scan = new Scanner(fileData);
 			scan.useDelimiter("\\t|\\n");
 			
@@ -221,11 +227,11 @@ public class ReducerFieldAgent extends FieldAgent{
 	// We are looking up the name of the NameNodeSlave using the taskTrackerName
 	private NameNodeSlave lookupNameNodeSlave(String taskTrackerName){
 		
-		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
+		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
 		
 		// Parsing out the location information
 		int end_index = taskTrackerName.length();
-		int start_index = taskTrackerName.indexOf("_");
+		int start_index = taskTrackerName.indexOf("_")+1;
 		String location = taskTrackerName.substring(start_index, end_index);
 		
 		// Building the lookup Name
