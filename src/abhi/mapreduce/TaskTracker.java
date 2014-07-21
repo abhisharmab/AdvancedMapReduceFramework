@@ -46,7 +46,7 @@ public class TaskTracker {
 
 	private String taskTrackerName;
 
-	private final int hb_period = 4;
+	private final int hb_period = 2;
 
 	private IJobTrackerServices jobTrackerServices;
 

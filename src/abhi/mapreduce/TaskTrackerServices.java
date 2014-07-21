@@ -33,7 +33,8 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 				if(this.taskTrackerReference.countofRunningMapperFieldAgents < this.taskTrackerReference.mapperSlotCapacity)
 				{
 					synchronized(this.taskTrackerReference.countofRunningMapperFieldAgents){
-					this.taskTrackerReference.countofRunningMapperFieldAgents++;}
+						this.taskTrackerReference.countofRunningMapperFieldAgents++;
+					}
 					
 					String[] processargs = new String [] 
 							{
@@ -69,7 +70,8 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 				if(this.taskTrackerReference.countofRunningReducerFieldAgents < this.taskTrackerReference.reducerSlotCapacity)
 				{
 					synchronized(this.taskTrackerReference.countofRunningReducerFieldAgents){
-					this.taskTrackerReference.countofRunningReducerFieldAgents++;}
+						this.taskTrackerReference.countofRunningReducerFieldAgents++;
+						}
 					
 					String[] processargs = new String [] 
 							{
