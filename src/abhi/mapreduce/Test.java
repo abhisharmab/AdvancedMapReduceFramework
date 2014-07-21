@@ -31,12 +31,23 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
+		String xyz = "adfs_files" + System.getProperty("file.separator") + "test.txt";
+		
+		
+		String abc = xyz.substring(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY).length() + 1);
+		
+		String[] strip = xyz.split(System.getProperty("file.separator") + System.getProperty("file.separator")); 
+		
+		String[] strip1 = xyz.split(System.getProperty("file.separator"));
+		
+		int x = 0;
+		/*
 		try {
 			JVMUtility.startProcessinJVM(null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		/*
 		Test t = new Test();
 		
