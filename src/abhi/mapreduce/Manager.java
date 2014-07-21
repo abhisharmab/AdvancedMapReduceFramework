@@ -188,7 +188,11 @@ public class Manager {
 										
 									// Distributing and Partitioning the input file
 									if(slave.dump(inputFileName)){
-										executeFile(executionName, inputFileName, outputLocation);
+										System.out.println("Paritioned the File.");
+										System.out.println("Starting the execution.");
+										
+										String classPath = jar.getDictory();
+										executeFile(executionName, inputFileName, outputLocation, classPath);
 									} else {
 										System.out.println("Error in distributing the input file.");
 										System.out.println("Check the distribute file system and try again.");
@@ -221,24 +225,28 @@ public class Manager {
     }
 	
 	
-	private static void executeFile(String executeName, String inputFile, String outputPath){
+	private static void executeFile(String executeName, String inputFile, String outputPath, String classPath){
 
 		String separator = System.getProperty("file.separator");
 		String[] args = new String[6];
 		
 		args[0] = "java";
 		args[1] = "-cp";
-		args[2] = "."+separator+"*";
+		args[2] = classPath+";."+separator;
 		args[3] = executeName;
 		args[4] = inputFile;
 		args[5] = outputPath;
 		
+		 for(String ar : args){
+			 System.out.println(ar);
+		 }
 		 
-		ProcessBuilder p = new ProcessBuilder().command(args);
+		ProcessBuilder p = new ProcessBuilder(args);
 		//ProcessBuilder p = new ProcessBuilder().command(new String[] {"java", "-cp",  "./*", className});
 		Process process;
 		try {
 			process = p.start();
+			System.out.println("hmmmm");
 			InputStream is = process.getInputStream();
 		    InputStreamReader isr = new InputStreamReader(is);
 		    BufferedReader br = new BufferedReader(isr);
@@ -248,8 +256,20 @@ public class Manager {
 		        System.out.println(line);
 		    }
 		    
+		    
+		    InputStream isErr = process.getErrorStream();
+		    InputStreamReader isrErr = new InputStreamReader(isErr);
+		    BufferedReader brErr = new BufferedReader(isrErr);
+		    String lineErr;
+		    while ((lineErr = brErr.readLine()) != null)
+		    {
+		        System.out.println(lineErr);
+		    }
+		    
 		    try {
+		    	System.out.println("hmmm1");
 				System.exit(process.waitFor());
+				System.out.println("hmmm22");
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

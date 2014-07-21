@@ -32,51 +32,112 @@ import abhi.mapreduce.SystemConstants;
 
 public class Testing_Spliter {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] ars) throws IOException {
 		
 		
-		try {
-//			File file = new File("WordCountInputFormat.class");
-//			if(file.exists()){
-				InputFormat inputFormat = (InputFormat) Class.forName("abhi.wordcount.WordCountInputFormat")
-						.getConstructor(String.class)
-						.newInstance("sample.txt");
-				
-				int count = 0;
-				while(inputFormat.hasNext()){
-					KeyValueConstruct kv = inputFormat.next();
-					System.out.println(count);
-					System.out.println(kv.key);
-					System.out.println(kv.value);
-					count++;
-				}
-//			} else {
-//				System.out.println("no");
-//			}
+
 			
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+
+				String separator = System.getProperty("file.separator");
+				String[] args = new String[6];
+				
+				args[0] = "java";
+				args[1] = "-cp";
+				args[2] = "jar"+separator+"word"+separator+";."+separator;
+				args[3] = "abhi.wordcount.WordCount";
+				args[4] = "sample.txt";
+				args[5] = "HEEE";
+				
+				 for(String ar : args){
+					 System.out.println(ar);
+				 }
+				 
+				ProcessBuilder p = new ProcessBuilder(args);
+				//ProcessBuilder p = new ProcessBuilder().command(new String[] {"java", "-cp",  "./*", className});
+				Process process;
+				try {
+					process = p.start();
+					System.out.println("hmmmm");
+					InputStream is = process.getInputStream();
+				    InputStreamReader isr = new InputStreamReader(is);
+				    BufferedReader br = new BufferedReader(isr);
+				    String line;
+				    while ((line = br.readLine()) != null)
+				    {
+				        System.out.println(line);
+				    }
+				    
+				    
+				    InputStream isErr = process.getErrorStream();
+				    InputStreamReader isrErr = new InputStreamReader(isErr);
+				    BufferedReader brErr = new BufferedReader(isrErr);
+				    String lineErr;
+				    while ((lineErr = brErr.readLine()) != null)
+				    {
+				        System.out.println(lineErr);
+				    }
+				    
+				    try {
+				    	System.out.println("hmmm1");
+						System.exit(process.waitFor());
+						System.out.println("hmmm22");
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				    
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			
+				
+			
+			
+			
+//		}
+////			File file = new File("WordCountInputFormat.class");
+////			if(file.exists()){
+//				InputFormat inputFormat = (InputFormat) Class.forName("abhi.wordcount.WordCountInputFormat")
+//						.getConstructor(String.class)
+//						.newInstance("sample.txt");
+//				
+//				int count = 0;
+//				while(inputFormat.hasNext()){
+//					KeyValueConstruct kv = inputFormat.next();
+//					System.out.println(count);
+//					System.out.println(kv.key);
+//					System.out.println(kv.value);
+//					count++;
+//				}
+////			} else {
+////				System.out.println("no");
+////			}
+//			
+//		} catch (InstantiationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (NoSuchMethodException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
 		
 //		JarExtraction ex = new JarExtraction("HelloWorld.jar");
 //		ex.extraction();

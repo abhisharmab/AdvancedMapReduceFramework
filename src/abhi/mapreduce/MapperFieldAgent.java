@@ -120,7 +120,12 @@ public class MapperFieldAgent extends FieldAgent {
 
 		}
 
-		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("I am ending!!!!");
 		System.exit(0);
 	}

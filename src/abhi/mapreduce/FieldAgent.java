@@ -111,7 +111,7 @@ public abstract class FieldAgent {
 	    });
 	    thread.start();
 	    
-	    thread.setDaemon(true);
+	    //thread.setDaemon(true);
 	    //schExec.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
 	  }
 
