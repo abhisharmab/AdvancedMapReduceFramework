@@ -39,7 +39,7 @@ public class AnagramMain implements Serializable {
 		jobConf.setMapperClassName("abhi.anagram.AnaMapper");
 		jobConf.setReducerClassName("abhi.anagram.AnaReducer");
 
-		jobConf.setReducerNum(2);
+		jobConf.setReducerNum(1);
 
 		JobClient jClient = new JobClient();
 		try 

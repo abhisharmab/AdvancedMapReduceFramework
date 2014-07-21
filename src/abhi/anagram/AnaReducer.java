@@ -14,6 +14,8 @@ import abhi.mapreduce.Reducer;
  * @author abhisheksharma
  *
  */
+
+//Reference https://code.google.com/p/hadoop-map-reduce-examples/source/browse/trunk/hadoop-examples/src/com/hadoop/examples/anagrams/AnagramReducer.java
 public class AnaReducer extends Reducer<String, String, String, String> {
 
 	/**
@@ -29,7 +31,7 @@ public class AnaReducer extends Reducer<String, String, String, String> {
         while(values.hasNext())
         {
                 String anagram = values.next();
-                outputString = output + anagram.toString() + "~";
+                outputString = outputString + anagram.toString() + "~";
         }
         StringTokenizer outputTokenizer = new StringTokenizer(outputString,"~");
         if(outputTokenizer.countTokens() >= 2)
