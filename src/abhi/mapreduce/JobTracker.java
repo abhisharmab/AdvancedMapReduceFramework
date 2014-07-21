@@ -126,7 +126,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		    });
 		    
 		    thread.setDaemon(true);
-		    schExecutor.scheduleAtFixedRate(thread, 0, 5, TimeUnit.SECONDS);
+		    schExecutor.scheduleAtFixedRate(thread, 0, 15, TimeUnit.SECONDS);
 		     
 
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
@@ -229,6 +229,12 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 			
 		    //TaskTracker Fault Tolerance Thread
+			
+		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
+		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);
+		    
+
 		} 
 		catch (Exception e)
 		{

@@ -97,12 +97,11 @@ public class LiveStatusThread implements Runnable {
 								{
 									fileContent = this.nameNodeSlaveReference.retrieveFromLocalDataNode(fileName);
 
-									File file;
+									String finalName = fileName.substring(String.valueOf(liveJobInfo.getJobID()).length() + 1);
 									
-									if(pList.size() > 1)
-										file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result");
-									else
-										file = new File(this.finalOutputPath + System.getProperty("file.separator") + "final_result_" + counter);
+									File file;
+								
+									file = new File(this.finalOutputPath + System.getProperty("file.separator") + finalName);
 
 									file.createNewFile();
 								

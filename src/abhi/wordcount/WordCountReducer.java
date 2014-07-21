@@ -24,16 +24,14 @@ public class WordCountReducer extends Reducer<String, String, String, String> {
 	public void reduce(String key, Iterator<String> values,
 			OutputCollector<String, String> output) throws IOException {
 		
-		long addition = 0; 
+		long addition = 0;  //Final summation of the word-count
 		
-		while(values.hasNext())
+		while(values.hasNext()) //While we have similar tokens
 		{
 			addition += Long.parseLong(values.next());
 		}
 		
 		output.collect(key, Long.toString(addition));
-		
 	}
-
 
 }

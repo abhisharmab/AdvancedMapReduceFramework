@@ -24,7 +24,7 @@ public class TaskTrackerInfo implements Comparable<TaskTrackerInfo>, Serializabl
 	private static final long serialVersionUID = 1L;
 
 	//Threshold for a SLave Node to be considered as alive
-	  private final int THRESHOLD_ALIVE_CYCLE = 15000; //milliseconds 
+	  private final int THRESHOLD_ALIVE_CYCLE = 30000; //milliseconds 
 
 	  // the unique name of task tracker
 	  private String taskTrackerName;
@@ -43,8 +43,11 @@ public class TaskTrackerInfo implements Comparable<TaskTrackerInfo>, Serializabl
 	    this.taskTrackerName = name;
 	    this.tasksRunning = new HashSet<Integer>();
 	    this.taskTrackerReference = taskTrackerReference;
-	    this.setNumOfMaps(pendingMapSlots);
-	    this.setNumOfMaps(pendingReduceSlots);
+
+	    this.numOfMaps = pendingMapSlots;
+	   
+	    
+	    this.numOfReduces = pendingReduceSlots;
 	  }
 
 	  public String getTaskTrackerName() {

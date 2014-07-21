@@ -46,7 +46,7 @@ public class TaskTracker {
 
 	private String taskTrackerName;
 
-	private final int hb_period = 4;
+	private final int hb_period = 2;
 
 	private IJobTrackerServices jobTrackerServices;
 
@@ -56,7 +56,7 @@ public class TaskTracker {
 	public Integer countofRunningMapperFieldAgents; 
 
 	//The synchronized function needs a Wrapper. Since it works only on Objects
-	public  Integer countofRunningReducerFieldAgents;
+	public Integer countofRunningReducerFieldAgents;
 
 	public int mapperSlotCapacity;
 	public int reducerSlotCapacity;

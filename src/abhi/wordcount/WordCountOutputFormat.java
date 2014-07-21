@@ -18,8 +18,9 @@ public class WordCountOutputFormat extends OutputFormat<String, String> {
 
 	@Override
 	public String format(String key, String value) {
-		// TODO Auto-generated method stub
+		
 		return key + "\t" + value + "\n";
+		//We write key values on new lines separated by tabs
 	}
 
 
