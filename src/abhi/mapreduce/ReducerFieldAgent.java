@@ -66,9 +66,11 @@ public class ReducerFieldAgent extends FieldAgent{
 
 			this.reducer = (Reducer) Class.forName(reducer).newInstance();
 
+			
+			System.out.println("--------------"+outputFormat);
+			System.out.println("--------------"+outputFile);
 			this.outputFormat = (OutputFormat) Class.forName(outputFormat)
-					.getConstructor(String.class)
-					.newInstance(this.outputFile);
+					.newInstance();
 			
 			this.outputCollector = 
 					new ReducerOutputCollector(this.outputFile, "\t", this.outputFormat, partitionedNumber);

@@ -57,13 +57,21 @@ public class MapperFieldAgent extends FieldAgent {
 
 			Partitioner part = (Partitioner) Class.forName(partitioner).newInstance();
 
-			String[] strip = this.inputFile.split(System.getProperty("file.separator"));
+			
+			System.out.println("--------------" + inputFormat);
+			System.out.println("===============" + outputFile);
+			System.out.println("--------------" + inputFile);
+			
+			String[] strip = this.inputFile.split(System.getProperty("file.separator")+System.getProperty("file.separator"));
 			
 			this.outputCollector = new MapperOutputCollector(this.outputFile, strip[1].toString(), part, reducerNum, "\t");
+
+			
 
 			this.inputFormat = (InputFormat) Class.forName(inputFormat)
 					.getConstructor(String.class)
 					.newInstance(this.inputFile);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			/* exception happens, shut down jvm */
@@ -100,12 +108,16 @@ public class MapperFieldAgent extends FieldAgent {
 			
 			//Shows task is Done
 			this.updateStatusSucceeded();
+			
+			
 		}
 		catch(IOException | InterruptedException e)
 		{
-			
+			e.printStackTrace();
 		}
 
+		
+		System.out.println("I am ending!!!!");
 	}
 
 	//Reference: http://stackoverflow.com/questions/11647889/sorting-the-mapkey-value-in-descending-order-based-on-the-value
@@ -175,6 +187,10 @@ public class MapperFieldAgent extends FieldAgent {
 	@Override
 	protected float getPercentage() {
 		try {
+			
+			System.out.println("inputFormat.raf.getFilePointer()   " + inputFormat.raf.getFilePointer());
+			System.out.println(" offsetoffsetoffset  "  +offset);
+			System.out.println(" fileSize  "  +fileSize);
 			return (float) (this.inputFormat.raf.getFilePointer() - offset) / this.fileSize;
 		} catch (IOException e) {
 			e.printStackTrace();
