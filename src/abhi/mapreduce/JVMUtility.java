@@ -19,7 +19,7 @@ public class JVMUtility {
     String policyFileName = SystemConstants.getConfig(SystemConstants.CLIENT_POLICY);
     //Provide the MapReduce Jar Folder ensure everyone has RMI access. 
     //Just like Douglas Runs the Code Manually.
-    processbuilderArgs[3] = "-Djava.security.policy="+ policyFileName +" -Djava.rmi.server.codebase=file:" + SystemConstants.getConfig(SystemConstants.RMI_CODE_BASE);
+    processbuilderArgs[3] = "-Djava.security.policy="+ policyFileName;
     
     for (int i = 4, j = 0; j < args.length; i++, j++) {
     	processbuilderArgs[i] = args[j];

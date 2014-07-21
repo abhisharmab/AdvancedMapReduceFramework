@@ -45,8 +45,6 @@ public class SystemConstants {
 	private static final ResourceBundle sysConfig = ResourceBundle.getBundle("Configuration", Locale.getDefault());
 	
 	//----Many of the System Configuration and System Constants are Declared here --//
-	public static final String REGISTRY_HOST = "REGISTRY.HOST";
-	public static final String REGISTRY_PORT = "REGISTRY.PORT";
 	public static final String JOBTRACKER_SERVICE_NAME = "JOBTRACKER.SERVICE";
 	public static final String FILE_PARITION_SIZE = "FILE.PARTITION.SIZE";
 	public static final String REPLICATION = "REPLICATION";
@@ -66,8 +64,6 @@ public class SystemConstants {
 	public static final String MAX_MAPPER_SLOTS = "MAX.MAPPER.SLOTS";	
 	public static final String MAX_REDUCER_SLOTS = "MAX.REDUCER.SLOTS";
 
-    public static final String RMI_CODE_BASE="rmi.code.base";
-    
     public static final String CLIENT_POLICY="CLIENT.POLICY";
 
 	

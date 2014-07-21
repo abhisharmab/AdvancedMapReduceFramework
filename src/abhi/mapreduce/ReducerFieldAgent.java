@@ -294,10 +294,10 @@ public class ReducerFieldAgent extends FieldAgent{
 	// Looking up the job Tracker
 	private boolean lookUpJobTracker(){
 		//Get the JobTrackerServiceProvider Reference
-		int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.REGISTRY_PORT));
+		int registryPort = Integer.parseInt(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_PORT));
 		Registry rmiRegistry;
 		try {
-			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
+			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.JOBTRACKER_REGISTRY_HOST),registryPort);
 			this.setJobTrackerServiceProvider((IJobTrackerServices) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
 			return true;
 		} catch (RemoteException | NotBoundException e) {
