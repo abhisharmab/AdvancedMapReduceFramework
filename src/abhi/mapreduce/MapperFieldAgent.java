@@ -156,7 +156,7 @@ public class MapperFieldAgent extends FieldAgent {
 		            br.close();
 		          } catch (IOException e) {
 		            e.printStackTrace();
-		            System.exit(0);
+		            System.exit(0);     
 		          }
 		      }
 		      /* delete the file */
@@ -178,11 +178,13 @@ public class MapperFieldAgent extends FieldAgent {
 		        if (bw != null)
 		          try {
 		            bw.close();
-		            getCreatedFiles().add(filename);
-		            this.nameNodeSlaveReference.registerToLocalDataNode(filename);
+		            
+		            String name = filename.substring(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY).length() + 1);
+		            getCreatedFiles().add(name);
+		            this.nameNodeSlaveReference.registerToLocalDataNode(name);
 		          } catch (IOException e) {
 		            e.printStackTrace();
-		            System.exit(0);
+		            System.exit(0);     
 		          }
 		      }
 		    }

@@ -41,7 +41,7 @@ public class WordCount implements Serializable {
 
 		jobConf.setInputPath(args[0]);
 		jobConf.setOutputPath(args[1]);
-
+		                                 
 		jobConf.setInputFormatClassName("abhi.wordcount.WordCountInputFormat");
 		jobConf.setPartitionerClassName("abhi.wordcount.WordCountPartitioner");
 		jobConf.setOutputFormatClassName("abhi.wordcount.WordCountOutputFormat");
