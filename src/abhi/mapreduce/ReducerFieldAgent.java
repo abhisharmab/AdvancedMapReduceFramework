@@ -94,7 +94,7 @@ public class ReducerFieldAgent extends FieldAgent{
        try
         {
     	   
-	   		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
+	   		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE);
 	   		String hostName = getJobTrackerServiceProvider().getJobOriginHostNamebyTaskID(taskID);
 	   		// Building the lookup Name
 	   		String lookup_name = "rmi://" +hostName + ":"+ 1099+ "/"+slaveName+"_"+hostName;
