@@ -155,7 +155,7 @@ public class LiveStatusThread implements Runnable {
 					if(noReducers == 0)
 						noReducers = 1;
 
-					System.out.println("Job_" + liveJobInfo.getJobName() + ". mapPhase = " + cumulativeMapPercent/noMappers + ", reducePhase = " + cumulativeReducePercent/noReducers);
+					System.out.println("Job_" + liveJobInfo.getJobName() + ". mapPhase = " + (cumulativeMapPercent/noMappers) * 100 + "%, reducePhase = " + (cumulativeReducePercent/noReducers) * 100 + "%");
 				}
 
 				try 

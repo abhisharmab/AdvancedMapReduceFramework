@@ -221,8 +221,6 @@ public class MapperFieldAgent extends FieldAgent {
 
 		MapperFieldAgent mFA = new MapperFieldAgent(taskID, inputFile, outputFile, mapper, partitioner, inputFormat, reducerNum);
 		mFA.run();
-		out.flush();
-		out.close();
 	}
 
 }
