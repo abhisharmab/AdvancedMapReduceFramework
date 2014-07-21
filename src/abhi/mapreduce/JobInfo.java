@@ -46,6 +46,9 @@ public class JobInfo implements Serializable {
 	public JobInfo(JobConf jobConf)
 	{
 		this.jobConf = jobConf;
+		this.jobID = jobConf.getJobID();
+		this.jobName = jobConf.getJobName();
+		this.jobStatus = SystemConstants.JobStatus.INITIALIZED;
 		this.setProgressofallTasks(new ConcurrentHashMap<Integer, TaskProgress>());
 	}
 	
