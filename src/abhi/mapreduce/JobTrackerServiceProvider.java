@@ -74,7 +74,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 		//Call this to assign Tasks
 		//this.jobTracker.assignTasks();
 
-		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
