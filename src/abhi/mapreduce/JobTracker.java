@@ -359,6 +359,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					//Get the List of the Possible Deployments
 					List<String> possibleDeploymentNodes = partitionEntry.getValue();
 					
+					
 					for(String dataNode : possibleDeploymentNodes)
 					{
 						String taskTrackerName = "TaskTracker_" + dataNode.split("_")[1].toString();

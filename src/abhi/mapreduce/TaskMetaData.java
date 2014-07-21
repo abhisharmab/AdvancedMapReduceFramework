@@ -117,7 +117,7 @@ public class TaskMetaData implements Serializable{
 	  }
 	  
 	  public boolean isTaskDone() {
-	    return this.getTaskProgress().getStatus() == TaskStatus.SUCCEEDED;
+	    return this.getTaskProgress().getStatus() == SystemConstants.TaskStatus.SUCCEEDED;
 	  }
 	  
 	  public void increaseAttempts() {
