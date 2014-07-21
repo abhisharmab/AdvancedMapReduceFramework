@@ -133,11 +133,21 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 
 				if(mapTaskList.containsKey(taskProgress.getTaskID()))
 				{
+					System.out.println("we are getting the taskMetaData     MAP");
+					
 					taskMetaData = Collections.list(mapTaskList.get(taskProgress.getTaskID()).keys()).get(0);
+					System.out.println(taskMetaData.getJobID());
+					System.out.println(taskMetaData.getReducer());
+					System.out.println(taskMetaData.isTaskDone());
+					
+					System.out.println("We got this from the MAP");
+					System.out.println("map said === " + taskProgress.getStatus().toString());
 				}
 				else if (reduceTaskList.containsKey(taskProgress.getTaskID()))
 				{
+					System.out.println("we are getting the taskMetaData    REDUCE");
 					taskMetaData = Collections.list(reduceTaskList.get(taskProgress.getTaskID()).keys()).get(0);
+
 				}
 
 				if(taskMetaData == null)
@@ -152,9 +162,11 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 				if(taskProgress.getStatus() == SystemConstants.TaskStatus.INPROGRESS)
 				{
 					//Do Nothing. Update Data Structures and let the things run.
+					continue;
 				}
 				else if(taskProgress.getStatus() == SystemConstants.TaskStatus.SUCCEEDED)
 				{
+					System.out.println("		else if(taskProgress.getStatus() == SystemConstants.TaskStatus.SUCCEEDED)");
 					//Remove the Task from the TaskTracker List since its done.
 					taskTrackerInfo.removeTask(taskProgress.getTaskID());
 

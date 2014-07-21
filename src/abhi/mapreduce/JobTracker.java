@@ -21,8 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 import abhi.adfs.InputFileInfo;
 import abhi.adfs.NameNodeMaster;
+import abhi.mapreduce.SystemConstants.TaskType;
 
 
 /**
@@ -433,20 +435,28 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		TaskMetaData task = Collections.list(this.reducerTasks.get(taskID).keys()).get(0);
 
 		if (task == null) {
+			System.out.println("did we last the meta data?");
 			return SystemConstants.MapJobsStatus.INPROGRESS;
 		}
 
 		JobInfo job = this.jobs.get(task.getJobID());
 
 		if (job == null || job.getJobStatus() == SystemConstants.JobStatus.FAILED) {
+			System.out.println("this shouldnt fail");
 			return SystemConstants.MapJobsStatus.FAILED;
 		}
 
 		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
 		for (TaskProgress mtaskProgress : mapTasksProgress) {
+			
+			System.out.println("type   = " + mtaskProgress.getTaskType().toString());
+			System.out.println(mtaskProgress.getStatus().toString());
 			if (this.mapperTasks.containsKey(mtaskProgress.getTaskID()) && 
-					!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone())
+					!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone()){
+				System.out.println("or are we here?");
 				return SystemConstants.MapJobsStatus.INPROGRESS;
+			}
+			
 		}
 
 		// if all map tasks finished, then return FINISHED
@@ -466,13 +476,27 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		JobInfo job = this.jobs.get(task.getJobID());
 		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
 		for (TaskProgress mtaskProgress : mapTasksProgress) {
-			if (!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone()){
-				System.out.println("There are map tasks are not complete.");
-				return null;
+			
+			
+			if(mtaskProgress.getTaskType().equals(TaskType.MAPPER)){
+				if (!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone()){
+					System.out.println("There are map tasks are not complete.");
+					return null;
+				}
 			}
+			
 				
 		}
-		return mapTasksProgress;
+		
+		// Building Map Task Progress
+		List<TaskProgress> mapTasks = new ArrayList<TaskProgress>();
+		
+		for (TaskProgress mtaskProgress : mapTasksProgress) {
+			if(mtaskProgress.getTaskType().equals(TaskType.MAPPER)){
+				mapTasks.add(mtaskProgress);
+			}
+		}
+		return mapTasks;
 	}
 
 	/**

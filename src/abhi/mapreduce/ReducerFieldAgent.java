@@ -45,7 +45,7 @@ public class ReducerFieldAgent extends FieldAgent{
 	
 	private OutputFormat outputFormat;
 
-	private JobTrackerServiceProvider jobTrackerServiceProvider;
+	private IJobTrackerServices jobTrackerServiceProvider;
 
 
 	private int partitionedNumber;
@@ -88,106 +88,19 @@ public class ReducerFieldAgent extends FieldAgent{
 		System.out.println("contructor done");
 	}
 
-	@Override
-	public void run() {
-
-		try
-		{
-			
-			pushStatusToTaskTracker();
-
-			//called once
-			reducer.setup();
-			
-			
-			// Shuffle
-			if(lookUpJobTracker()){
-				MapJobsStatus status;
-				status = getJobTrackerServiceProvider().reportMapStatus(taskID);
-				while(!status.equals(MapJobsStatus.SUCCEEDED)){
-					Thread.sleep(1000);
-				}	
-			} else {
-				System.out.println("ERROR : Cannot look up the Job tracker.");
-				this.outputCollector.close();
-				System.exit(0);
-			}
-			
-			
-			System.out.println("All map task have been completed.");
-			System.out.println("Starting the Shuffle process");
-			List<String> data = shuffleData();
-			if(data == null){
-				System.out.println("Error has been occured while accessing the Data from the Mappers.");
-				// let the job tracker know??????
-				this.outputCollector.close();
-				System.exit(0);
-			} else {
-				System.out.println("Got all data from the Mapper.");
-			}
-			
-			
-			
-			// Packaging the Data
-			System.out.println("Combining the data.");
-			HashMap<String, List<String>> packagedData = packageData(data);
-			if(packagedData.isEmpty()){
-				System.out.println("There are errors in packaging the Data.");
-				this.outputCollector.close();
-				System.exit(0);
-			} else {
-				System.out.println("Data packaged.");
-				totalEntryNumber = packagedData.size();
-			}
-
-			
-			
-			// Reduce
-			try {
-				Iterator iter = packagedData.entrySet().iterator();
-				while (iter.hasNext()) {
-
-					Entry<String, List<String>> entry = (Entry<String, List<String>>) iter.next();
-					reducer.reduce(entry.getKey(), entry.getValue().iterator(), this.outputCollector);
-					
-					// This is for tracking the progress
-					processedEntryNumber++;
-				}
-				/* close the files */
-				this.outputCollector.close();
-				
-				this.nameNodeSlaveReference.registerToLocalDataNode(this.outputCollector.getOutputFileName());
-				getCreatedFiles().add(this.outputCollector.getOutputFileName());
-			}/* if runtime exception happens in user's code, exit jvm */
-			catch (RuntimeException e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-
-			// Send the file to the Job Client location
-			sendResultToJobClient();
-			
-			//clean-up at end
-			reducer.cleanUp();
-			
-			//Shows task is Done
-			this.updateStatusSucceeded();
-		}
-		catch(IOException | InterruptedException e)
-		{
-			
-		}
-
-	}
 	private void sendResultToJobClient(){
-		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
-		String hostName = getJobTrackerServiceProvider().getJobOriginHostNamebyTaskID(taskID);
-		// Building the lookup Name
-		String lookup_name = "rmi://" +hostName + ":"+ 1099+ "/"+slaveName+"_"+hostName;
-		System.out.println("Building a look up make for the Slave  : " + lookup_name);
+
 		
        try
         {
+    	   
+	   		String slaveName = SystemConstants.getConfig(SystemConstants.NAMENODE_SERVICE_NAME);
+	   		String hostName = getJobTrackerServiceProvider().getJobOriginHostNamebyTaskID(taskID);
+	   		// Building the lookup Name
+	   		String lookup_name = "rmi://" +hostName + ":"+ 1099+ "/"+slaveName+"_"+hostName;
+	   		System.out.println("Building a look up make for the Slave  : " + lookup_name);
+   		
+   		
     	   // This is the origin nameNodeSlave
     		NameNodeSlave originSlave = (NameNodeSlave) Naming.lookup(lookup_name);
     		System.out.println("NameNodeSlave has been looked up.");
@@ -365,7 +278,7 @@ public class ReducerFieldAgent extends FieldAgent{
 		if(totalEntryNumber == 0){
 			return 0;
 		}
-		return (float) (processedEntryNumber/totalEntryNumber);
+		return (float) (processedEntryNumber/totalEntryNumber*100);
 	}
 	
 	// Looking up the job Tracker
@@ -375,7 +288,7 @@ public class ReducerFieldAgent extends FieldAgent{
 		Registry rmiRegistry;
 		try {
 			rmiRegistry = LocateRegistry.getRegistry(SystemConstants.getConfig(SystemConstants.REGISTRY_HOST),registryPort);
-			this.setJobTrackerServiceProvider((JobTrackerServiceProvider) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
+			this.setJobTrackerServiceProvider((IJobTrackerServices) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
 			return true;
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Could bind to the JobTracker Registry Error Occured");
@@ -383,14 +296,110 @@ public class ReducerFieldAgent extends FieldAgent{
 		}
 	}
 
-	public JobTrackerServiceProvider getJobTrackerServiceProvider() {
-		
+	public IJobTrackerServices getJobTrackerServiceProvider() {
 		return jobTrackerServiceProvider;
 	}
 
-	public void setJobTrackerServiceProvider(
-			JobTrackerServiceProvider jobTrackerServiceProvider) {
+	public void setJobTrackerServiceProvider(IJobTrackerServices jobTrackerServiceProvider) {
 		this.jobTrackerServiceProvider = jobTrackerServiceProvider;
 	}
-	
+
+	@Override
+	public void run() {
+
+			
+
+			try
+			{
+				
+				pushStatusToTaskTracker();
+
+				//called once
+				reducer.setup();
+				
+				
+				// Shuffle
+				int count = 0;
+				if(lookUpJobTracker()){
+					MapJobsStatus status;
+					status = getJobTrackerServiceProvider().reportMapStatus(taskID);
+					while(!status.equals(MapJobsStatus.SUCCEEDED)){
+						status = getJobTrackerServiceProvider().reportMapStatus(taskID);
+						Thread.sleep(1000);
+					}	
+				} else {
+					System.out.println("ERROR : Cannot look up the Job tracker.");
+					this.outputCollector.close();
+					System.exit(0);
+				}
+				
+				
+				System.out.println("All map task have been completed.");
+				System.out.println("Starting the Shuffle process");
+				List<String> data = shuffleData();
+				if(data == null){
+					System.out.println("Error has been occured while accessing the Data from the Mappers.");
+					// let the job tracker know??????
+					this.outputCollector.close();
+					System.exit(0);
+				} else {
+					System.out.println("Got all data from the Mapper.");
+				}
+				
+				
+				
+				// Packaging the Data
+				System.out.println("Combining the data.");
+				HashMap<String, List<String>> packagedData = packageData(data);
+				if(packagedData.isEmpty()){
+					System.out.println("There are errors in packaging the Data.");
+					this.outputCollector.close();
+					System.exit(0);
+				} else {
+					System.out.println("Data packaged.");
+					totalEntryNumber = packagedData.size();
+				}
+
+				
+				
+				// Reduce
+				try {
+					Iterator iter = packagedData.entrySet().iterator();
+					while (iter.hasNext()) {
+
+						Entry<String, List<String>> entry = (Entry<String, List<String>>) iter.next();
+						reducer.reduce(entry.getKey(), entry.getValue().iterator(), this.outputCollector);
+						
+						// This is for tracking the progress
+						processedEntryNumber++;
+					}
+					/* close the files */
+					this.outputCollector.close();
+					
+					this.nameNodeSlaveReference.registerToLocalDataNode(this.outputCollector.getOutputFileName());
+					getCreatedFiles().add(this.outputCollector.getOutputFileName());
+				}/* if runtime exception happens in user's code, exit jvm */
+				catch (RuntimeException e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
+
+				// Send the file to the Job Client location
+				sendResultToJobClient();
+				
+				//clean-up at end
+				reducer.cleanUp();
+				
+				//Shows task is Done
+				this.updateStatusSucceeded();
+			}
+			catch(IOException | InterruptedException e)
+			{
+				
+			}
+
+		
+	}
+
+
 }

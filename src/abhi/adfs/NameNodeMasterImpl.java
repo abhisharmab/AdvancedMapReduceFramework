@@ -189,45 +189,47 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 					// By doing so we could replicate the file in different location
 					Entry<String, DataNode> entry = getNextDataNodeEntry();
 					
-					try {
-						// We will look into the data node and check whether 
-						// the existing file exist in the data node
-						// If the file does not exist in the data Node
-						// Add that file in.
-						if(!entry.getValue().isExist(file)){
-							
-							found = Boolean.TRUE;
-							
-							// Got the dataNode from an existing Node 
-							DataNode node = list_dataNode.get(dataNode);
-							
-//							Debug
-//							System.out.println("I am about to retrieve   " + file);
-//							System.out.println("from    " + dataNode);
-//							for(String fileaaa : node.getFileList()){
-//								System.out.println("-------"+fileaaa);
-//							}
-							
-							// Getting the data from the dataNode
-							String data = node.retrieve(file);
-							
-							// Get the new Node and submit the file
-							DataNode newNode = entry.getValue();
-							newNode.submit(file, data);
-							
-							// update the info with the new file.
-							info.addFileParitionInfo(entry.getKey(), file);
-						} else {
-							// This is a limitation of the replication retry process.
-							// If the counter is over the size of the dataNode
-							// There is no need for replication. All files exist in the filesystem.
-							counter++;
-							if(counter >  list_dataNode.size()){
+					if(!(entry==null)){
+						try {
+							// We will look into the data node and check whether 
+							// the existing file exist in the data node
+							// If the file does not exist in the data Node
+							// Add that file in.
+							if(!entry.getValue().isExist(file)){
+								
 								found = Boolean.TRUE;
+								
+								// Got the dataNode from an existing Node 
+								DataNode node = list_dataNode.get(dataNode);
+								
+	//							Debug
+	//							System.out.println("I am about to retrieve   " + file);
+	//							System.out.println("from    " + dataNode);
+	//							for(String fileaaa : node.getFileList()){
+	//								System.out.println("-------"+fileaaa);
+	//							}
+								
+								// Getting the data from the dataNode
+								String data = node.retrieve(file);
+								
+								// Get the new Node and submit the file
+								DataNode newNode = entry.getValue();
+								newNode.submit(file, data);
+								
+								// update the info with the new file.
+								info.addFileParitionInfo(entry.getKey(), file);
+							} else {
+								// This is a limitation of the replication retry process.
+								// If the counter is over the size of the dataNode
+								// There is no need for replication. All files exist in the filesystem.
+								counter++;
+								if(counter >  list_dataNode.size()){
+									found = Boolean.TRUE;
+								}
 							}
+						} catch (RemoteException e) {
+							System.out.println("Error while asking the remote object");
 						}
-					} catch (RemoteException e) {
-						System.out.println("Error while asking the remote object");
 					}
 				}
 			}
@@ -343,11 +345,18 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 	// This is used to rotation through the DataNode 
 	public static Entry<String,DataNode> getNextDataNodeEntry(){
 		rotationIndex++;
+		if(list_dataNode.size() == 0){
+			return null;
+		} else {
+			
+		
 		Integer index = rotationIndex % list_dataNode.size(); 
 		List<String> keys = new ArrayList<String>(list_dataNode.keySet());
 		Map.Entry<String, DataNode> entry = 
 				new AbstractMap.SimpleEntry<String,DataNode>(keys.get(index), list_dataNode.get(keys.get(index)));
 		return entry;
+		
+		}
 		
 	}
 	

@@ -99,6 +99,9 @@ public abstract class FieldAgent {
 	    	  while(true)
 	    	  {
 	    		  updateStatus();
+	    		  
+	    		  
+	    		  System.out.println("I am the push statis to task tracker");
 	    		  try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
