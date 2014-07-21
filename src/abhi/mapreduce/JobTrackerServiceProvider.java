@@ -143,6 +143,9 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 				if(taskMetaData == null)
 					continue;
 
+				//In the TaskProgress set whoever is running the Latest Task
+				taskProgress.setTaskTrackerName(heartBeat.getTaskTrackerServiceName());
+				
 				taskMetaData.setTaskProgress(taskProgress);
 
 				//Get the jobInfo
@@ -162,8 +165,6 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 					if(jobInfo.isJobDone())
 						jobInfo.setJobStatus(SystemConstants.JobStatus.SUCCEEDED);
 
-					//Something finished we might have space for more.
-					//this.jobTracker.assignTasks();
 				}
 				else if(taskProgress.getStatus() == SystemConstants.TaskStatus.FAILED)
 				{
