@@ -404,10 +404,12 @@ public class ReducerFieldAgent extends FieldAgent{
 				
 				//Shows task is Done
 				this.updateStatusSucceeded();
+				
+				Thread.sleep(4000);
 			}
 			catch(IOException | InterruptedException e)
 			{
-				
+				System.exit(0);
 			}
 
 			

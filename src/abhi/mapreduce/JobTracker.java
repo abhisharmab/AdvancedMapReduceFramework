@@ -229,9 +229,9 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 			
 		    //TaskTracker Fault Tolerance Thread
-		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
+		    /*ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
 		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);*/
 		} 
 		catch (Exception e)
 		{
@@ -269,7 +269,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
 					synchronized(this.mapTaskQueue)
 					{
-						this.mapTaskQueue.remove(entry);
+						this.mapTaskQueue.remove(entry.getKey());
 					}
 				}
 				else
@@ -279,7 +279,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 						entry.getValue().add(taskTrackerInfo);
 						synchronized(this.mapTaskQueue)
 						{
-							this.mapTaskQueue.remove(entry);
+							this.mapTaskQueue.remove(entry.getKey());
 							this.mapTaskQueue.put(entry.getKey(), entry.getValue());
 						}
 					}
@@ -309,7 +309,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
 					synchronized(this.reduceTaskQueue)
 					{
-						this.reduceTaskQueue.remove(entry);
+						this.reduceTaskQueue.remove(entry.getKey());
 					}
 				}
 				else
@@ -320,7 +320,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 						
 						synchronized(this.reduceTaskQueue)
 						{
-							this.reduceTaskQueue.remove(entry);
+							this.reduceTaskQueue.remove(entry.getKey());
 							this.reduceTaskQueue.put(entry.getKey(), entry.getValue());
 						}
 					}
@@ -343,8 +343,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				HashMap<String, List<String>> partitionInfo = inputFileInfo.getTranspose();
 				
 				//Instantiate the Priority Queue for the MapperTask and ReducerTasks(This List keeps a Heap of Where POssibly we might run it)
-				MapperPriorityQueue mQ = new MapperPriorityQueue(10);
-				ReducerPriorityQueue rQ = new ReducerPriorityQueue(10);
+				MapperPriorityQueue mQ = new MapperPriorityQueue(30);
+				ReducerPriorityQueue rQ = new ReducerPriorityQueue(30);
 				
 				Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mTasks = new HashMap<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>();				
 				Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> rTasks = new HashMap<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>();
