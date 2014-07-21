@@ -74,7 +74,6 @@ public class MapperFieldAgent extends FieldAgent {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			/* exception happens, shut down jvm */
 			System.exit(0);
 		}
 		System.out.println("contructor done");
