@@ -62,9 +62,9 @@ public class MapperFieldAgent extends FieldAgent {
 			System.out.println("===============" + outputFile);
 			System.out.println("--------------" + inputFile);
 			
-			String[] strip = this.inputFile.split(System.getProperty("file.separator") + System.getProperty("file.separator"));
+			String strippedName = this.inputFile.substring(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY).length() + 1);
 			
-			this.outputCollector = new MapperOutputCollector(this.outputFile, strip[1].toString(), part, reducerNum, "\t");
+			this.outputCollector = new MapperOutputCollector(this.outputFile, strippedName, part, reducerNum, "\t");
 
 			
 
