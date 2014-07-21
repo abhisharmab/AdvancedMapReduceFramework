@@ -56,7 +56,7 @@ public class TaskTracker {
 	public Integer countofRunningMapperFieldAgents; 
 
 	//The synchronized function needs a Wrapper. Since it works only on Objects
-	public  Integer countofRunningReducerFieldAgents;
+	public Integer countofRunningReducerFieldAgents;
 
 	public int mapperSlotCapacity;
 	public int reducerSlotCapacity;

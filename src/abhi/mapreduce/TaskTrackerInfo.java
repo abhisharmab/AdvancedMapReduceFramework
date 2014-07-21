@@ -43,7 +43,10 @@ public class TaskTrackerInfo implements Comparable<TaskTrackerInfo>, Serializabl
 	    this.taskTrackerName = name;
 	    this.tasksRunning = new HashSet<Integer>();
 	    this.taskTrackerReference = taskTrackerReference;
+
 	    this.numOfMaps = pendingMapSlots;
+	   
+	    
 	    this.numOfReduces = pendingReduceSlots;
 	  }
 
