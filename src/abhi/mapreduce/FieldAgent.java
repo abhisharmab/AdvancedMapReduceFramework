@@ -92,14 +92,26 @@ public abstract class FieldAgent {
 	  public void pushStatusToTaskTracker() {
 	    /* periodically send status progress to task tracker */
 		  
-	    ScheduledExecutorService schExec = Executors.newScheduledThreadPool(1);
+	    //ScheduledExecutorService schExec = Executors.newScheduledThreadPool(1);
+		  
 	    Thread thread = new Thread(new Runnable() {
 	      public void run() {
-	        updateStatus();
+	    	  while(true)
+	    	  {
+	    		  updateStatus();
+	    		  try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    	  }
 	      }
 	    });
-	    thread.setDaemon(true);
-	    schExec.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
+	    thread.start();
+	    
+	    //thread.setDaemon(true);
+	    //schExec.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
 	  }
 
 	  
