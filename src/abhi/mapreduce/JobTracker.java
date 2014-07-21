@@ -103,6 +103,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			//Job collections
 			this.jobs = Collections.synchronizedMap(new HashMap<Integer, JobInfo>());
 
+			//Task Trackers
+			this.taskTrackers = Collections.synchronizedMap(new HashMap<String, TaskTrackerInfo>());
 			
 			//New Strategy 
 			this.mapperTasks =  Collections.synchronizedMap(new HashMap<Integer,ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>());
@@ -225,9 +227,10 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 			
 		    //TaskTracker Fault Tolerance Thread
-		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
+			//TODO: Abhi uncomment this
+		    /*ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
 		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 1,2,TimeUnit.SECONDS);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);*/
 		} 
 		catch (Exception e)
 		{

@@ -36,7 +36,7 @@ public abstract class FieldAgent {
 	  
 	  protected TaskProgress taskProgress;
 	  
-	  protected TaskTrackerServices taskServiceProviderReference; //Task Service Provider Reference
+	  protected ITaskTrackerServices taskServiceProviderReference; //Task Service Provider Reference
 	  
 	  protected NameNodeSlave nameNodeSlaveReference;
 
@@ -71,8 +71,8 @@ public abstract class FieldAgent {
 
 	    try {
 	      Registry reg = LocateRegistry.getRegistry(registryHostName, 1099);
-	      taskServiceProviderReference = (TaskTrackerServices) reg.lookup("TaskTracker_"+ registryHostName);
-	      nameNodeSlaveReference = (NameNodeSlave) reg.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE) + registryHostName);
+	      taskServiceProviderReference = (ITaskTrackerServices) reg.lookup("TaskTracker_"+ registryHostName);
+	      nameNodeSlaveReference = (NameNodeSlave) reg.lookup(SystemConstants.getConfig(SystemConstants.NAMENODE_SLAVE_SERVICE) + "_" + registryHostName);
 	    } catch (RemoteException e) {
 	      e.printStackTrace();
 	    } catch (NotBoundException e) {

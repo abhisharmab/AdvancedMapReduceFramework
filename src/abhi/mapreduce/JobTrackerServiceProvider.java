@@ -89,7 +89,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 			TrackerHeartBeat heartBeat = (TrackerHeartBeat) hb;
 
 			//Check if the JobTracker already has this 
-			TaskTrackerInfo taskTrackerInfo = this.jobTracker.getTaskTracker(heartBeat.getTaskTrackerName());
+			TaskTrackerInfo taskTrackerInfo = this.jobTracker.getTaskTracker(heartBeat.getTaskTrackerServiceName());
 
 			//If not then check-in this TaskTRacker with the JObTracker
 			if(taskTrackerInfo == null)
@@ -97,15 +97,15 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 				try {
 					//TODO:Abhi to Fix this
 					Registry registry = LocateRegistry.getRegistry(heartBeat.getRmiHostName(), 1099);
-					TaskTrackerServices taskTrackerServiceReference =  (TaskTrackerServices) registry.lookup(heartBeat.getTaskTrackerServiceName());
+					ITaskTrackerServices taskTrackerServiceReference =  (ITaskTrackerServices) registry.lookup(heartBeat.getTaskTrackerServiceName());
 
 					//Create a Fresh TaskTracker Info Object
-					taskTrackerInfo = new TaskTrackerInfo(heartBeat.getTaskTrackerName(), taskTrackerServiceReference, heartBeat.getMapperSlotsAvailable(), heartBeat.getReducerSlotsAvailable());
+					taskTrackerInfo = new TaskTrackerInfo(heartBeat.getTaskTrackerServiceName(), taskTrackerServiceReference, heartBeat.getMapperSlotsAvailable(), heartBeat.getReducerSlotsAvailable());
 					taskTrackerInfo.setTimestamp(System.currentTimeMillis());
 
 					this.jobTracker.checkInTaskTracker(taskTrackerInfo);
 
-				} catch (NotBoundException e) {
+				} catch (NotBoundException e ) {
 					System.err.println("Could not get reference to the TaskTracker");
 				}
 

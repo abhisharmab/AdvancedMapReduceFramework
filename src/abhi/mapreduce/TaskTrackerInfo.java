@@ -16,7 +16,7 @@ import java.util.Set;
  * system
  *
  */
-public class TaskTrackerInfo implements Serializable{
+public class TaskTrackerInfo implements Comparable<TaskTrackerInfo>, Serializable{
 
 	 /**
 	 * 
@@ -37,9 +37,9 @@ public class TaskTrackerInfo implements Serializable{
 
 	  private Set<Integer> tasksRunning;
 	  
-	  private TaskTrackerServices taskTrackerReference;
+	  private ITaskTrackerServices taskTrackerReference;
 
-	  public TaskTrackerInfo(String name, TaskTrackerServices taskTrackerReference, int pendingMapSlots, int pendingReduceSlots) {
+	  public TaskTrackerInfo(String name, ITaskTrackerServices taskTrackerReference, int pendingMapSlots, int pendingReduceSlots) {
 	    this.taskTrackerName = name;
 	    this.tasksRunning = new HashSet<Integer>();
 	    this.taskTrackerReference = taskTrackerReference;
@@ -100,14 +100,14 @@ public class TaskTrackerInfo implements Serializable{
 	/**
 	 * @return the taskTrackerReference
 	 */
-	public TaskTrackerServices getTaskTrackerReference() {
+	public ITaskTrackerServices getTaskTrackerReference() {
 		return taskTrackerReference;
 	}
 
 	/**
 	 * @param taskTrackerReference the taskTrackerReference to set
 	 */
-	public void setTaskTrackerReference(TaskTrackerServices taskTrackerReference) {
+	public void setTaskTrackerReference(ITaskTrackerServices taskTrackerReference) {
 		this.taskTrackerReference = taskTrackerReference;
 	}
 
@@ -124,4 +124,11 @@ public class TaskTrackerInfo implements Serializable{
 	public void setTasksRunning(Set<Integer> taskRunning) {
 		this.tasksRunning = taskRunning;
 	}
+
+	@Override
+	public int compareTo(TaskTrackerInfo o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
