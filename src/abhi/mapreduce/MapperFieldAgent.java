@@ -66,8 +66,6 @@ public class MapperFieldAgent extends FieldAgent {
 			
 			this.outputCollector = new MapperOutputCollector(this.outputFile, strippedName, part, reducerNum, "\t");
 
-			
-
 			this.inputFormat = (InputFormat) Class.forName(inputFormat)
 					.getConstructor(String.class)
 					.newInstance(this.inputFile);
