@@ -237,16 +237,12 @@ public class Manager {
 		args[4] = inputFile;
 		args[5] = outputPath;
 		
-		 for(String ar : args){
-			 System.out.println(ar);
-		 }
 		 
-		ProcessBuilder p = new ProcessBuilder(args);
+		ProcessBuilder p = new ProcessBuilder().command(args);
 		//ProcessBuilder p = new ProcessBuilder().command(new String[] {"java", "-cp",  "./*", className});
 		Process process;
 		try {
 			process = p.start();
-			System.out.println("hmmmm");
 			InputStream is = process.getInputStream();
 		    InputStreamReader isr = new InputStreamReader(is);
 		    BufferedReader br = new BufferedReader(isr);
@@ -256,20 +252,8 @@ public class Manager {
 		        System.out.println(line);
 		    }
 		    
-		    
-		    InputStream isErr = process.getErrorStream();
-		    InputStreamReader isrErr = new InputStreamReader(isErr);
-		    BufferedReader brErr = new BufferedReader(isrErr);
-		    String lineErr;
-		    while ((lineErr = brErr.readLine()) != null)
-		    {
-		        System.out.println(lineErr);
-		    }
-		    
 		    try {
-		    	System.out.println("hmmm1");
 				System.exit(process.waitFor());
-				System.out.println("hmmm22");
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

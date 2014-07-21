@@ -229,19 +229,16 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 			
 		    //TaskTracker Fault Tolerance Thread
-			/*
-		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
-		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);
-		    */
-
+//		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
+//		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
+//		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);
 		} 
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}   
+	}
 
 
 	@Override
@@ -272,7 +269,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
 					synchronized(this.mapTaskQueue)
 					{
-						this.mapTaskQueue.remove(entry.getKey());
+						this.mapTaskQueue.remove(entry);
 					}
 				}
 				else
@@ -282,7 +279,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 						entry.getValue().add(taskTrackerInfo);
 						synchronized(this.mapTaskQueue)
 						{
-							this.mapTaskQueue.remove(entry.getKey());
+							this.mapTaskQueue.remove(entry);
 							this.mapTaskQueue.put(entry.getKey(), entry.getValue());
 						}
 					}
@@ -312,7 +309,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					entry.getKey().getTaskProgress().setStatus(SystemConstants.TaskStatus.INPROGRESS);
 					synchronized(this.reduceTaskQueue)
 					{
-						this.reduceTaskQueue.remove(entry.getKey());
+						this.reduceTaskQueue.remove(entry);
 					}
 				}
 				else
@@ -323,7 +320,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 						
 						synchronized(this.reduceTaskQueue)
 						{
-							this.reduceTaskQueue.remove(entry.getKey());
+							this.reduceTaskQueue.remove(entry);
 							this.reduceTaskQueue.put(entry.getKey(), entry.getValue());
 						}
 					}
@@ -346,8 +343,8 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				HashMap<String, List<String>> partitionInfo = inputFileInfo.getTranspose();
 				
 				//Instantiate the Priority Queue for the MapperTask and ReducerTasks(This List keeps a Heap of Where POssibly we might run it)
-				MapperPriorityQueue mQ = new MapperPriorityQueue(30);
-				ReducerPriorityQueue rQ = new ReducerPriorityQueue(30);
+				MapperPriorityQueue mQ = new MapperPriorityQueue(10);
+				ReducerPriorityQueue rQ = new ReducerPriorityQueue(10);
 				
 				Map<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>> mTasks = new HashMap<Integer, ConcurrentHashMap<TaskMetaData, MapperPriorityQueue>>();				
 				Map<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>> rTasks = new HashMap<Integer, ConcurrentHashMap<TaskMetaData, ReducerPriorityQueue>>();
