@@ -3,17 +3,24 @@
  */
 package abhi.wordcount;
 
+import abhi.mapreduce.OutputFormat;
+
 /**
  * @author abhisheksharma
  *
  */
-public class WordCountOutputFormat {
+public class WordCountOutputFormat extends OutputFormat<String, String> {
 
 	/**
 	 * 
 	 */
-	public WordCountOutputFormat() {
-		// TODO Auto-generated constructor stub
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public String format(String key, String value) {
+		// TODO Auto-generated method stub
+		return key + "\t" + value + "\n";
 	}
+
 
 }
