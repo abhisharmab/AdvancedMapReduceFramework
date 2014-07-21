@@ -54,7 +54,7 @@ public class LiveStatusThread implements Runnable {
 	{
 		try 
 		{
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -159,7 +159,7 @@ public class LiveStatusThread implements Runnable {
 
 				try 
 				{
-					Thread.sleep(3000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

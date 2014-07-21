@@ -130,6 +130,8 @@ public class TaskTracker {
 		try
 		{
 			TaskTracker taskTracker = new TaskTracker();
+			
+			System.out.println("Task Tracker is up and running");
 			taskTracker.fireUp();
 		}
 		catch(Exception e)
