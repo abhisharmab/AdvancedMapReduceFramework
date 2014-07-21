@@ -45,8 +45,6 @@ public class SystemConstants {
 	private static final ResourceBundle sysConfig = ResourceBundle.getBundle("Configuration", Locale.getDefault());
 	
 	//----Many of the System Configuration and System Constants are Declared here --//
-	public static final String REGISTRY_HOST = "REGISTRY.HOST";
-	public static final String REGISTRY_PORT = "REGISTRY.PORT";
 	public static final String JOBTRACKER_SERVICE_NAME = "JOBTRACKER.SERVICE";
 	public static final String FILE_PARITION_SIZE = "FILE.PARTITION.SIZE";
 	public static final String REPLICATION = "REPLICATION";
