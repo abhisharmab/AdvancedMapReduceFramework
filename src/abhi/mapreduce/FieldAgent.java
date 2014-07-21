@@ -100,8 +100,6 @@ public abstract class FieldAgent {
 	    	  {
 	    		  updateStatus();
 	    		  
-	    		  
-	    		  System.out.println("I am the push statis to task tracker");
 	    		  try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
@@ -113,7 +111,7 @@ public abstract class FieldAgent {
 	    });
 	    thread.start();
 	    
-	    //thread.setDaemon(true);
+	    thread.setDaemon(true);
 	    //schExec.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
 	  }
 

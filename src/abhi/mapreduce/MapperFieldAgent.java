@@ -194,9 +194,6 @@ public class MapperFieldAgent extends FieldAgent {
 	protected float getPercentage() {
 		try {
 			
-			System.out.println("this.inputFormat.fileSizethis.inputFormat.fileSize   " + this.inputFormat.fileSize);
-			System.out.println("this.inputFormat.raf.getFilePointer()   " + this.inputFormat.raf.getFilePointer() );
-			System.out.println(" this.inputFormat.offset    " +  this.inputFormat.offset);
 			return (float) (this.inputFormat.raf.getFilePointer() - this.inputFormat.offset) / this.inputFormat.fileSize;
 		} catch (IOException e) {
 			e.printStackTrace();
