@@ -122,6 +122,7 @@ public class MapperFieldAgent extends FieldAgent {
 
 		
 		System.out.println("I am ending!!!!");
+		System.exit(0);
 	}
 
 	//Reference: http://stackoverflow.com/questions/11647889/sorting-the-mapkey-value-in-descending-order-based-on-the-value
