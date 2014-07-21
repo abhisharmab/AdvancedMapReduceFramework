@@ -105,11 +105,7 @@ public class ReducerFieldAgent extends FieldAgent{
     		NameNodeSlave originSlave = (NameNodeSlave) Naming.lookup(lookup_name);
     		System.out.println("NameNodeSlave has been looked up.");
     		
-    		if(getCreatedFiles().size()==0){
-    			System.out.println("There are no files.");
-    		}
     		for(String filename : getCreatedFiles()){
-    			System.out.println("Created files " + filename);
     			// This is the local Reference
     			String data = this.nameNodeSlaveReference.retrieveFromLocalDataNode(filename);
     			
@@ -175,6 +171,11 @@ public class ReducerFieldAgent extends FieldAgent{
 				List<String> fileNames = task.getCreatedFileNames();
 				slavesWithFiles.put(slave, fileNames);
 				
+				for(String name : fileNames){
+					System.out.println("Slave   " + slave.toString());
+					System.out.println("file =====  " + name);
+				}
+				
 			}
 			
 			List<String> data = new ArrayList<String>();
@@ -214,7 +215,10 @@ public class ReducerFieldAgent extends FieldAgent{
 	// Within the FileList we are getting the correct file part that is assigned to the reducer
 	private String getFileNameWithParitionNumber(List<String> fileNames, int partitionedNumber){
 		String indicator = "part_"+ partitionedNumber;
+		
+		System.out.println("indicator   " + indicator);
 		for(String name : fileNames){
+			System.out.println("FFFFILE NAME " + name);
 			if(name.contains(indicator)){
 				return name;
 			}

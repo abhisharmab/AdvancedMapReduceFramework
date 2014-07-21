@@ -16,7 +16,7 @@ public class WordCountInputFormat extends InputFormat
 {
 
 
-	protected WordCountInputFormat(String filename) throws IOException {
+	public WordCountInputFormat(String filename) throws IOException {
 		super(filename);
 		// TODO Auto-generated constructor stub
 	}

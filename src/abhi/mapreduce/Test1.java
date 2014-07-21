@@ -27,7 +27,7 @@ public class Test1 {
 		try {
 			out = new PrintStream(new FileOutputStream(new File("tasklog")));
 			System.setOut(out);
-			System.out.println(firstName + lastName);
+			System.out.println("Asd");
 			out.flush();
 			out.close();
 		
