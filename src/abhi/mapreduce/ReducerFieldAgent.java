@@ -386,8 +386,10 @@ public class ReducerFieldAgent extends FieldAgent{
 					/* close the files */
 					this.outputCollector.close();
 					
-					this.nameNodeSlaveReference.registerToLocalDataNode(this.outputCollector.getOutputFileName());
-					getCreatedFiles().add(this.outputCollector.getOutputFileName());
+					
+					String name = this.outputCollector.getOutputFileName().substring(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY).length() + 1);
+					this.nameNodeSlaveReference.registerToLocalDataNode(name);
+					getCreatedFiles().add(name);
 				}/* if runtime exception happens in user's code, exit jvm */
 				catch (RuntimeException e) {
 					e.printStackTrace();
