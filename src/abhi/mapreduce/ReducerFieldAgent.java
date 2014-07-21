@@ -410,6 +410,9 @@ public class ReducerFieldAgent extends FieldAgent{
 				
 			}
 
+			
+			
+			System.exit(0);
 		
 	}
 
