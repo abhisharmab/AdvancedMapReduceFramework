@@ -63,7 +63,6 @@ public class MapperFieldAgent extends FieldAgent {
 			System.out.println("--------------" + inputFile);
 			
 			String[] strip = this.inputFile.split(System.getProperty("file.separator")+System.getProperty("file.separator"));
-			
 			this.outputCollector = new MapperOutputCollector(this.outputFile, strip[1].toString(), part, reducerNum, "\t");
 
 			
