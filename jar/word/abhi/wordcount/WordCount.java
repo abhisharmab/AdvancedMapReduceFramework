@@ -49,7 +49,7 @@ public class WordCount implements Serializable {
 		jobConf.setMapperClassName("abhi.wordcount.WordCountMapper");
 		jobConf.setReducerClassName("abhi.wordcount.WordCountReducer");
 
-		jobConf.setReducerNum(2);
+		jobConf.setReducerNum(1);
 
 		JobClient jClient = new JobClient();
 		try 
