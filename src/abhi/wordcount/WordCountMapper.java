@@ -21,11 +21,10 @@ public class WordCountMapper extends Mapper<String, String, String, String>
 	public void map(String key, String value, OutputCollector<String, String> outputCollector)
 			throws IOException, InterruptedException {
 		
-		String line = value.toString();
+		String data = value.toString(); //Converted the Data Into String
+		String[] wordsArray = data.split(" "); //User is saying that the file is space de-limited
 		
-		String[] words = line.split(" ");
-		
-		for(String word : words)
+		for(String word : wordsArray)
 		{
 			outputCollector.collect(word, Long.toString(1));
 		}

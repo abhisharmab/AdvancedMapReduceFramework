@@ -15,9 +15,7 @@ import abhi.mapreduce.KeyValueConstruct;
 public class WordCountInputFormat extends InputFormat
 {
 	public WordCountInputFormat(String filename) throws IOException {
-
 		super(filename);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -25,13 +23,12 @@ public class WordCountInputFormat extends InputFormat
 		try {
 			return this.hasByte();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	@Override
+	@Override //Function to construct the KeyValue
 	public KeyValueConstruct next() {
 
 		try
