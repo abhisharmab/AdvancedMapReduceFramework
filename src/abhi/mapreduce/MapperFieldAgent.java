@@ -108,6 +108,8 @@ public class MapperFieldAgent extends FieldAgent {
 			//Shows task is Done
 			this.updateStatusSucceeded();
 			
+			Thread.sleep(3000);
+			
 			
 		}
 		catch(IOException | InterruptedException e)
