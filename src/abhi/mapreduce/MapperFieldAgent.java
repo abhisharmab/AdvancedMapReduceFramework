@@ -62,7 +62,7 @@ public class MapperFieldAgent extends FieldAgent {
 			System.out.println("===============" + outputFile);
 			System.out.println("--------------" + inputFile);
 			
-			String[] strip = this.inputFile.split(System.getProperty("file.separator")+System.getProperty("file.separator"));
+			String[] strip = this.inputFile.split(System.getProperty("file.separator") + System.getProperty("file.separator"));
 			
 			this.outputCollector = new MapperOutputCollector(this.outputFile, strip[1].toString(), part, reducerNum, "\t");
 
@@ -104,6 +104,8 @@ public class MapperFieldAgent extends FieldAgent {
 
 			//clean-up at end
 			mapper.cleanUp();
+			
+			this.sort();
 			
 			//Shows task is Done
 			this.updateStatusSucceeded();
