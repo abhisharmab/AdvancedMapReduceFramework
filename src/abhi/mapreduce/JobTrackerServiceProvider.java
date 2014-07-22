@@ -157,7 +157,7 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 				}
 				else if(taskProgress.getStatus() == SystemConstants.TaskStatus.SUCCEEDED)
 				{
-					
+
 					//Remove the Task from the TaskTracker List since its done.
 					taskTrackerInfo.removeTask(taskProgress.getTaskID());
 

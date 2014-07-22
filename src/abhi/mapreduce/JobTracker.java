@@ -214,11 +214,17 @@ public class JobTracker implements IDefineSchedulingStrategy{
 	{
 		if(this.mapperTasks.containsKey(taskID))
 		{
-			this.mapTaskQueue.put(Collections.list(this.mapperTasks.get(taskID).keys()).get(0), Collections.list(this.mapperTasks.get(taskID).elements()).get(0));
+			synchronized(this.mapTaskQueue)
+			{
+				this.mapTaskQueue.put(Collections.list(this.mapperTasks.get(taskID).keys()).get(0), Collections.list(this.mapperTasks.get(taskID).elements()).get(0));
+			}
 		}
 		else
 		{
-			this.reduceTaskQueue.put(Collections.list(this.reducerTasks.get(taskID).keys()).get(0), Collections.list(this.reducerTasks.get(taskID).elements()).get(0));
+			synchronized(this.reduceTaskQueue)
+			{
+				this.reduceTaskQueue.put(Collections.list(this.reducerTasks.get(taskID).keys()).get(0), Collections.list(this.reducerTasks.get(taskID).elements()).get(0));
+			}
 		}
 	}
 	
@@ -232,7 +238,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
 		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance,30,30,TimeUnit.SECONDS);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance,4,4,TimeUnit.SECONDS);
 		    
 		    System.out.println("Job Tracker Up and Running. It is ready to orchestrated the cluster now.");
 
