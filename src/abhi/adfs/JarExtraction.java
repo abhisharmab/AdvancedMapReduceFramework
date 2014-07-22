@@ -29,8 +29,6 @@ public class JarExtraction {
 		
 		String jarName = jarFileName.substring(0, jarFileName.indexOf("."));
 		directory = directory + jarName + System.getProperty("file.separator");
-		System.out.println("JarName         " + jarName);
-		System.out.println("directory         " + directory);
 	}
 	
 	// This code has been referenced from 
