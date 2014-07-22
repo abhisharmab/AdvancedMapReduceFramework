@@ -265,7 +265,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 						result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
 					else
 						System.out.println("There is no node in the cluster to schedule tasks");
-				}
+				} 
 				catch(Exception e)
 				{
 					System.out.println("Could not execute Mapper Task");
@@ -446,25 +446,20 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		TaskMetaData task = Collections.list(this.reducerTasks.get(taskID).keys()).get(0);
 
 		if (task == null) {
-			System.out.println("did we last the meta data?");
 			return SystemConstants.MapJobsStatus.INPROGRESS;
 		}
 
 		JobInfo job = this.jobs.get(task.getJobID());
 
 		if (job == null || job.getJobStatus() == SystemConstants.JobStatus.FAILED) {
-			System.out.println("this shouldnt fail");
 			return SystemConstants.MapJobsStatus.FAILED;
 		}
 
 		List<TaskProgress> mapTasksProgress = Collections.list(job.getProgressofallTasks().elements());
 		for (TaskProgress mtaskProgress : mapTasksProgress) {
 			
-			System.out.println("type   = " + mtaskProgress.getTaskType().toString());
-			System.out.println(mtaskProgress.getStatus().toString());
 			if (this.mapperTasks.containsKey(mtaskProgress.getTaskID()) && 
 					!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone()){
-				System.out.println("or are we here?");
 				return SystemConstants.MapJobsStatus.INPROGRESS;
 			}
 			
@@ -491,7 +486,6 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 			if(mtaskProgress.getTaskType().equals(TaskType.MAPPER)){
 				if (!Collections.list(this.mapperTasks.get(mtaskProgress.getTaskID()).keys()).get(0).isTaskDone()){
-					System.out.println("There are map tasks are not complete.");
 					return null;
 				}
 			}

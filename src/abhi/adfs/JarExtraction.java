@@ -29,8 +29,6 @@ public class JarExtraction {
 		
 		String jarName = jarFileName.substring(0, jarFileName.indexOf("."));
 		directory = directory + jarName + System.getProperty("file.separator");
-		System.out.println("JarName         " + jarName);
-		System.out.println("directory         " + directory);
 	}
 	
 	// This code has been referenced from 
@@ -39,7 +37,7 @@ public class JarExtraction {
 	// Extraction of the jar file will happen with Manager/TaskTracker(Mapper,Reducer)
 	public boolean extraction(){
 		
-		
+		 
 		try {
 			String fileNameWithPath = jar_dic + jarFileName;
 			JarFile jarfile = new JarFile(new File(fileNameWithPath));
