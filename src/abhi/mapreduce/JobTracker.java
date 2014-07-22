@@ -236,9 +236,9 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 		    //TaskTracker Fault Tolerance Thread
 			
-		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
+		    /*ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
 		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance,4,4,TimeUnit.SECONDS);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance,4,4,TimeUnit.SECONDS);*/
 		    
 		    System.out.println("Job Tracker Up and Running. It is ready to orchestrated the cluster now.");
 
