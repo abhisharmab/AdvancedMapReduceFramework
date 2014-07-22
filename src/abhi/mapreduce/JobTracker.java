@@ -232,7 +232,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 			
 		    ScheduledExecutorService faultyTaskTrackers = Executors.newScheduledThreadPool(1);
 		    TaskTrackerFaultTolerance faultTolerance = new TaskTrackerFaultTolerance(jt);
-		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance, 30,30,TimeUnit.SECONDS);
+		    faultyTaskTrackers.scheduleAtFixedRate(faultTolerance,30,30,TimeUnit.SECONDS);
 		    
 		    System.out.println("Job Tracker Up and Running. It is ready to orchestrated the cluster now.");
 
@@ -259,9 +259,12 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				{
 					//Get the relevant TaskTracker from the Queue who can Execute this Job
 					 taskTrackerInfo = entry.getValue().poll();
-					
+
 					//Send the Task to the Appropriate TaskTracker
-					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
+					if(taskTrackerInfo!=null)
+						result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
+					else
+						System.out.println("There is no node in the cluster to schedule tasks");
 				}
 				catch(Exception e)
 				{
@@ -302,7 +305,11 @@ public class JobTracker implements IDefineSchedulingStrategy{
 				{
 					//Get the relevant TaskTracker from the Queue who can Execute this Job
 					taskTrackerInfo = entry.getValue().poll();
-					result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
+					
+					if(taskTrackerInfo!=null)
+						result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
+					else
+						System.out.println("There is no node in the cluster to schedule tasks");
 				}
 				catch(Exception e)
 				{
