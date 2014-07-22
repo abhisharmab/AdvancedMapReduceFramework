@@ -190,7 +190,7 @@ public class TaskTracker {
 			            try {
 			            	jobTrackerServices.updateTaskManagerStatus(hb);
 			            } catch (RemoteException e) {
-			              e.printStackTrace();
+			              System.out.println("Remote Execption Occurred. Maybe the RMI or the other main servers are down");
 			            }
 			          
 			          //Delete the entry from the Task Status. 
