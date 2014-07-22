@@ -380,7 +380,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 					{
 						String taskTrackerName = "TaskTracker_" + dataNode.split("_")[1].toString();
 						
-						if(this.taskTrackers.containsKey(taskTrackerName))
+						if(this.taskTrackers.containsKey(taskTrackerName) && !mQ.contains(this.taskTrackers.get(taskTrackerName)))
 						{
 							//Possible list of Slaves the TaskCould Run on Based on the File Chunks
 							mQ.add(this.taskTrackers.get(taskTrackerName));
