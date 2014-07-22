@@ -126,7 +126,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 		    });
 		    
 		    thread.setDaemon(true);
-		    schExecutor.scheduleAtFixedRate(thread, 0, 10, TimeUnit.SECONDS);
+		    schExecutor.scheduleAtFixedRate(thread, 0, 8, TimeUnit.SECONDS);
 		     
 
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
