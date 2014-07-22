@@ -20,10 +20,10 @@ import abhi.adfs.NameNodeSlave;
 /**
  * @author abhisheksharma
  *
- * This is the base class for this Main Worker. This is the guy that will be doing the heavy lifting and actually going to do some wokrk. 
+ * This is the base class for this Main Worker. This is the guy that will be doing the heavy lifting and actually going to do some wokrk.
  * 
+ *  The Base acts as the parent for the MApper and The Reducer Agent Respecively who do the actual work and provides some additional functionality.
  * 
- *
  */
 public abstract class FieldAgent {
 
@@ -90,9 +90,7 @@ public abstract class FieldAgent {
 	  protected abstract float getPercentage();
 	  
 	  public void pushStatusToTaskTracker() {
-	    /* periodically send status progress to task tracker */
-		  
-	    //ScheduledExecutorService schExec = Executors.newScheduledThreadPool(1);
+
 		  
 	    Thread thread = new Thread(new Runnable() {
 	      public void run() {
@@ -111,15 +109,13 @@ public abstract class FieldAgent {
 	    });
 	    thread.start();
 	    
-	    //thread.setDaemon(true);
-	    //schExec.scheduleAtFixedRate(thread, 0, 2, TimeUnit.SECONDS);
 	  }
 
 	  
 	  public void updateStatus() {
 	    synchronized (taskProgress) {
 	      
-	    	/* if already succeed, stop. if not, send in-progress status */
+	    	//if already succeed, stop. if not, send in-progress status 
 	      if (taskProgress.getStatus() != SystemConstants.TaskStatus.SUCCEEDED) {
 	        try {
 
@@ -141,7 +137,7 @@ public abstract class FieldAgent {
 
 
 	  public void updateStatusSucceeded() {
-	    /* lock progress before change it */
+	    //Lock Task Progress before chanign it
 		  synchronized (taskProgress) {
 	      try {
 	        	taskProgress.setPercentageCompleted(this.getPercentage());
@@ -149,7 +145,6 @@ public abstract class FieldAgent {
 	        	taskProgress.setStatus(SystemConstants.TaskStatus.SUCCEEDED);
 	        	taskProgress.setCreatedFileNames(getCreatedFiles());
 
-	        /* set the current time stamp */
 	    	  taskProgress.setLatestUpdateTimeStamp(System.currentTimeMillis());
 
 	    	  //Update Task Tracker
