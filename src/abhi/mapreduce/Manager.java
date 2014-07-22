@@ -184,21 +184,19 @@ public class Manager {
 								
 								// Extracting the jar file
 								JarExtraction jar = new JarExtraction(jarfileName);
-								if(jar.extraction()){
 										
-									// Distributing and Partitioning the input file
-									if(slave.dump(inputFileName)){
-										System.out.println("Paritioned the File.");
-										System.out.println("Starting the execution.");
-										
-										String classPath = jar.getDictory();
-										executeFile(executionName, inputFileName, outputLocation, classPath);
-									} else {
-										System.out.println("Error in distributing the input file.");
-										System.out.println("Check the distribute file system and try again.");
-									}
+								// Distributing and Partitioning the input file
+								if(slave.dump(inputFileName)){
+									System.out.println("Paritioned the File.");
+									System.out.println("Starting the execution.");
 									
-								} 
+									String classPath = jar.getDirectory();
+									executeFile(executionName, inputFileName, outputLocation, classPath);
+								} else {
+									System.out.println("Error in distributing the input file.");
+									System.out.println("Check the distribute file system and try again.");
+								}
+									
 							} else {
 								System.out.println("Error has been occured while distributing the Jarfile.");
 							}
@@ -215,7 +213,7 @@ public class Manager {
 		} else {
 			System.err.println("Usage: Manager --dump <Input File Name>");
 			System.err.println("Usage: Manager --remove <File Name>");
-			System.err.println("Usage: Manager --cat ");
+			System.err.println("Usage: Manager --ls ");
 			System.err.println("Usage: Manager --jar <JarFileName> <Execution Class Name> <InputFileName> <OutputLocation>");
 			System.err.println("Usage: Manager --help");
 		}
@@ -237,16 +235,11 @@ public class Manager {
 		args[4] = inputFile;
 		args[5] = outputPath;
 		
-		 for(String ar : args){
-			 System.out.println(ar);
-		 }
 		 
 		ProcessBuilder p = new ProcessBuilder(args);
-		//ProcessBuilder p = new ProcessBuilder().command(new String[] {"java", "-cp",  "./*", className});
 		Process process;
 		try {
 			process = p.start();
-			System.out.println("hmmmm");
 			InputStream is = process.getInputStream();
 		    InputStreamReader isr = new InputStreamReader(is);
 		    BufferedReader br = new BufferedReader(isr);
@@ -256,20 +249,8 @@ public class Manager {
 		        System.out.println(line);
 		    }
 		    
-		    
-		    InputStream isErr = process.getErrorStream();
-		    InputStreamReader isrErr = new InputStreamReader(isErr);
-		    BufferedReader brErr = new BufferedReader(isrErr);
-		    String lineErr;
-		    while ((lineErr = brErr.readLine()) != null)
-		    {
-		        System.out.println(lineErr);
-		    }
-		    
 		    try {
-		    	System.out.println("hmmm1");
 				System.exit(process.waitFor());
-				System.out.println("hmmm22");
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

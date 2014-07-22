@@ -19,16 +19,18 @@ import abhi.mapreduce.SystemConstants;
  */
 public class JarExtraction {
 	private String jarFileName;    
-	private String dictory;
+	private String directory;
+	private String jar_dic;
 	
 	public JarExtraction(String jarFileName){
 		this.jarFileName = jarFileName;
-		dictory = SystemConstants.getConfig(SystemConstants.JAR_DIRECTORY)+System.getProperty("file.separator");
+		directory = SystemConstants.getConfig(SystemConstants.JAR_DIRECTORY)+System.getProperty("file.separator");
+		jar_dic = directory;
 		
 		String jarName = jarFileName.substring(0, jarFileName.indexOf("."));
-		dictory = dictory + jarName + System.getProperty("file.separator");
+		directory = directory + jarName + System.getProperty("file.separator");
 		System.out.println("JarName         " + jarName);
-		System.out.println("dictory         " + dictory);
+		System.out.println("directory         " + directory);
 	}
 	
 	// This code has been referenced from 
@@ -39,7 +41,8 @@ public class JarExtraction {
 		
 		
 		try {
-			JarFile jarfile = new JarFile(new File(jarFileName));
+			String fileNameWithPath = jar_dic + jarFileName;
+			JarFile jarfile = new JarFile(new File(fileNameWithPath));
 		    Enumeration<JarEntry> entry= jarfile.entries();
 		    while(entry.hasMoreElements())
 		    {
@@ -47,11 +50,11 @@ public class JarExtraction {
 
 		        System.out.println(jarEntry.getName());
 
-		        File file = new File(dictory, jarEntry.getName());
+		        File file = new File(directory, jarEntry.getName());
 		        if(!file.exists())
 		        {
 		        	file.getParentFile().mkdirs();
-		        	file = new java.io.File(dictory, jarEntry.getName());
+		        	file = new java.io.File(directory, jarEntry.getName());
 		        }
 		        if(jarEntry.isDirectory())
 		        {
@@ -85,12 +88,12 @@ public class JarExtraction {
 		this.jarFileName = jarFileName;
 	}
 
-	public String getDictory() {
-		return dictory;
+	public String getDirectory() {
+		return directory;
 	}
 
-	public void setDictory(String dictory) {
-		this.dictory = dictory;
+	public void setdirectory(String directory) {
+		this.directory = directory;
 	}
 	
 

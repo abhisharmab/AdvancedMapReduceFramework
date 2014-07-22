@@ -42,7 +42,7 @@ public class InputFileInfo  implements Serializable{
 		}
 		
 		boolean checking = true;
-		for(int i = 1; i <+ paritionNumber; i ++){
+		for(int i = 1; i <= paritionNumber; i ++){
 			// This is how to file is being names in parts.
 			String name = fileName+"_" +i;
 			if( !allFileList.contains(name)){

@@ -234,6 +234,7 @@ public class NameNodeMasterImpl extends UnicastRemoteObject implements NameNodeM
 				}
 			}
 			
+			info.validateFiles();
 		}
 		
 		System.out.println("Replication process has completed.");
