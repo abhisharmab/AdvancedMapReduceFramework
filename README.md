@@ -1,4 +1,3 @@
 AdvancedMapReduceFramework
 ==========================
-
-A Map Reduce Framework from Scratch
+Map Reduce Computing Framework and Distributed File System from sctrach
