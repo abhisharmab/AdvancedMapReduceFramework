@@ -265,7 +265,7 @@ public class JobTracker implements IDefineSchedulingStrategy{
 						result = taskTrackerInfo.getTaskTrackerReference().executeTask(entry.getKey());
 					else
 						System.out.println("There is no node in the cluster to schedule tasks");
-				}
+				} 
 				catch(Exception e)
 				{
 					System.out.println("Could not execute Mapper Task");
