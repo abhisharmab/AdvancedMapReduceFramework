@@ -8,6 +8,8 @@ import abhi.mapreduce.Partitioner;
 /**
  * @author abhisheksharma
  *
+ * This implements the Partitioner Interface to get the Partition Fucntions
+ * 
  */
 public class WordCountPartitioner implements Partitioner<String> {
 

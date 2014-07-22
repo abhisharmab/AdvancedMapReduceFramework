@@ -54,10 +54,10 @@ public class LiveStatusThread implements Runnable {
 	{
 		try 
 		{
+			//Sleep for sometime since it takes sometime for JobTracker to set everything up.
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				System.out.println("The thread was interrupted and killed");
 		}
 
 		JobInfo liveJobInfo;
@@ -161,14 +161,12 @@ public class LiveStatusThread implements Runnable {
 				{
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("The thread was interrupted");
 				}
 			
 
 			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("The thread was interrupted and got an Remote Exception. Maybe the RMI conencitno is dead");
 			}
 		}
 			

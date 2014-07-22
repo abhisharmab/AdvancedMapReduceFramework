@@ -12,6 +12,9 @@ import abhi.mapreduce.Reducer;
 /**
  * @author abhisheksharma
  *
+ *
+ * Extending the Reducer Class of the MR frameowkr to implement the Reduce functions for hte WordCound exmaple.
+ *
  */
 public class WordCountReducer extends Reducer<String, String, String, String> {
 

@@ -14,5 +14,6 @@ import java.util.Map;
  */
 public interface IDefineSchedulingStrategy extends Remote {
 
+	// The Strategy Making guy needs to implement this to Make the Task Scheduling Strategy
 	public void makeStrategy();
 }

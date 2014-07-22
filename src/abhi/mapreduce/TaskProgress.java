@@ -10,7 +10,7 @@ import abhi.mapreduce.SystemConstants.TaskStatus;
 import abhi.mapreduce.SystemConstants.TaskType;
 
 /**
- * @author abhisheksharma, dkrew
+ * @author abhisheksharma
  *
  * This class represents the Progress of the each of the Tasks running on the Nodes. 
  * We represent progress in-terms of how much percentage of work is done.

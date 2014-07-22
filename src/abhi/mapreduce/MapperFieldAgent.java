@@ -18,6 +18,10 @@ import java.util.Collections;
 
 /**
  * @author abhisheksharma
+ * 
+ * Mapper Field Agent extends the FieldAgent and is the acutally the Map Worker.
+ * This guy will started as a new PRocess from the TaskTracker in its own JVM and run the user's map code 
+ * 
  *
  */
 public class MapperFieldAgent extends FieldAgent {
@@ -57,10 +61,6 @@ public class MapperFieldAgent extends FieldAgent {
 
 			Partitioner part = (Partitioner) Class.forName(partitioner).newInstance();
 
-			
-			System.out.println("--------------" + inputFormat);
-			System.out.println("===============" + outputFile);
-			System.out.println("--------------" + inputFile);
 			
 			String strippedName = this.inputFile.substring(SystemConstants.getConfig(SystemConstants.ADFS_DIRECTORY).length() + 1);
 			
@@ -126,7 +126,7 @@ public class MapperFieldAgent extends FieldAgent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("I am ending!!!!");
+		System.out.println("I am Mapper and I am ending!!!!");
 		System.exit(0);
 	}
 

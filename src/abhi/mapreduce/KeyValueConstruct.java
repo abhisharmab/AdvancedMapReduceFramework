@@ -6,6 +6,10 @@ package abhi.mapreduce;
 
 /**
  * @author abhisheksharma
+ * 
+ * The guys present the KeyValue Constructor that the Map Reduce Framework operates on. 
+ * 
+ * We call this class and pass the parameters to it so that we could forma  Key VAlye Construct.
  *
  */
 public class KeyValueConstruct implements Comparable<KeyValueConstruct>{

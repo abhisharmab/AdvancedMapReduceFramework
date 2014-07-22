@@ -35,6 +35,9 @@ import abhi.adfs.NameNodeSlave;
 import abhi.adfs.NameNodeSlaveImpl;
 
 /**
+ * This class is the USER facing guy. It interacts to get some information from user and let him run commands. 
+ * Just like /bin/hadoop
+ * 
  * @author dkrew
  * This will be used to interact with the NameNodeSlave by the user.
  * 			Usage: Manager --dump <Input File Name>

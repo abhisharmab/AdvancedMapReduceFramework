@@ -71,9 +71,6 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 
 		this.jobTracker.submitJob(jobInfo);
 
-		//Call this to assign Tasks
-		//this.jobTracker.assignTasks();
-
 		return true;
 	}
 
@@ -132,20 +129,11 @@ public class JobTrackerServiceProvider extends UnicastRemoteObject implements IJ
 				TaskMetaData taskMetaData = null; 
 
 				if(mapTaskList.containsKey(taskProgress.getTaskID()))
-				{
-					System.out.println("we are getting the taskMetaData     MAP");
-					
+				{	
 					taskMetaData = Collections.list(mapTaskList.get(taskProgress.getTaskID()).keys()).get(0);
-					System.out.println(taskMetaData.getJobID());
-					System.out.println(taskMetaData.getReducer());
-					System.out.println(taskMetaData.isTaskDone());
-					
-					System.out.println("We got this from the MAP");
-					System.out.println("map said === " + taskProgress.getStatus().toString());
 				}
 				else if (reduceTaskList.containsKey(taskProgress.getTaskID()))
 				{
-					System.out.println("we are getting the taskMetaData    REDUCE");
 					taskMetaData = Collections.list(reduceTaskList.get(taskProgress.getTaskID()).keys()).get(0);
 
 				}

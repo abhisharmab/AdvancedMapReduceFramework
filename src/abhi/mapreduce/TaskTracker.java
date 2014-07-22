@@ -61,8 +61,7 @@ public class TaskTracker {
 	public int mapperSlotCapacity;
 	public int reducerSlotCapacity;
 
-	//TODO:Abhi make this configurable
-	private final long aliveThreshold = 8000;
+	private final long aliveThreshold = 8000; //8 secs
 
 	public TaskTracker()
 	{
@@ -74,15 +73,13 @@ public class TaskTracker {
 			this.setJobTrackerServices((IJobTrackerServices) rmiRegistry.lookup(SystemConstants.getConfig(SystemConstants.JOBTRACKER_SERVICE_NAME)));
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Could bind to the JobTracker Registry Error Occured");
-			e.printStackTrace();
 		}
 
 		//Set the taskTrackerName
 		try {
 			this.taskTrackerName = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Could not find the particular host");
 		}
 
 		//Register the TaskTrackerServices in the RMI Registry
@@ -91,8 +88,7 @@ public class TaskTracker {
 			TaskTrackerServices tServices = new TaskTrackerServices(this);
 			Naming.rebind("TaskTracker_" + this.taskTrackerName, tServices);
 		} catch (RemoteException | MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Remote Exception. Check if the connection is lost. Could not connect");
 		}
 
 		this.mapperSlotCapacity = Integer.parseInt(SystemConstants.getConfig(SystemConstants.MAX_MAPPER_SLOTS));
@@ -103,13 +99,7 @@ public class TaskTracker {
 		this.statusofAllTasks = new HashMap<Integer,TaskProgress>();
 
 	}
-
-//	//Called to actually start a Mapper or Reducer Task
-//	public void executeTask() throws RemoteException
-//	{
-//	
-//	}
-//	
+	
 	
 	//Each of the Spawned Off Mapper or Reducer Field Agent Will Call Upon this Function to Update their Status
 	//Each field agent will have a reference of the main co-ordinating Boss that is the TaskTracker
@@ -130,12 +120,12 @@ public class TaskTracker {
 		try
 		{
 			TaskTracker taskTracker = new TaskTracker();
-			
 			System.out.println("Task Tracker is up and running");
 			taskTracker.fireUp();
 		}
 		catch(Exception e)
 		{
+			System.out.println("Exception Occured. Please try running again. Printing more information");
 			System.out.println(e.getMessage());
 		}
 	}

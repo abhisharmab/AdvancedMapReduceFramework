@@ -10,6 +10,8 @@ import abhi.mapreduce.KeyValueConstruct;
 
 /**
  * @author abhisheksharma
+ * 
+ * Extending the InputFormat of the MR framework to provide the Iterator
  *
  */
 public class WordCountInputFormat extends InputFormat

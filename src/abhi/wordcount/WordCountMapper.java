@@ -11,6 +11,8 @@ import abhi.mapreduce.OutputCollector;
 /**
  * @author abhisheksharma
  *
+ *
+ * The Map Function of the Word Count Example.
  */
 public class WordCountMapper extends Mapper<String, String, String, String>
 {

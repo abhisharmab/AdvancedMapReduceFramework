@@ -8,6 +8,8 @@ import abhi.mapreduce.OutputFormat;
 /**
  * @author abhisheksharma
  *
+ * Extending the outformat class of the MR Framework to implement the Task Tracker 
+ * 
  */
 public class WordCountOutputFormat extends OutputFormat<String, String> {
 

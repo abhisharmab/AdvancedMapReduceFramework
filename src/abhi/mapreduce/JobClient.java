@@ -143,7 +143,6 @@ public class JobClient implements IClientServices {
 			catch (RemoteException | InterruptedException e) 
 			{
 				System.out.println("Error occured while submitting the job");
-				e.printStackTrace();
 			}
 			return false;
 		}

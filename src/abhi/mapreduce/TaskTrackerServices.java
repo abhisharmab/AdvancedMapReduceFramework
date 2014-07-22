@@ -9,6 +9,10 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author abhisheksharma
  *
+ * This is the Remote Referecne for the Task Tracker. Basically this registered to the RMI and acts the front end for the Task Tracker. 
+ * 
+ * Task Tracker Services Exposes the Functionaliyt to the Outside World.
+ *
  */
 public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTrackerServices{
 
@@ -101,6 +105,8 @@ public class TaskTrackerServices extends UnicastRemoteObject implements ITaskTra
 		
 	}
 
+	
+	//Get the HeartBeat from the Field Agent and Update its Status
 	@Override
 	public void updateFieldAgentStatus(Object status) throws RemoteException {
 		if(status instanceof TaskProgress)
