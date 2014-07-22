@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * @author abhisheksharma
  *
- *This class represents the TaskTracker Heartbeat Payload. This message will sent to the JobTracker will all the information about the TaskTracker
+ *This class represents the TaskTracker Heartbeat Payload. 
+ *This message will sent to the JobTracker will all the information about the TaskTracker
  *
  */
 public class TrackerHeartBeat implements Serializable{

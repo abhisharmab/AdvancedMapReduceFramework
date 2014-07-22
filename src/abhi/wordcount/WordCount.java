@@ -13,6 +13,10 @@ import abhi.mapreduce.JobConf;
 /**
  * @author abhisheksharma
  *
+ * Main Function for the WordCount Example 
+ * 
+ * This instantiates the jobConf and calls the JobClient
+ *
  */
 public class WordCount implements Serializable {
 
