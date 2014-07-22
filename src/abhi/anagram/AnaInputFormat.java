@@ -11,6 +11,9 @@ import abhi.mapreduce.KeyValueConstruct;
 /**
  * @author abhisheksharma
  *
+ * This extends the InputFormat Abstract Class of the Map Reduce Class 
+ * We provide the hasNext() and next() functions.
+ *
  */
 public class AnaInputFormat extends InputFormat
 {

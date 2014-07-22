@@ -13,6 +13,9 @@ import abhi.mapreduce.Reducer;
 /**
  * @author abhisheksharma
  *
+ * This is the Reducer for the Anagram Reducer. 
+ * We find the original string and print the anagrams that are present in the output file.
+ * 
  */
 
 //Reference https://code.google.com/p/hadoop-map-reduce-examples/source/browse/trunk/hadoop-examples/src/com/hadoop/examples/anagrams/AnagramReducer.java

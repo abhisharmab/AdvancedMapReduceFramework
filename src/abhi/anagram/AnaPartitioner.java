@@ -8,6 +8,8 @@ import abhi.mapreduce.Partitioner;
 /**
  * @author abhisheksharma
  *
+ * This class is the partitioner which the user uses to partition the things.
+ * 
  */
 public class AnaPartitioner implements Partitioner<String> {
 

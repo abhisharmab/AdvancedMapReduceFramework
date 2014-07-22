@@ -8,6 +8,8 @@ import abhi.mapreduce.OutputFormat;
 /**
  * @author abhisheksharma
  *
+ * Extend the OutputFormat of the MR framework. This is format of how to split to the file.
+ *
  */
 public class AnaOutputFormat extends OutputFormat<String, String> {
 

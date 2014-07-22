@@ -11,6 +11,8 @@ import abhi.mapreduce.OutputCollector;
 
 /**
  * @author abhisheksharma
+ * 
+ * Extends the Mapper Class; We show the Map function.
  *
  */
 //Reference https://code.google.com/p/hadoop-map-reduce-examples/source/browse/trunk/hadoop-examples/src/com/hadoop/examples/anagrams/AnagramMapper.java

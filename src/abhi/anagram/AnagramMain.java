@@ -12,6 +12,10 @@ import abhi.mapreduce.JobConf;
 /**
  * @author abhisheksharma
  *
+ *
+ * This is the main class for the Sample of Anagram.
+ * We treat this as the application programmers code to test our application. 
+ * 
  */
 public class AnagramMain implements Serializable {
 
